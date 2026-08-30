@@ -1,0 +1,149 @@
+<section data-design-system="command-center" class="flex flex-col gap-6">
+
+  <header>
+    <h1 class="text-headline-lg text-on-surface">{{ 'auditLog.title' | t }}</h1>
+    <p class="mt-1 text-body-md text-on-surface-variant">{{ 'auditLog.subtitle' | t }}</p>
+  </header>
+
+  <!-- Filter Card — AC-511 -->
+  <div class="bg-surface-lowest border border-border-subtle rounded-xl p-6">
+    <div class="flex flex-wrap items-end gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="audit-action" class="text-label-md text-on-surface-variant">{{ 'auditLog.filters.action' | t }}</label>
+        <select
+          id="audit-action"
+          class="h-10 w-48 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface"
+          [ngModel]="actionType()"
+          (ngModelChange)="actionType.set($event)"
+        >
+          <option value="">{{ 'auditLog.filters.allActions' | t }}</option>
+          <option value="Created">{{ 'auditLog.action.created' | t }}</option>
+          <option value="Updated">{{ 'auditLog.action.updated' | t }}</option>
+          <option value="Deleted">{{ 'auditLog.action.deleted' | t }}</option>
+          <option value="Login">{{ 'auditLog.action.login' | t }}</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="audit-user" class="text-label-md text-on-surface-variant">{{ 'auditLog.filters.user' | t }}</label>
+        <input
+          id="audit-user"
+          type="text"
+          [ngModel]="userId()"
+          (ngModelChange)="userId.set($event)"
+          [placeholder]="'auditLog.filters.userPlaceholder' | t"
+          class="h-10 w-72 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+        />
+      </div>
+
+      <button type="button" (click)="applyFilters()" class="h-10 rounded-lg bg-primary px-4 text-body-md font-semibold text-on-primary transition-colors hover:bg-primary/90">
+        {{ 'auditLog.filters.apply' | t }}
+      </button>
+
+      <button type="button" (click)="exportCsv()" class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-4 text-body-md text-on-surface transition-colors hover:bg-surface ms-auto">
+        <cs-icon name="download" [size]="16" />
+        {{ 'auditLog.export' | t }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Log Table in Glassmorphism Container — AC-511 -->
+  <div class="rounded-xl border border-border-subtle overflow-hidden" style="background: rgba(255,255,255,0.7); backdrop-filter: blur(8px);">
+    <cs-card [heading]="'auditLog.list.title' | t">
+      @switch (state().status) {
+        @case ('loading') {
+          <cs-loading-state />
+        }
+        @case ('error') {
+          @if (loadError(); as failure) {
+            <cs-error-state [error]="failure" (retry)="load()" />
+          }
+        }
+        @case ('empty') {
+          <cs-empty-state [message]="'auditLog.empty' | t" />
+        }
+        @default {
+          <div class="overflow-x-auto">
+            <table class="cs-data-table min-w-3xl">
+              <thead>
+                <tr class="border-b border-border-subtle bg-surface/30">
+                  <th scope="col" class="px-4 py-2 text-start text-label-md text-on-surface-variant uppercase tracking-wider">{{ 'auditLog.column.when' | t }}</th>
+                  <th scope="col" class="px-4 py-2 text-start text-label-md text-on-surface-variant uppercase tracking-wider">{{ 'auditLog.column.event' | t }}</th>
+                  <th scope="col" class="px-4 py-2 text-start text-label-md text-on-surface-variant uppercase tracking-wider">{{ 'auditLog.column.entity' | t }}</th>
+                  <th scope="col" class="px-4 py-2 text-start text-label-md text-on-surface-variant uppercase tracking-wider">{{ 'auditLog.column.actor' | t }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (entry of entries(); track entry.id) {
+                  <tr
+                    class="border-b border-border-subtle transition-colors even:bg-surface/30 hover:bg-surface-container-low/50 cursor-pointer"
+                    (click)="select(entry)"
+                  >
+                    <td class="px-4 py-3 font-mono text-data-mono text-on-surface-variant text-xs whitespace-nowrap">{{ entry.createdAt | csDate: 'datetime' }}</td>
+                    <td class="px-4 py-3">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs" [class]="eventColor(entry.action)">
+                          <cs-icon [name]="eventIcon(entry.action)" [size]="14" />
+                        </div>
+                        <div>
+                      <span class="text-label-lg text-on-surface block">{{ entry.action }}</span>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-4 py-3 text-on-surface-variant">
+                      <span class="font-mono text-data-mono text-xs">{{ entry.entityType }}</span>
+                      <span class="text-on-surface-variant mx-1">—</span>
+                      <span class="font-mono text-data-mono text-xs">{{ entry.entityId }}</span>
+                    </td>
+                    <td class="px-4 py-3">
+                      <div class="flex items-center gap-2">
+                        <div class="w-6 h-6 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-xs text-label-lg" aria-hidden="true">
+                          {{ (entry.userName || entry.userId)[0].toUpperCase() }}
+                        </div>
+                        <span class="text-on-surface-variant text-body-sm">{{ entry.userName || entry.userId }}</span>
+                      </div>
+                    </td>
+                  </tr>
+                  @if (selected() === entry) {
+                    <tr>
+                      <td colspan="4" class="border-b border-border-subtle bg-surface-lowest px-4 py-3">
+                        <dl class="grid grid-cols-2 gap-2 text-body-sm">
+                          <div>
+                            <dt class="text-on-surface-variant">{{ 'auditLog.detail.ip' | t }}</dt>
+                            <dd class="font-mono text-data-mono">{{ entry.ipAddress || '—' }}</dd>
+                          </div>
+                          <div>
+                            <dt class="text-on-surface-variant">{{ 'auditLog.detail.userAgent' | t }}</dt>
+                            <dd class="truncate">{{ entry.userAgent || '—' }}</dd>
+                          </div>
+                          @if (entry.newValues) {
+                            <div class="col-span-2">
+                              <dt class="text-on-surface-variant">{{ 'auditLog.detail.newValues' | t }}</dt>
+                              <dd class="whitespace-pre-wrap break-all font-mono text-data-mono text-xs">{{ entry.newValues }}</dd>
+                            </div>
+                          }
+                        </dl>
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex items-center justify-between border-t border-border-subtle p-4">
+            <span class="text-body-sm text-on-surface-variant">{{ 'auditLog.total' | t: totalCount() }}</span>
+            <div class="flex gap-2">
+              <button type="button" [disabled]="!hasPreviousPage()" (click)="previousPage()" class="h-9 rounded-lg border border-outline-variant px-3 text-body-sm disabled:opacity-40">
+                {{ 'pagination.previous' | t }}
+              </button>
+              <button type="button" [disabled]="!hasNextPage()" (click)="nextPage()" class="h-9 rounded-lg border border-outline-variant px-3 text-body-sm disabled:opacity-40">
+                {{ 'pagination.next' | t }}
+              </button>
+            </div>
+          </div>
+        }
+      }
+    </cs-card>
+  </div>
+</section>

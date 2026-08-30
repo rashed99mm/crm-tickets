@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CRM Pulse - Ticket Detail</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface": "#0b1c30",
+                      "on-secondary": "#ffffff",
+                      "on-background": "#0b1c30",
+                      "on-secondary-fixed-variant": "#3a485c",
+                      "secondary-container": "#d5e3fd",
+                      "primary-container": "#131b2e",
+                      "surface-tint": "#565e74",
+                      "surface-container": "#e5eeff",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-tertiary-fixed-variant": "#004c6e",
+                      "on-tertiary-fixed": "#001e2f",
+                      "tertiary-fixed-dim": "#89ceff",
+                      "on-error-container": "#93000a",
+                      "on-tertiary": "#ffffff",
+                      "on-surface-variant": "#45464d",
+                      "surface": "#f8f9ff",
+                      "surface-container-high": "#dce9ff",
+                      "surface-container-low": "#eff4ff",
+                      "secondary-fixed-dim": "#b9c7e0",
+                      "surface-bright": "#f8f9ff",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-secondary-fixed": "#0d1c2f",
+                      "on-primary-fixed": "#131b2e",
+                      "surface-dim": "#cbdbf5",
+                      "inverse-surface": "#213145",
+                      "on-tertiary-container": "#008cc7",
+                      "inverse-primary": "#bec6e0",
+                      "tertiary-container": "#001e2f",
+                      "primary-fixed": "#dae2fd",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed": "#c9e6ff",
+                      "secondary": "#515f74",
+                      "primary-fixed-dim": "#bec6e0",
+                      "primary": "#000000",
+                      "surface-container-lowest": "#ffffff",
+                      "outline-variant": "#c6c6cd",
+                      "on-secondary-container": "#57657b",
+                      "on-error": "#ffffff",
+                      "secondary-fixed": "#d5e3fd",
+                      "background": "#f8f9ff",
+                      "outline": "#76777d",
+                      "surface-variant": "#d3e4fe",
+                      "error-container": "#ffdad6",
+                      "on-primary-container": "#7c839b",
+                      "tertiary": "#000000",
+                      "inverse-on-surface": "#eaf1ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin": "24px",
+                      "gutter": "20px",
+                      "sm": "8px",
+                      "2xl": "48px",
+                      "lg": "24px",
+                      "md": "16px",
+                      "xs": "4px",
+                      "base": "4px",
+                      "xl": "32px"
+              },
+              "fontFamily": {
+                      "display": [
+                              "Hanken Grotesk"
+                      ],
+                      "data-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "display": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "data-mono": [
+                              "13px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background h-full font-body-md text-body-md overflow-hidden flex flex-col antialiased">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest text-primary font-body-md text-body-md flex justify-between items-center w-full px-lg h-16 z-40 sticky top-0 border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<h1 class="font-display text-display font-bold text-on-surface">CRM Pulse</h1>
+<!-- Since this is a detail view, Nav isn't fully active, but we show structure -->
+<nav class="hidden md:flex gap-lg ml-xl">
+<a class="text-on-secondary-fixed-variant hover:bg-surface-container-high transition-colors px-xs py-base rounded" href="#">Dashboard</a>
+<a class="text-primary font-bold border-b-2 border-primary px-xs py-base" href="#">Tickets</a>
+<a class="text-on-secondary-fixed-variant hover:bg-surface-container-high transition-colors px-xs py-base rounded" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<div class="hidden md:flex items-center bg-surface-container px-sm py-xs rounded-full border border-outline-variant">
+<span class="material-symbols-outlined text-outline">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-body-sm text-on-surface placeholder:text-outline w-48 py-0" placeholder="Search..." type="text"/>
+</div>
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full cursor-pointer transition-all duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-full cursor-pointer transition-all duration-150">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<img alt="Agent Profile" class="w-8 h-8 rounded-full border border-outline-variant cursor-pointer" data-alt="A professional headshot of a customer service agent smiling warmly. Clean studio lighting, light background. High resolution, modern corporate aesthetic. 8k quality, sharp focus on the face." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArk9H5thJ9E-O8USYnrR3ybXIIzWpItnVCZ5P7MRs1krroOr55AUllSVDoatuHxqWyzs9hsX1qd_DPqeAXsXX-os-oWhY5gdsdBvL0SltZ0OmKx6ZBPQi_bMSnpkfDPJduOY9Im_dFMvVOpTCKahn_YhUrwrksWqgyV7C15XWLBya8Krch78sNZpsfwprF-5tgMAMzvXTAv_NuQuolT_1c4iou87Nf58Ho-dKvBG0HHa7688j2PaYUgA"/>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar (Hidden on smaller screens, shown as contextual nav on large) -->
+<aside class="bg-surface-container-low hidden lg:flex flex-col h-full w-64 left-0 py-lg px-md z-50 border-r border-outline-variant shrink-0">
+<div class="mb-xl px-sm">
+<div class="flex items-center gap-sm mb-xs">
+<img alt="Organization Logo" class="w-6 h-6 rounded" data-alt="A minimalist tech startup logo featuring interlocking geometric shapes in blue and grey. Clean, modern, corporate identity style. High contrast on white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDx9ZC6wkrSgprBNM6lBczIFNg1OVW3UTAAuDYM6ScnE6V53_WvlZ9SsbrEdUHAxkCtksvRdQwUnbofFmMHama6_dB-5mAjjsxtY9Sowm6zwwtMP0oaehkMEjhMSIa6NkBEmYz41hNCg1DGfqNep4xVV_3x-KoBzVIAucEthO-6I2t584FaYhVw81Ft4-ybAgLK71VTWOIVN6TvK4IsFn2se744oBbJ5VSNFQzvToh7xCZJejVd5bOfRg"/>
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Support Desk</h2>
+</div>
+<p class="text-label-md font-label-md text-secondary ml-8">Enterprise Tier</p>
+</div>
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-sm rounded-lg mb-lg hover:bg-primary-container hover:text-on-primary-container transition-colors shadow-sm">
+<span class="material-symbols-outlined mr-xs align-middle text-[18px]">add</span> New Ticket
+            </button>
+<nav class="flex flex-col gap-xs flex-1">
+<a class="flex items-center gap-sm px-sm py-xs text-secondary hover:bg-surface-container-high transition-all rounded-lg scale-95 active:scale-90 text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span> Dashboard
+                </a>
+<a class="flex items-center gap-sm px-sm py-xs bg-secondary-container text-on-secondary-container font-semibold rounded-lg scale-95 active:scale-90 transition-transform text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-[20px] fill" data-icon="confirmation_number">confirmation_number</span> Tickets
+                </a>
+<a class="flex items-center gap-sm px-sm py-xs text-secondary hover:bg-surface-container-high transition-all rounded-lg scale-95 active:scale-90 text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span> Settings
+                </a>
+</nav>
+<div class="mt-auto flex flex-col gap-xs pt-lg border-t border-outline-variant">
+<a class="flex items-center gap-sm px-sm py-xs text-secondary hover:bg-surface-container-high transition-all rounded-lg text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="contact_support">contact_support</span> Support
+                </a>
+<a class="flex items-center gap-sm px-sm py-xs text-secondary hover:bg-surface-container-high transition-all rounded-lg text-label-md font-label-md" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span> Sign Out
+                </a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col lg:flex-row overflow-hidden bg-background">
+<!-- Ticket Detail Column (Center Workspace) -->
+<div class="flex-1 flex flex-col min-w-0 overflow-y-auto">
+<!-- Header/Meta -->
+<div class="p-md md:p-lg border-b border-outline-variant bg-surface-container-lowest">
+<div class="flex justify-between items-start mb-md">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="font-data-mono text-data-mono text-secondary bg-surface px-xs py-[2px] rounded border border-outline-variant">TKT-8924</span>
+<span class="bg-error-container text-on-error-container font-label-md text-label-md px-sm py-[2px] rounded-full uppercase tracking-wider flex items-center gap-[4px]"><span class="w-1.5 h-1.5 rounded-full bg-error block"></span> Critical</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">Database Connection Timeout on Production Cluster</h2>
+<p class="text-body-sm font-body-sm text-on-surface-variant">Created by <span class="font-semibold">Sarah Jenkins</span> (TechOps) • Oct 24, 2023, 14:32 UTC</p>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-sm bg-surface-container-lowest border border-outline text-secondary font-label-md text-label-md rounded hover:bg-surface-container-low transition-colors">Assign to me</button>
+<button class="px-md py-sm bg-surface-container-lowest border border-outline text-secondary font-label-md text-label-md rounded hover:bg-surface-container-low transition-colors"><span class="material-symbols-outlined text-[18px] align-bottom">more_horiz</span></button>
+</div>
+</div>
+<div class="flex flex-wrap gap-lg border-t border-outline-variant pt-md">
+<div>
+<p class="text-label-md font-label-md text-secondary uppercase mb-xs">Status</p>
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-[18px]">progress_activity</span>
+<span class="font-body-md text-body-md text-on-surface font-semibold">Investigating</span>
+</div>
+</div>
+<div>
+<p class="text-label-md font-label-md text-secondary uppercase mb-xs">Assignee</p>
+<div class="flex items-center gap-xs">
+<img alt="Assignee" class="w-5 h-5 rounded-full" data-alt="A small circular avatar of a male software engineer with glasses, looking focused. Clean modern office background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPAjJR7-IwsB-oMtKh2solx-FKCfBjR5D3rUVy9QW15tKM1rBJrsd9f9iMTBRxWN-wuEHDgsfd7xwdPs1T0vhmoBDGVFNFE7pk0VCcuthSNeRbnHU3O9UhAV33DI6IuKHldz16LlqDMSoxkF4_UwoJMfL4lV4Eq01s5g__fxHODwd7sf4i_XQfd_IYcrgzHNb4mzBCKZ2iC8EAou1tz6gRrHnpvTnVRoRkoqlG2naJ8Ti9nS-MPhpW1g"/>
+<span class="font-body-md text-body-md text-on-surface">Marcus Webb</span>
+</div>
+</div>
+<div>
+<p class="text-label-md font-label-md text-secondary uppercase mb-xs">Environment</p>
+<span class="font-data-mono text-data-mono text-on-surface">us-east-1 (Prod)</span>
+</div>
+</div>
+</div>
+<!-- Timeline / History -->
+<div class="flex-1 p-md md:p-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md">Activity History</h3>
+<div class="space-y-lg relative before:absolute before:inset-0 before:ml-[1.1rem] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-outline-variant">
+<!-- Initial Description -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+<div class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-background bg-secondary text-on-secondary shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<span class="material-symbols-outlined text-[16px]">description</span>
+</div>
+<div class="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] bg-surface-container-lowest border border-outline-variant p-md rounded-lg shadow-sm relative">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-md text-label-md font-bold text-on-surface">Sarah Jenkins reported</span>
+<span class="font-body-sm text-body-sm text-secondary">Oct 24, 14:32</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant leading-relaxed">
+                                    Experiencing intermittent connection drops to the primary RDS instance starting at ~14:15 UTC. Application logs show generic timeout errors. Spike in latency observed on Datadog dashboard. Needs immediate investigation as it's affecting checkout flows.
+                                </p>
+</div>
+</div>
+<!-- System Update -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-background bg-surface-variant text-on-surface shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<span class="material-symbols-outlined text-[16px]">smart_toy</span>
+</div>
+<div class="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] px-md py-sm rounded-lg relative">
+<p class="text-body-sm font-body-sm text-secondary text-center md:text-left">
+                                    System automatically categorized as <span class="bg-error-container text-on-error-container px-xs rounded">Severity 1</span> and assigned to On-Call (Marcus Webb).
+                                </p>
+<p class="text-body-sm font-body-sm text-outline text-center md:text-left mt-xs">Oct 24, 14:33</p>
+</div>
+</div>
+<!-- Agent Response -->
+<div class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group">
+<div class="flex items-center justify-center w-8 h-8 rounded-full border-2 border-background bg-primary text-on-primary shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+<img alt="Marcus" class="w-full h-full rounded-full object-cover" data-alt="Small circular avatar of Marcus Webb, the assignee." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDo3FQ0htxOIFAl0M9gIzXE1F_DlBm2gGvj0P8oDk7XolzgcNkGY_0_n4Qkv4BPEkWAwBOEa61juztNW4esMd_2RLeHjB_paSKoEBn40SoABcfe1bbs84KpF8u3LFLJ9XFdJi-DU6Xmcbqd7EyVqdRxvEuC1AAmoyVjhjgq8jSZPqlbDIgG6v_SI0B7WT4bI-c6cD1K0iqyKw6_9Ce9L6oEBfbModIuNTcPi1EUq6szIuNn7ibSLf1utg"/>
+</div>
+<div class="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] bg-surface-container-lowest border border-outline-variant p-md rounded-lg shadow-sm relative">
+<div class="flex justify-between items-center mb-sm">
+<span class="font-label-md text-label-md font-bold text-on-surface">Marcus Webb commented</span>
+<span class="font-body-sm text-body-sm text-secondary">Oct 24, 14:45</span>
+</div>
+<p class="text-body-md font-body-md text-on-surface-variant leading-relaxed">
+                                    Looking into this now. I see the latency spikes. Checking CloudWatch metrics for the RDS instance to see if we hit a resource limit or if there's a network partition.
+                                </p>
+</div>
+</div>
+</div>
+<!-- Reply Box -->
+<div class="mt-xl pt-lg border-t border-outline-variant">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg overflow-hidden focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-shadow">
+<div class="bg-surface-container-low px-sm py-xs border-b border-outline-variant flex gap-xs">
+<button class="p-xs text-secondary hover:bg-surface-container-highest rounded"><span class="material-symbols-outlined text-[18px]">format_bold</span></button>
+<button class="p-xs text-secondary hover:bg-surface-container-highest rounded"><span class="material-symbols-outlined text-[18px]">format_italic</span></button>
+<button class="p-xs text-secondary hover:bg-surface-container-highest rounded"><span class="material-symbols-outlined text-[18px]">link</span></button>
+<div class="w-px h-4 bg-outline-variant my-auto mx-xs"></div>
+<button class="p-xs text-secondary hover:bg-surface-container-highest rounded"><span class="material-symbols-outlined text-[18px]">attach_file</span></button>
+</div>
+<textarea class="w-full bg-transparent border-none p-md text-body-md font-body-md focus:ring-0 placeholder:text-outline resize-none" placeholder="Add a public reply or internal note..." rows="3"></textarea>
+<div class="bg-surface-container-lowest px-md py-sm flex justify-between items-center border-t border-outline-variant">
+<label class="flex items-center gap-xs text-body-sm text-secondary cursor-pointer">
+<input class="rounded border-outline-variant text-primary focus:ring-primary" type="checkbox"/>
+                                    Internal Note
+                                </label>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-lg py-sm rounded shadow-sm hover:bg-primary-container transition-colors">Submit</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- AI Support Chatbot Sidebar -->
+<div class="w-full lg:w-80 border-l border-outline-variant bg-surface-container-lowest flex flex-col shrink-0 h-[50vh] lg:h-auto">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<div class="flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">smart_toy</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-[16px]">Pulse AI Assist</h3>
+</div>
+<button class="text-secondary hover:text-on-surface lg:hidden"><span class="material-symbols-outlined">expand_more</span></button>
+</div>
+<div class="flex-1 overflow-y-auto p-md space-y-md bg-surface">
+<!-- AI Bubble -->
+<div class="flex gap-sm">
+<div class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-sm rounded-lg rounded-tl-none shadow-sm text-body-sm font-body-sm text-on-surface-variant">
+                            Hello! I analyzed ticket TKT-8924. Similar symptoms were reported last week in TKT-8810 caused by a maxed out connection pool.
+                        </div>
+</div>
+<!-- Suggested Actions -->
+<div class="ml-8 space-y-xs">
+<button class="w-full text-left px-sm py-xs border border-primary-fixed-dim bg-surface-container-lowest hover:bg-primary-fixed text-primary font-label-md text-label-md rounded text-[11px] transition-colors">
+                            View TKT-8810 Resolution
+                        </button>
+<button class="w-full text-left px-sm py-xs border border-primary-fixed-dim bg-surface-container-lowest hover:bg-primary-fixed text-primary font-label-md text-label-md rounded text-[11px] transition-colors">
+                            Check RDS Connection Pool Metrics
+                        </button>
+</div>
+<!-- User Bubble -->
+<div class="flex gap-sm flex-row-reverse mt-lg">
+<div class="bg-primary-container text-on-primary-container p-sm rounded-lg rounded-tr-none shadow-sm text-body-sm font-body-sm max-w-[85%]">
+                            Fetch current connection count for us-east-1 RDS.
+                        </div>
+</div>
+<!-- AI Bubble Loading -->
+<div class="flex gap-sm">
+<div class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0 mt-1">
+<span class="material-symbols-outlined text-[14px]">smart_toy</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant p-sm rounded-lg rounded-tl-none shadow-sm text-body-sm font-body-sm text-on-surface-variant flex items-center gap-xs">
+<span class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce"></span>
+<span class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce" style="animation-delay: 0.1s"></span>
+<span class="w-1.5 h-1.5 bg-outline rounded-full animate-bounce" style="animation-delay: 0.2s"></span>
+</div>
+</div>
+</div>
+<div class="p-sm border-t border-outline-variant bg-surface-container-lowest">
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-sm pl-md pr-10 text-body-sm font-body-sm focus:border-primary focus:ring-1 focus:ring-primary placeholder:text-outline" placeholder="Ask AI for logs, runbooks, etc..." type="text"/>
+<button class="absolute right-2 p-xs text-primary hover:bg-surface-container-high rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

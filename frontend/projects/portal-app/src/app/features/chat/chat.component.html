@@ -1,0 +1,67 @@
+<cs-card class="flex h-full flex-col" data-testid="portal-chat">
+  <div class="flex items-center gap-2 border-b border-border-subtle bg-surface-bright px-4 py-3">
+    <cs-icon name="forum" [size]="20" />
+    <h2 class="font-headline-md text-on-surface">{{ 'ai.chat.title' | t }}</h2>
+  </div>
+
+  <ul class="flex flex-1 flex-col gap-3 overflow-y-auto p-4">
+    @for (message of messages(); track $index) {
+      <li [class]="message.role === 'user' ? 'self-end' : 'self-start'" class="max-w-[85%]">
+        <div
+          class="rounded-xl px-3 py-2 text-body-md"
+          [class]="
+            message.role === 'user'
+              ? 'bg-primary text-on-primary'
+              : message.refusal
+                ? 'border border-border-subtle bg-surface-low text-on-surface'
+                : 'bg-surface-low text-on-surface'
+          "
+          [attr.data-refusal]="message.refusal ? 'true' : null"
+        >
+          {{ message.text }}
+        </div>
+
+        @if (message.citations?.length) {
+          <!-- A3 — every grounded answer shows what grounded it, linking to the KB detail. -->
+          <ul class="mt-1 flex flex-wrap gap-2">
+            @for (citation of message.citations; track citation.articleId) {
+              <li>
+                <a
+                  [routerLink]="['/app/kb', citation.articleId]"
+                  class="text-body-sm font-semibold text-primary hover:underline"
+                >
+                  {{ citation.title }}
+                </a>
+              </li>
+            }
+          </ul>
+        }
+      </li>
+    }
+
+    @if (busy()) {
+      <li class="self-start">
+        <div class="rounded-xl bg-surface-low px-3 py-2 text-body-md text-on-surface-variant">
+          …
+        </div>
+      </li>
+    }
+  </ul>
+
+  <form
+    class="flex items-center gap-2 border-t border-border-subtle p-3"
+    (submit)="$event.preventDefault(); send()"
+  >
+    <input
+      type="text"
+      [ngModel]="question()"
+      (ngModelChange)="question.set($event)"
+      name="question"
+      [placeholder]="'ai.chat.placeholder' | t"
+      class="h-10 flex-1 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+    />
+    <cs-button type="submit" [busy]="busy()" [disabled]="!question().trim() || busy()">
+      {{ 'ai.chat.send' | t }}
+    </cs-button>
+  </form>
+</cs-card>

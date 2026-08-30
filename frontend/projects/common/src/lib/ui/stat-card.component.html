@@ -1,0 +1,41 @@
+@if (href(); as link) {
+  <a [routerLink]="link" [queryParams]="queryParams()" class="block">
+    <cs-card class="cs-dashboard-card group relative overflow-hidden p-4 transition-colors hover:border-primary/40">
+      <ng-container [ngTemplateOutlet]="body" />
+    </cs-card>
+  </a>
+} @else {
+  <cs-card class="cs-dashboard-card group relative overflow-hidden p-4">
+    <ng-container [ngTemplateOutlet]="body" />
+  </cs-card>
+}
+
+<ng-template #body>
+  <div class="flex items-start justify-between gap-2">
+    <span
+      class="grid size-9 shrink-0 place-items-center rounded-lg {{ iconTone() }}"
+      aria-hidden="true"
+    >
+      <cs-icon [name]="icon()" [size]="20" />
+    </span>
+
+    @if (delta(); as d) {
+      <span
+        class="inline-flex items-center gap-1 text-label-md"
+        [class.text-success]="d.tone === 'good'"
+        [class.text-error]="d.tone === 'bad'"
+        [class.text-on-surface-variant]="d.tone === 'neutral'"
+      >
+        <cs-icon [name]="d.direction === 'up' ? 'arrow_upward' : 'arrow_downward'" [size]="14" />
+        {{ d.value }}
+      </span>
+    }
+  </div>
+
+  <div class="mt-4">
+    <p class="text-label-md uppercase tracking-wider text-on-surface-variant">
+      {{ label() }}
+    </p>
+    <p class="text-display text-on-surface">{{ value() }}</p>
+  </div>
+</ng-template>

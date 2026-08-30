@@ -1,0 +1,31 @@
+<section
+  aria-live="polite"
+  aria-atomic="true"
+  class="pointer-events-none fixed inset-0 z-[70] flex items-center justify-center p-4"
+>
+  @for (toast of toasts.items(); track toast.id) {
+    <article
+      class="pointer-events-auto flex w-[min(34rem,calc(100vw-2rem))] items-start gap-4 rounded-2xl border p-6 shadow-popover"
+      [class]="tone(toast.kind)"
+      role="status"
+    >
+      <span class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-lowest/70">
+        <cs-icon [name]="icon(toast.kind)" [size]="30" />
+      </span>
+      <div class="min-w-0 flex-1">
+        <p class="text-headline-md font-semibold">{{ toast.title }}</p>
+        @if (toast.message) {
+          <p class="mt-1 text-body-md opacity-80">{{ toast.message }}</p>
+        }
+      </div>
+      <button
+        type="button"
+        class="grid size-9 shrink-0 place-items-center rounded-full transition-colors hover:bg-on-surface/10"
+        [attr.aria-label]="'toast.dismiss' | t"
+        (click)="toasts.dismiss(toast.id)"
+      >
+        <cs-icon name="close" [size]="18" />
+      </button>
+    </article>
+  }
+</section>

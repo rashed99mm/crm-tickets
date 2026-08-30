@@ -1,0 +1,190 @@
+<!--
+  `submit_ticket`'s composition: a back-to-the-queue control beside the title, then one centred
+  `max-w-3xl` card. The mockup carries the title in its own top app bar; this build already has a
+  shell topbar, so the title stays on the page and only the back control is adopted — it goes to a
+  route that exists.
+-->
+<section class="mx-auto flex max-w-3xl flex-col gap-6">
+  <header class="flex items-center gap-3">
+    <a
+      routerLink="/tickets"
+      [attr.aria-label]="'tickets.create.back' | t"
+      [title]="'tickets.create.back' | t"
+      class="grid size-9 shrink-0 place-items-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-high hover:text-on-surface rtl:rotate-180"
+    >
+      <!--
+        `arrow_back` is a physical direction the RTL guard cannot see — a ligature is a font name,
+        not a utility class — so the control is mirrored explicitly for Arabic.
+      -->
+      <cs-icon name="arrow_back" [size]="24" />
+    </a>
+    <h1 class="text-headline-lg text-on-surface">{{ 'tickets.create.title' | t }}</h1>
+  </header>
+
+  <cs-card>
+    <!-- The mockup's intro block: the card names itself, ruled off from the fields below. -->
+    <div class="flex flex-col gap-1 border-b border-border-subtle bg-surface-bright px-6 py-4">
+      <h2 class="text-headline-md text-on-surface">
+        {{ 'tickets.create.section' | t }}
+      </h2>
+      <p class="text-body-md text-on-surface-variant">{{ 'tickets.create.subtitle' | t }}</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-6 p-6">
+      <cs-input-field
+        [label]="'field.subject' | t"
+        [control]="form.controls.subject"
+        [serverError]="fieldError('subject')"
+        (input)="clearServerError('subject')"
+      />
+
+      <div class="grid gap-4 sm:grid-cols-2">
+        <div class="flex flex-col gap-1.5">
+          <label for="ticket-customer" class="text-label-md text-on-surface-variant">
+            {{ 'field.customer' | t }}
+          </label>
+          <select
+            id="ticket-customer"
+            formControlName="customerId"
+            [attr.aria-invalid]="(fieldError('customerId') || (form.controls.customerId.invalid && (form.controls.customerId.touched || form.controls.customerId.dirty))) ? 'true' : null"
+            [attr.aria-describedby]="(fieldError('customerId') || (form.controls.customerId.invalid && (form.controls.customerId.touched || form.controls.customerId.dirty))) ? 'ticket-customer-error' : null"
+            (change)="clearServerError('customerId')"
+            class="h-10 rounded-lg border bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+            [class.border-error]="fieldError('customerId') || (form.controls.customerId.invalid && (form.controls.customerId.touched || form.controls.customerId.dirty))"
+            [class.border-outline-variant]="!fieldError('customerId') && !(form.controls.customerId.invalid && (form.controls.customerId.touched || form.controls.customerId.dirty))"
+          >
+            <option value="">{{ 'tickets.create.selectCustomer' | t }}</option>
+            @for (customer of customers(); track customer.id) {
+              <option [value]="customer.id">{{ customer.name }} — {{ customer.email }}</option>
+            }
+          </select>
+          @if (fieldError('customerId'); as failure) {
+            <p id="ticket-customer-error" role="alert" class="text-body-sm text-error">
+              {{ failure.message }}
+            </p>
+          } @else if (form.controls.customerId.invalid && (form.controls.customerId.touched || form.controls.customerId.dirty)) {
+            <p id="ticket-customer-error" role="alert" class="text-body-sm text-error">
+              {{ 'validation.required' | t }}
+            </p>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="ticket-category" class="text-label-md text-on-surface-variant">
+            {{ 'field.category' | t }}
+          </label>
+          <select
+            id="ticket-category"
+            formControlName="categoryId"
+            [attr.aria-invalid]="(fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))) ? 'true' : null"
+            [attr.aria-describedby]="(fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))) ? 'ticket-category-error' : null"
+            (change)="clearServerError('categoryId')"
+            class="h-10 rounded-lg border bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+            [class.border-error]="fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))"
+            [class.border-outline-variant]="!fieldError('categoryId') && !(form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))"
+          >
+            <option value="">{{ 'tickets.create.selectCategory' | t }}</option>
+            @for (category of categories(); track category.id) {
+              <option [value]="category.id">{{ category.name }}</option>
+            }
+          </select>
+          @if (fieldError('categoryId'); as failure) {
+            <p id="ticket-category-error" role="alert" class="text-body-sm text-error">
+              {{ failure.message }}
+            </p>
+          } @else if (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty)) {
+            <p id="ticket-category-error" role="alert" class="text-body-sm text-error">
+              {{ 'validation.required' | t }}
+            </p>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="ticket-priority" class="text-label-md text-on-surface-variant">
+            {{ 'field.priority' | t }}
+          </label>
+          <select
+            id="ticket-priority"
+            formControlName="priority"
+            [attr.aria-invalid]="fieldError('priority') ? 'true' : null"
+            [attr.aria-describedby]="fieldError('priority') ? 'ticket-priority-error' : null"
+            (change)="clearServerError('priority')"
+            class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          >
+            @for (priority of priorities; track priority) {
+              <option [value]="priority">{{ priority }}</option>
+            }
+          </select>
+          @if (fieldError('priority'); as failure) {
+            <p id="ticket-priority-error" role="alert" class="text-body-sm text-error">
+              {{ failure.message }}
+            </p>
+          }
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label for="ticket-description" class="text-label-md text-on-surface-variant">
+          {{ 'field.description' | t }}
+        </label>
+        <textarea
+          id="ticket-description"
+          rows="5"
+          formControlName="description"
+          [attr.aria-invalid]="(fieldError('description') || (form.controls.description.invalid && (form.controls.description.touched || form.controls.description.dirty))) ? 'true' : null"
+          [attr.aria-describedby]="(fieldError('description') || (form.controls.description.invalid && (form.controls.description.touched || form.controls.description.dirty))) ? 'ticket-description-error' : null"
+          (input)="clearServerError('description')"
+          class="rounded-lg border bg-surface-lowest p-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          [class.border-error]="fieldError('description') || (form.controls.description.invalid && (form.controls.description.touched || form.controls.description.dirty))"
+          [class.border-outline-variant]="!fieldError('description') && !(form.controls.description.invalid && (form.controls.description.touched || form.controls.description.dirty))"
+        ></textarea>
+        @if (fieldError('description'); as failure) {
+          <p id="ticket-description-error" role="alert" class="text-body-sm text-error">
+            {{ failure.message }}
+          </p>
+        } @else if (form.controls.description.invalid && (form.controls.description.touched || form.controls.description.dirty)) {
+          <p id="ticket-description-error" role="alert" class="text-body-sm text-error">
+            {{ 'validation.required' | t }}
+          </p>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1.5" data-testid="ticket-create-attachment-dropzone">
+        <label class="text-label-md text-on-surface-variant">{{ 'field.attachments' | t }}</label>
+        <cs-attachment-picker (filesChange)="onFilesChange($event)" />
+        @if (attachmentError()) {
+          <p role="alert" class="text-body-sm text-error">{{ attachmentError()!.message_ }}</p>
+        }
+        @if (uploadingAttachments()) {
+          <p class="text-body-sm text-on-surface-variant">{{ 'attachments.uploading' | t }}</p>
+        }
+      </div>
+
+      <!--
+        Only shown when the failure names no field. A rejection that DOES name fields is already
+        displayed under each control, and repeating it here would be the banner AC-60 forbids.
+      -->
+      @if (formLevelError(); as failure) {
+        <p role="alert" class="text-body-md text-error">{{ failure.message_ }}</p>
+      }
+
+      <!--
+        The mockup ends the form with an end-aligned Cancel / Submit pair above a rule. Cancel is a
+        link to the queue rather than a button that resets the form: leaving is what the mockup's
+        Cancel does, and a reset would silently discard typing with no way back.
+      -->
+      <cs-action-bar>
+        <a
+          routerLink="/tickets"
+          class="inline-flex h-10 items-center rounded-lg px-4 text-label-lg font-semibold text-primary transition-colors hover:bg-surface-high"
+        >
+          {{ 'action.cancel' | t }}
+        </a>
+        <cs-button type="submit" [busy]="saving()" [disabled]="form.invalid">
+          <cs-icon name="send" [size]="18" />
+          {{ 'tickets.create.submit' | t }}
+        </cs-button>
+      </cs-action-bar>
+    </form>
+  </cs-card>
+</section>

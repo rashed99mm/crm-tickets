@@ -1,0 +1,186 @@
+<cs-card [heading]="'attachments.files' | t" data-testid="customer-attachments">
+  <!--
+    The three distinct states: a file list that failed to load must not read as a customer who sent
+    no evidence.
+  -->
+  @switch (state().status) {
+    @case ('idle') {
+      <cs-loading-state [label]="'attachments.loading' | t" />
+    }
+    @case ('loading') {
+      <cs-loading-state [label]="'attachments.loading' | t" />
+    }
+    @case ('error') {
+      @if (loadError(); as failure) {
+        <cs-error-state [error]="failure" (retry)="load()" />
+      }
+    }
+    @case ('empty') {
+      <cs-empty-state [message]="'attachments.empty' | t" />
+    }
+    @default {
+      <!--
+        `customer_profile_history`'s file rail: a per-type glyph, the original name on one line and
+        a mono `size • date` beneath it. The rail is three columns wide, so the row stacks rather
+        than putting the actions beside the name — the mockup's own row has no actions at all, and
+        `AC-85` needs two.
+      -->
+      <ul class="flex flex-col p-2" data-testid="attachment-list">
+        @for (attachment of attachments(); track attachment.id) {
+          <li
+            class="group flex flex-col gap-2 rounded border border-transparent p-2 transition-colors hover:border-border-subtle hover:bg-surface-bright"
+          >
+            <div class="flex min-w-0 items-start gap-2">
+              <span
+                class="mt-0.5 shrink-0 transition-transform group-hover:scale-110"
+                [class]="glyphTone(attachment)"
+              >
+                <cs-icon [name]="glyph(attachment)" />
+              </span>
+              <div class="min-w-0 flex-1">
+                <!-- AC-83 — the original filename, a readable size and the type. -->
+                <p class="truncate text-body-sm text-on-surface" data-testid="attachment-name">
+                  {{ attachment.originalFileName }}
+                </p>
+                <p class="font-mono text-data-mono text-on-surface-variant">
+                  <span data-testid="attachment-size">{{ sizeAndDate(attachment) }}</span>
+                </p>
+                <!--
+                  The mockup stops at size and date. `AC-83` also asks for the type, and the
+                  uploader is what makes an attachment attributable, so both stay — one step
+                  quieter, as the rail's secondary line.
+                -->
+                <p class="truncate text-label-md text-on-surface-variant/70">
+                  {{ attachment.contentType }}
+                </p>
+                <p class="truncate text-label-md text-on-surface-variant/70">
+                  {{ attachment.uploadedByName }}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <!--
+                A button, not a link. The content route needs a session and an href carries no
+                Authorization header, so a link would 401 and look broken (AC-85).
+              -->
+              <cs-button
+                variant="secondary"
+                [busy]="downloadingId() === attachment.id"
+                (pressed)="download(attachment)"
+              >
+                {{ 'action.download' | t }}
+              </cs-button>
+              <cs-button variant="ghost" (pressed)="askToRemove(attachment.id)">
+                {{ 'action.remove' | t }}
+              </cs-button>
+            </div>
+
+            <!--
+              Confirmed in the page rather than with window.confirm, which cannot be styled or
+              translated and is suppressed outright by some embedded browsers.
+            -->
+            @if (confirmingRemovalOf() === attachment.id) {
+              <div
+                class="flex w-full flex-col gap-2 border-t border-border-subtle pt-2"
+                data-testid="attachment-remove-confirm"
+              >
+                <p class="text-body-sm text-on-surface">
+                  {{ 'attachments.confirmRemove' | t: attachment.originalFileName }}
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                  <cs-button [busy]="removing()" (pressed)="confirmRemove(attachment.id)">
+                    {{ 'action.confirmRemoval' | t }}
+                  </cs-button>
+                  <cs-button variant="secondary" (pressed)="cancelRemove()">
+                    {{ 'action.cancel' | t }}
+                  </cs-button>
+                </div>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+    }
+  }
+
+  <!--
+    The mockup's dashed upload target, at the foot of the rail where it puts it — not a bare file
+    input above the list.
+
+    The `<input>` is the same element it always was, still carrying `attachment-input`, still
+    calling `chooseFile`; it is only visually replaced by the label wrapping it, which is what makes
+    the whole dashed box the click target. `sr-only` rather than `hidden`: a hidden input is
+    unreachable by keyboard and by a screen reader, which would make the one control on this card
+    inoperable for anyone not using a mouse.
+  -->
+  <div class="border-t border-border-subtle p-4">
+    <label
+      class="flex cursor-pointer flex-col items-center justify-center gap-1 rounded border border-dashed border-border-subtle p-4 text-center text-label-md font-semibold text-on-surface-variant transition-colors hover:bg-surface-bright hover:text-primary"
+      [class.pointer-events-none]="uploading()"
+      [class.opacity-50]="uploading()"
+    >
+      <cs-icon name="upload_file" [size]="24" />
+      {{ 'attachments.upload' | t }}
+
+      <!--
+        `accept` filters the dialog but does not enforce anything — every browser lets the user
+        switch it off — so `chooseFile` re-checks, and the server checks after that (AC-84).
+      -->
+      <input
+        id="customer-attachment"
+        type="file"
+        class="sr-only"
+        data-testid="attachment-input"
+        [attr.accept]="accept"
+        [disabled]="uploading()"
+        (change)="chooseFile($event)"
+      />
+    </label>
+
+    <p class="mt-2 text-label-md text-on-surface-variant">{{ limitHint() }}</p>
+
+    <!--
+      A 10 MB upload with no feedback reads as a hang, and an agent who thinks nothing happened
+      picks the file again.
+    -->
+    @if (uploading()) {
+      <p
+        role="status"
+        class="mt-2 text-body-sm text-on-surface-variant"
+        data-testid="attachment-uploading"
+      >
+        {{ 'attachments.uploading' | t }}
+      </p>
+    }
+
+    <!--
+      The client's own refusal. Plain text rather than the error state, because nothing failed and
+      no server was asked — the file was simply never sent (AC-84).
+    -->
+    @if (refusal(); as reason) {
+      <p role="alert" class="mt-2 text-body-sm text-error" data-testid="attachment-refusal">
+        {{ reason }}
+      </p>
+    }
+
+    <!-- The server's refusal, which is independent of the one above and may disagree with it. -->
+    @if (uploadError(); as failure) {
+      <p role="alert" class="mt-2 text-body-sm text-error" data-testid="attachment-upload-error">
+        {{ failure.message_ }}
+      </p>
+    }
+
+    @if (downloadError(); as failure) {
+      <p role="alert" class="mt-2 text-body-sm text-error" data-testid="attachment-download-error">
+        {{ failure.message_ }}
+      </p>
+    }
+
+    @if (removeError(); as failure) {
+      <p role="alert" class="mt-2 text-body-sm text-error" data-testid="attachment-remove-error">
+        {{ failure.message_ }}
+      </p>
+    }
+  </div>
+</cs-card>

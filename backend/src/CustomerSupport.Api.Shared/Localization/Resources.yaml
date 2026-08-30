@@ -1,0 +1,885 @@
+INVALID_CREDENTIALS:
+  ar: "عذرًا، حدثت مشكلة أثناء تسجيل الدخول"
+  en: "Sorry, a problem occurred during login"
+
+INVALID_TOKEN:
+  ar: "رمز الوصول غير صالح."
+  en: "Invalid access token."
+
+INVALID_REFRESH_TOKEN:
+  ar: "رمز التحديث غير صالح أو منتهي الصلاحية."
+  en: "Invalid or expired refresh token."
+
+ACCOUNT_DEACTIVATED:
+  ar: "عذرًا، حدثت مشكلة أثناء تسجيل الدخول"
+  en: "Sorry, a problem occurred during login"
+
+NOT_AUTHENTICATED:
+  ar: "المستخدم غير مصادق."
+  en: "User not authenticated."
+
+LOGIN_SUCCESS:
+  ar: "تم تسجيل الدخول بنجاح"
+  en: "Logged in successfully"
+
+REGISTER_SUCCESS:
+  ar: "تم إنشاء الحساب بنجاح"
+  en: "Account created successfully"
+
+LOGOUT_SUCCESS:
+  ar: "تم تسجيل الخروج بنجاح"
+  en: "Logged out successfully"
+
+TOKEN_REFRESHED:
+  ar: "تم تحديث الرمز بنجاح"
+  en: "Token refreshed successfully"
+
+USER_NOT_FOUND:
+  ar: "عذرًا، لم يتم العثور على الحساب المرتبط بالبريد الإلكتروني"
+  en: "Sorry, no account was found associated with this email address"
+
+PERMISSION_NOT_FOUND:
+  ar: "لم يتم العثور على الصلاحية."
+  en: "Permission was not found."
+PERMISSION_ROLE_NOT_FOUND:
+  ar: "لم يتم العثور على الدور."
+  en: "Role was not found."
+PERMISSION_MAPPING_NOT_FOUND:
+  ar: "لم يتم العثور على إسناد الصلاحية."
+  en: "Permission assignment was not found."
+PERMISSION_ASSIGNED:
+  ar: "تم إسناد الصلاحية بنجاح."
+  en: "Permission assigned successfully."
+PERMISSION_REVOKED:
+  ar: "تم إلغاء الصلاحية بنجاح."
+  en: "Permission revoked successfully."
+PERMISSION_LAST_REQUIRED:
+  ar: "لا يمكن إزالة آخر صلاحية مطلوبة من دور مدمج."
+  en: "The last required permission cannot be removed from a built-in role."
+
+CURRENT_PASSWORD_INCORRECT:
+  ar: "كلمة المرور الحالية غير صحيحة"
+  en: "The current password is incorrect"
+
+PASSWORD_TOO_WEAK:
+  ar: "كلمة المرور الجديدة لا تفي بمتطلبات القوة"
+  en: "The new password does not meet the strength requirements"
+
+PASSWORD_CHANGED:
+  ar: "تم تغيير كلمة المرور بنجاح"
+  en: "Password changed successfully"
+
+EMAIL_EXISTS:
+  ar: "عذرًا، حدثت مشكلة أثناء إنشاء الحساب"
+  en: "Sorry, a problem occurred while creating the account"
+
+USERNAME_EXISTS:
+  ar: "اسم المستخدم مستخدم بالفعل."
+  en: "Username already taken."
+
+USER_CREATED:
+  ar: "تم إنشاء المستخدم بنجاح!"
+  en: "User created successfully!"
+
+USER_UPDATED:
+  ar: "تم تحديث المستخدم بنجاح"
+  en: "User updated successfully"
+
+USER_DELETED:
+  ar: "تم حذف المستخدم بنجاح!"
+  en: "User deleted successfully!"
+
+USER_ACTIVATED:
+  ar: "تم تفعيل المستخدم بنجاح"
+  en: "User activated successfully"
+
+USER_DEACTIVATED:
+  ar: "تم تعطيل المستخدم بنجاح"
+  en: "User deactivated successfully"
+
+ROLES_ASSIGNED:
+  ar: "تم تعيين الأدوار بنجاح"
+  en: "Roles assigned successfully"
+
+USER_CREATION_FAILED:
+  ar: "عذرًا، حدثت مشكلة أثناء إنشاء الحساب"
+  en: "Sorry, a problem occurred while creating the account"
+
+USER_UPDATE_FAILED:
+  ar: "عذرًا، حدثت مشكلة أثناء تحديث المستخدم"
+  en: "Sorry, a problem occurred while updating the user"
+
+USER_DELETE_FAILED:
+  ar: "عذرًا، حدثت مشكلة أثناء حذف المستخدم"
+  en: "Sorry, a problem occurred while deleting the user"
+
+ACTIVATE_FAILED:
+  ar: "عذرًا، حدثت مشكلة أثناء تفعيل المستخدم"
+  en: "Sorry, a problem occurred while activating the user"
+
+DEACTIVATE_FAILED:
+  ar: "عذرًا، حدثت مشكلة أثناء تعطيل المستخدم"
+  en: "Sorry, a problem occurred while deactivating the user"
+
+REMOVE_ROLES_FAILED:
+  ar: "عذرًا، حدثت مشكلة أثناء إزالة الأدوار"
+  en: "Sorry, a problem occurred while removing roles"
+
+ADD_ROLES_FAILED:
+  ar: "عذرًا، حدثت مشكلة أثناء إضافة الأدوار"
+  en: "Sorry, a problem occurred while adding roles"
+
+CONTENT_NOT_FOUND:
+  ar: "المحتوى غير موجود."
+  en: "Content not found."
+
+CONTENT_EXISTS:
+  ar: "المحتوى بهذا العنوان موجود بالفعل."
+  en: "Content with this title already exists."
+
+CONTENT_NOT_PUBLISHABLE:
+  ar: "لا يمكن نشر المحتوى من حالته الحالية."
+  en: "Content cannot be published from its current status."
+
+CONTENT_NOT_ARCHIVABLE:
+  ar: "لا يمكن أرشفة المحتوى من حالته الحالية."
+  en: "Content cannot be archived from its current status."
+
+CONTENT_CATEGORY_NOT_FOUND:
+  ar: "فئة المحتوى غير موجودة."
+  en: "Content category not found."
+
+CONTENT_CATEGORY_NAME_EXISTS:
+  ar: "توجد فئة بهذا الاسم ضمن نفس الفئة الأصل بالفعل."
+  en: "A category with this name already exists under the same parent."
+
+CONTENT_TICKET_LINK_EXISTS:
+  ar: "هذا المقال مرتبط بالفعل بهذه التذكرة."
+  en: "This article is already linked to this ticket."
+
+CONTENT_TICKET_LINK_NOT_FOUND:
+  ar: "رابط المقال بالتذكرة غير موجود."
+  en: "The article-ticket link was not found."
+
+CONTENT_CREATED:
+  ar: "تم إنشاء المحتوى بنجاح"
+  en: "Content created successfully"
+
+CONTENT_UPDATED:
+  ar: "تم تحديث المحتوى بنجاح"
+  en: "Content updated successfully"
+
+CONTENT_DELETED:
+  ar: "تم حذف المحتوى بنجاح"
+  en: "Content deleted successfully"
+
+CONTENT_PUBLISHED:
+  ar: "تم نشر المحتوى بنجاح"
+  en: "Content published successfully"
+
+CONTENT_ARCHIVED:
+  ar: "تم أرشفة المحتوى بنجاح"
+  en: "Content archived successfully"
+
+NOTIFICATION_NOT_FOUND:
+  ar: "الإشعار غير موجود."
+  en: "Notification not found."
+
+ACCESS_DENIED:
+  ar: "الوصول مرفوض."
+  en: "Access denied."
+
+NOTIFICATION_CREATED:
+  ar: "تم إنشاء الإشعار بنجاح"
+  en: "Notification created successfully"
+
+NOTIFICATION_MARKED_READ:
+  ar: "تم تحديد الإشعار كمقروء"
+  en: "Notification marked as read"
+
+NOTIFICATION_DELETED:
+  ar: "تم حذف الإشعار بنجاح"
+  en: "Notification deleted successfully"
+
+NOTIFICATION_CONFIG_MISSING:
+  ar: "تكوين الإشعار غير مكتمل"
+  en: "The notification configuration is missing"
+
+NOTIFICATION_TEMPLATE_INVALID:
+  ar: "قالب الإشعار غير صالح"
+  en: "The notification template is invalid"
+
+NOTIFICATION_DELIVERY_FAILED:
+  ar: "تعذر تسليم الإشعار"
+  en: "The notification could not be delivered"
+
+NOTIFICATION_INAPP_REQUIRES_USER:
+  ar: "الإشعار داخل التطبيق يتطلب مستخدمًا"
+  en: "In-app notifications require a user"
+
+NOTIFICATION_CHANNEL_NOT_SUPPORTED:
+  ar: "قناة الإشعار غير مدعومة"
+  en: "The notification channel is not supported"
+
+NOTIFICATION_SIGNALR_FAILED:
+  ar: "تعذر إرسال الإشعار عبر SignalR"
+  en: "The notification could not be delivered over SignalR"
+
+SETTING_NOT_FOUND:
+  ar: "الإعداد غير موجود."
+  en: "Setting not found."
+
+SETTING_EXISTS:
+  ar: "الإعداد بهذا المفتاح موجود بالفعل."
+  en: "Setting with this key already exists."
+
+SETTING_CREATED:
+  ar: "تم إنشاء الإعداد بنجاح"
+  en: "Setting created successfully"
+
+SETTING_UPDATED:
+  ar: "تم تحديث الإعداد بنجاح"
+  en: "Setting updated successfully"
+
+SETTING_DELETED:
+  ar: "تم حذف الإعداد بنجاح"
+  en: "Setting deleted successfully"
+
+SETTING_REPROTECT_FAILED:
+  ar: "تعذر إعادة معالجة القيمة المحمية الحالية. يرجى تقديم قيمة جديدة عند تغيير وضع الحماية."
+  en: "The existing protected value could not be re-processed. Provide a new value when changing protection mode."
+
+VALIDATION_ERROR:
+  ar: "عذرًا، البيانات المدخلة غير صحيحة"
+  en: "Sorry, the entered data is invalid"
+
+REQUIRED_FIELD:
+  ar: "هذا الحقل مطلوب"
+  en: "This field is required"
+
+INVALID_EMAIL:
+  ar: "البريد الإلكتروني غير صالح"
+  en: "Invalid email format"
+
+INVALID_PHONE:
+  ar: "رقم الهاتف غير صالح"
+  en: "Invalid phone number"
+
+MIN_LENGTH:
+  ar: "القيمة قصيرة جدًا"
+  en: "Value is too short"
+
+MAX_LENGTH:
+  ar: "القيمة طويلة جدًا"
+  en: "Value is too long"
+
+INTERNAL_ERROR:
+  ar: "حدث خطأ غير متوقع"
+  en: "An unexpected error occurred"
+
+UNAUTHORIZED_ACCESS:
+  ar: "الوصول غير مصرح به"
+  en: "Unauthorized access"
+
+FORBIDDEN_ACCESS:
+  ar: "الوصول ممنوع"
+  en: "Forbidden access"
+
+BAD_REQUEST:
+  ar: "عذرًا، البيانات المدخلة غير صحيحة"
+  en: "Sorry, the entered data is invalid"
+
+RESOURCE_NOT_FOUND:
+  ar: "المورد غير موجود"
+  en: "Resource not found"
+
+EXTERNAL_API_ERROR:
+  ar: "عذرًا، حدثت مشكلة أثناء الاتصال بالخدمة الخارجية"
+  en: "Sorry, a problem occurred while connecting to the external service"
+
+EXTERNAL_API_NOT_CONFIGURED:
+  ar: "الخدمة الخارجية غير مكونة"
+  en: "External service is not configured"
+
+SUCCESS_CREATED:
+  ar: "تم الإنشاء بنجاح"
+  en: "Created successfully"
+
+SUCCESS_UPDATED:
+  ar: "تم التحديث بنجاح"
+  en: "Updated successfully"
+
+SUCCESS_DELETED:
+  ar: "تم الحذف بنجاح"
+  en: "Deleted successfully"
+
+SUCCESS_OPERATION:
+  ar: "تمت العملية بنجاح"
+  en: "Operation completed successfully"
+
+# Validation keys for FluentValidation
+EMAIL_REQUIRED:
+  ar: "البريد الإلكتروني مطلوب"
+  en: "Email is required"
+
+PASSWORD_REQUIRED:
+  ar: "كلمة المرور مطلوبة"
+  en: "Password is required"
+
+USERNAME_REQUIRED:
+  ar: "اسم المستخدم مطلوب"
+  en: "Username is required"
+
+FIRST_NAME_REQUIRED:
+  ar: "الاسم الأول مطلوب"
+  en: "First name is required"
+
+LAST_NAME_REQUIRED:
+  ar: "اسم العائلة مطلوب"
+  en: "Last name is required"
+
+TOKEN_REQUIRED:
+  ar: "الرمز مطلوب"
+  en: "Token is required"
+
+TITLE_REQUIRED:
+  ar: "العنوان مطلوب"
+  en: "Title is required"
+
+TITLE_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز العنوان 500 حرف"
+  en: "Title must not exceed 500 characters"
+
+BODY_REQUIRED:
+  ar: "المحتوى مطلوب"
+  en: "Body is required"
+
+SUMMARY_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز الملخص 1000 حرف"
+  en: "Summary must not exceed 1000 characters"
+
+CONTENT_TYPE_REQUIRED:
+  ar: "نوع المحتوى مطلوب"
+  en: "Content type is required"
+
+CONTENT_TYPE_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز نوع المحتوى 50 حرف"
+  en: "Content type must not exceed 50 characters"
+
+AUTHOR_ID_REQUIRED:
+  ar: "معرف المؤلف مطلوب"
+  en: "Author ID is required"
+
+STATUS_REQUIRED:
+  ar: "الحالة مطلوبة"
+  en: "Status is required"
+
+STATUS_INVALID:
+  ar: "يجب أن تكون الحالة Draft أو Published أو Archived"
+  en: "Status must be Draft, Published, or Archived"
+
+FEATURED_IMAGE_URL_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز رابط الصورة 2000 حرف"
+  en: "Featured image URL must not exceed 2000 characters"
+
+CATEGORY_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز التصنيف 100 حرف"
+  en: "Category must not exceed 100 characters"
+
+USER_ID_REQUIRED:
+  ar: "معرف المستخدم مطلوب"
+  en: "User ID is required"
+
+MESSAGE_REQUIRED:
+  ar: "الرسالة مطلوبة"
+  en: "Message is required"
+
+MESSAGE_MAX_LENGTH:
+  ar: "يجب ألا تتجاوز الرسالة 2000 حرف"
+  en: "Message must not exceed 2000 characters"
+
+NOTIFICATION_TYPE_REQUIRED:
+  ar: "نوع الإشعار مطلوب"
+  en: "Notification type is required"
+
+NOTIFICATION_TYPE_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز نوع الإشعار 50 حرف"
+  en: "Notification type must not exceed 50 characters"
+
+CHANNEL_REQUIRED:
+  ar: "القناة مطلوبة"
+  en: "Channel is required"
+
+CHANNEL_INVALID:
+  ar: "يجب أن تكون القناة InApp أو Email أو SMS أو Push"
+  en: "Channel must be InApp, Email, SMS, or Push"
+
+KEY_REQUIRED:
+  ar: "المفتاح مطلوب"
+  en: "Key is required"
+
+KEY_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز المفتاح 200 حرف"
+  en: "Key must not exceed 200 characters"
+
+VALUE_REQUIRED:
+  ar: "القيمة مطلوبة"
+  en: "Value is required"
+
+VALUE_MAX_LENGTH:
+  ar: "يجب ألا تتجاوز القيمة 4000 حرف"
+  en: "Value must not exceed 4000 characters"
+
+INVALID_FORMAT:
+  ar: "التنسيق غير صالح"
+  en: "Invalid format"
+
+PASSWORD_UPPERCASE:
+  ar: "يجب أن تحتوي كلمة المرور على حرف كبير واحد على الأقل"
+  en: "Password must contain at least one uppercase letter"
+
+PASSWORD_LOWERCASE:
+  ar: "يجب أن تحتوي كلمة المرور على حرف صغير واحد على الأقل"
+  en: "Password must contain at least one lowercase letter"
+
+PASSWORD_NUMBER:
+  ar: "يجب أن تحتوي كلمة المرور على رقم واحد على الأقل"
+  en: "Password must contain at least one number"
+
+EXTERNAL_API_CONFIG_NOT_FOUND:
+  ar: "إعداد API الخارجي غير موجود."
+  en: "External API configuration not found."
+
+EXTERNAL_API_CONFIG_EXISTS:
+  ar: "إعداد API الخارجي بهذا الاسم موجود بالفعل."
+  en: "External API configuration with this name already exists."
+
+# --- FEAT-03 customers, FEAT-04 ticket capture, FEAT-05 queue -----------------
+# Arabic here is a developer placeholder, consistent with PA-7. Reviewed Arabic
+# copy is sprint 14 and is not claimed by these features.
+
+CUSTOMER_NOT_FOUND:
+  ar: "لم يتم العثور على العميل"
+  en: "Customer not found"
+
+CUSTOMER_EMAIL_EXISTS:
+  ar: "يوجد عميل آخر بنفس البريد الإلكتروني"
+  en: "A customer with this email address already exists"
+
+CUSTOMER_HAS_TICKETS:
+  ar: "لا يمكن حذف عميل لديه تذاكر"
+  en: "This customer has tickets and cannot be deleted"
+
+CUSTOMER_CREATED:
+  ar: "تم إنشاء العميل بنجاح"
+  en: "Customer created successfully"
+
+CUSTOMER_UPDATED:
+  ar: "تم تحديث العميل بنجاح"
+  en: "Customer updated successfully"
+
+CUSTOMER_DELETED:
+  ar: "تم حذف العميل بنجاح"
+  en: "Customer deleted successfully"
+
+TICKET_NOT_FOUND:
+  ar: "لم يتم العثور على التذكرة"
+  en: "Ticket not found"
+
+TICKET_CREATED:
+  ar: "تم إنشاء التذكرة بنجاح"
+  en: "Ticket created successfully"
+
+TICKET_CUSTOMER_NOT_FOUND:
+  ar: "العميل المحدد غير موجود"
+  en: "The selected customer does not exist"
+
+TICKET_CATEGORY_NOT_FOUND:
+  ar: "التصنيف المحدد غير موجود"
+  en: "The selected category does not exist"
+
+NAME_REQUIRED:
+  ar: "الاسم مطلوب"
+  en: "Name is required"
+
+NAME_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز الاسم 200 حرف"
+  en: "Name must not exceed 200 characters"
+
+EMAIL_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز البريد الإلكتروني 320 حرفًا"
+  en: "Email must not exceed 320 characters"
+
+PHONE_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز رقم الهاتف 32 حرفًا"
+  en: "Phone must not exceed 32 characters"
+
+PAGE_SIZE_EXCEEDED:
+  ar: "حجم الصفحة يتجاوز الحد الأقصى المسموح به"
+  en: "Page size exceeds the maximum allowed"
+
+SUBJECT_REQUIRED:
+  ar: "الموضوع مطلوب"
+  en: "Subject is required"
+
+SUBJECT_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز الموضوع 200 حرف"
+  en: "Subject must not exceed 200 characters"
+
+DESCRIPTION_REQUIRED:
+  ar: "الوصف مطلوب"
+  en: "Description is required"
+
+TICKET_PRIORITY_REQUIRED:
+  ar: "الأولوية مطلوبة"
+  en: "Priority is required"
+
+TICKET_PRIORITY_INVALID:
+  ar: "الأولوية يجب أن تكون Low أو Normal أو High أو Urgent"
+  en: "Priority must be Low, Normal, High, or Urgent"
+
+TICKET_STATUS_INVALID:
+  ar: "الحالة يجب أن تكون New أو Open أو Pending أو Resolved أو Closed"
+  en: "Status must be New, Open, Pending, Resolved, or Closed"
+
+CUSTOMER_ID_REQUIRED:
+  ar: "العميل مطلوب"
+  en: "A customer is required"
+
+CATEGORY_ID_REQUIRED:
+  ar: "التصنيف مطلوب"
+  en: "A category is required"
+
+# --- FEAT-06 lifecycle, FEAT-07 assignment, FEAT-08 history -------------------
+
+TICKET_TRANSITION_NOT_ALLOWED:
+  ar: "لا يمكن نقل التذكرة إلى هذه الحالة"
+  en: "The ticket cannot move to that status"
+
+TICKET_ALREADY_IN_STATUS:
+  ar: "التذكرة في هذه الحالة بالفعل"
+  en: "The ticket is already in that status"
+
+TICKET_MODIFIED_BY_ANOTHER_USER:
+  ar: "تم تعديل التذكرة بواسطة مستخدم آخر، أعد تحميل الصفحة"
+  en: "This ticket was changed by someone else. Reload and try again"
+
+TICKET_NOT_ASSIGNED_TO_YOU:
+  ar: "هذه التذكرة غير مسندة إليك"
+  en: "This ticket is not assigned to you"
+
+TICKET_ASSIGNEE_NOT_FOUND:
+  ar: "المستخدم المحدد غير موجود"
+  en: "The selected user does not exist"
+
+TICKET_ASSIGNEE_NOT_AN_AGENT:
+  ar: "لا يمكن إسناد التذكرة إلا إلى وكيل دعم"
+  en: "A ticket can only be assigned to a support agent"
+
+TICKET_ASSIGNEE_DEACTIVATED:
+  ar: "تم تعطيل هذا الحساب ولم يعد من الممكن إسناد العمل إليه"
+  en: "This account has been deactivated and can no longer be given work"
+
+TICKET_STATUS_CHANGED:
+  ar: "تم تحديث حالة التذكرة"
+  en: "Ticket status updated"
+
+TICKET_ASSIGNED:
+  ar: "تم إسناد التذكرة"
+  en: "Ticket assigned"
+
+TICKET_STATUS_REQUIRED:
+  ar: "الحالة مطلوبة"
+  en: "Status is required"
+
+ROW_VERSION_REQUIRED:
+  ar: "إصدار السجل مطلوب"
+  en: "The record version is required"
+
+ASSIGNEE_ID_REQUIRED:
+  ar: "المسند إليه مطلوب"
+  en: "An assignee is required"
+
+CUSTOMER_NOTE_ADDED:
+  ar: "تمت إضافة الملاحظة بنجاح"
+  en: "Note added successfully"
+
+ATTACHMENT_NOT_FOUND:
+  ar: "لم يتم العثور على المرفق"
+  en: "Attachment not found"
+
+ATTACHMENT_TOO_LARGE:
+  ar: "حجم الملف يتجاوز الحد المسموح به وهو 10 ميجابايت"
+  en: "The file exceeds the maximum allowed size of 10 MB"
+
+ATTACHMENT_TYPE_NOT_ALLOWED:
+  ar: "نوع الملف غير مسموح به. الأنواع المسموح بها: PNG، JPEG، GIF، PDF، نص عادي"
+  en: "That file type is not allowed. Permitted types: PNG, JPEG, GIF, PDF and plain text"
+
+ATTACHMENT_EMPTY:
+  ar: "الملف فارغ"
+  en: "The file is empty"
+
+ATTACHMENT_ADDED:
+  ar: "تمت إضافة المرفق بنجاح"
+  en: "Attachment added successfully"
+
+ATTACHMENT_REMOVED:
+  ar: "تم حذف المرفق بنجاح"
+  en: "Attachment removed successfully"
+
+NOTE_BODY_REQUIRED:
+  ar: "نص الملاحظة مطلوب"
+  en: "The note text is required"
+
+NOTE_BODY_MAX_LENGTH:
+  ar: "يجب ألا تتجاوز الملاحظة 4000 حرف"
+  en: "The note must not exceed 4000 characters"
+
+TICKET_MESSAGE_RECORDED:
+  ar: "تم تسجيل الرسالة بنجاح"
+  en: "Message recorded successfully"
+
+TICKET_ASSIGNMENT_REFUSED:
+  ar: "لا يمكن للعميل تعيين تذكرة لوكيل آخر"
+  en: "An agent may not assign a ticket to another agent"
+
+TICKET_ESCALATION_OWNER_SET:
+  ar: "تم تعيين مالك التصعيد بنجاح"
+  en: "Escalation owner set successfully"
+
+MESSAGE_BODY_REQUIRED:
+  ar: "نص الرسالة مطلوب"
+  en: "The message text is required"
+
+MESSAGE_BODY_MAX_LENGTH:
+  ar: "يجب ألا تتجاوز الرسالة 4000 حرف"
+  en: "The message must not exceed 4000 characters"
+
+MESSAGE_SUBJECT_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز الموضوع 200 حرف"
+  en: "The subject must not exceed 200 characters"
+
+MESSAGE_DIRECTION_INVALID:
+  ar: "اتجاه الرسالة غير صالح"
+  en: "The message direction is not valid"
+
+MESSAGE_CHANNEL_INVALID:
+  ar: "قناة الرسالة غير صالحة"
+  en: "The message channel is not valid"
+
+CHANNEL_CONTACT_REQUIRED:
+  ar: "رسالة القناة الواردة تتطلب رقم هاتف أو بريدًا إلكترونيًا"
+  en: "An inbound channel message needs a phone number or an email address"
+
+CHANNEL_WEBHOOK_SIGNATURE_INVALID:
+  ar: "توقيع الويب هوك غير صالح"
+  en: "The webhook signature is not valid"
+
+CHANNEL_PAYLOAD_INVALID:
+  ar: "بيانات الويب هوك غير صالحة"
+  en: "The webhook payload is not valid"
+
+DEPARTMENT_NOT_FOUND:
+  ar: "لم يتم العثور على القسم"
+  en: "Department not found"
+
+DEPARTMENT_CREATED:
+  ar: "تم إنشاء القسم بنجاح"
+  en: "Department created successfully"
+
+DEPARTMENT_UPDATED:
+  ar: "تم تحديث القسم بنجاح"
+  en: "Department updated successfully"
+
+DEPARTMENT_DEACTIVATED:
+  ar: "تم إلغاء تفعيل القسم بنجاح"
+  en: "Department deactivated successfully"
+
+BRANCH_NOT_FOUND:
+  ar: "لم يتم العثور على الفرع"
+  en: "Branch not found"
+
+BRANCH_CREATED:
+  ar: "تم إنشاء الفرع بنجاح"
+  en: "Branch created successfully"
+
+BRANCH_UPDATED:
+  ar: "تم تحديث الفرع بنجاح"
+  en: "Branch updated successfully"
+
+BRANCH_DEACTIVATED:
+  ar: "تم إلغاء تفعيل الفرع بنجاح"
+  en: "Branch deactivated successfully"
+
+ORG_NAME_REQUIRED:
+  ar: "الاسم مطلوب"
+  en: "Name is required"
+
+ORG_NAME_MAX_LENGTH:
+  ar: "يجب ألا يتجاوز الاسم 200 حرف"
+  en: "Name must not exceed 200 characters"
+
+ORG_TIMEZONE_MAX_LENGTH:
+  ar: "يجب ألا تتجاوز المنطقة الزمنية 100 حرف"
+  en: "Timezone must not exceed 100 characters"
+
+DEPARTMENT_NAME_EXISTS:
+  ar: "يوجد قسم بهذا الاسم بالفعل"
+  en: "A department with that name already exists"
+
+BRANCH_NAME_EXISTS:
+  ar: "يوجد فرع بهذا الاسم بالفعل"
+  en: "A branch with that name already exists"
+
+TEAM_NOT_FOUND:
+  ar: "لم يتم العثور على الفريق"
+  en: "Team not found"
+
+TEAM_NAME_EXISTS:
+  ar: "يوجد فريق بهذا الاسم بالفعل"
+  en: "A team with that name already exists"
+
+TEAM_CREATED:
+  ar: "تم إنشاء الفريق بنجاح"
+  en: "Team created successfully"
+
+TEAM_UPDATED:
+  ar: "تم تحديث الفريق بنجاح"
+  en: "Team updated successfully"
+
+TEAM_DEACTIVATED:
+  ar: "تم إلغاء تفعيل الفريق بنجاح"
+  en: "Team deactivated successfully"
+
+DEPARTMENT_ID_REQUIRED:
+  ar: "معرف القسم مطلوب"
+  en: "Department ID is required"
+
+REPORT_RANGE_INVALID:
+  ar: "يجب أن يكون تاريخ الانتهاء بعد تاريخ البدء"
+  en: "The end date must be on or after the start date"
+
+REPORT_GROUP_BY_INVALID:
+  ar: "قيمة التجميع غير صالحة"
+  en: "The grouping value is not valid"
+
+SLA_POLICY_CREATED:
+  ar: "تم إنشاء سياسة اتفاقية مستوى الخدمة بنجاح"
+  en: "SLA policy created successfully"
+
+SLA_POLICY_NOT_FOUND:
+  ar: "لم يتم العثور على سياسة اتفاقية مستوى الخدمة"
+  en: "SLA policy not found"
+
+SLA_POLICY_UPDATED:
+  ar: "تم تحديث سياسة اتفاقية مستوى الخدمة بنجاح"
+  en: "SLA policy updated successfully"
+
+SLA_POLICY_DEACTIVATED:
+  ar: "تم إلغاء تفعيل سياسة اتفاقية مستوى الخدمة بنجاح"
+  en: "SLA policy deactivated successfully"
+
+BUSINESS_HOURS_CALENDAR_CREATED:
+  ar: "تم إنشاء ساعات العمل بنجاح"
+  en: "Business hours calendar created successfully"
+
+BUSINESS_HOURS_HOLIDAY_CREATED:
+  ar: "تم إنشاء العطلة الرسمية بنجاح"
+  en: "Public holiday created successfully"
+
+SLA_PRIORITY_INVALID:
+  ar: "الأولوية غير صالحة"
+  en: "Priority is not valid"
+
+SLA_RESPONSE_TARGET_INVALID:
+  ar: "يجب أن يكون هدف وقت الاستجابة أكبر من صفر"
+  en: "The response target must be greater than zero"
+
+SLA_RESOLUTION_TARGET_INVALID:
+  ar: "يجب أن يكون هدف وقت الحل أكبر من صفر"
+  en: "The resolution target must be greater than zero"
+
+AI_NOT_CONFIGURED:
+  ar: "مساعد الذكاء الاصطناعي غير مفعّل في هذا النشر."
+  en: "AI assist is not enabled in this deployment."
+
+AI_UNGROUNDED:
+  ar: "لم أجد إجابة موثوقة في قاعدة المعرفة. يرجى التواصل مع فريق الدعم."
+  en: "I could not find a reliable answer in the knowledge base. Please contact support."
+
+AI_THREAD_TOO_SHORT:
+  ar: "المحادثة قصيرة جدًا بحيث لا يمكن تلخيصها."
+  en: "This thread is too short to summarise."
+
+AI_SUMMARY_READY:
+  ar: "تم إنشاء ملخص الذكاء الاصطناعي."
+  en: "AI summary created."
+
+AI_CATEGORIES_READY:
+  ar: "اقتراحات التصنيف جاهزة."
+  en: "Category suggestions ready."
+
+AI_DRAFT_READY:
+  ar: "مسودة الرد جاهزة للتحرير."
+  en: "Reply draft ready for editing."
+
+AI_SOLUTIONS_READY:
+  ar: "مقالات الحل المقترحة جاهزة."
+  en: "Suggested solution articles ready."
+
+AI_ANSWER_READY:
+  ar: "تم العثور على إجابة في قاعدة المعرفة."
+  en: "Answer found in the knowledge base."
+
+OTP_INVALID:
+  ar: "رمز التحقق غير صحيح أو لم يعد صالحًا."
+  en: "The verification code is incorrect or no longer valid."
+
+OTP_VERIFIED:
+  ar: "تم التحقق من جهة الاتصال بنجاح."
+  en: "Contact verified successfully."
+
+OTP_REQUESTED:
+  ar: "تم إرسال رمز التحقق."
+  en: "Verification code sent."
+
+OTP_COOLDOWN:
+  ar: "تم إرسال رمز مؤخرًا. حاول مرة أخرى بعد قليل."
+  en: "A code was already sent recently. Try again shortly."
+
+OTP_DISPATCH_FAILED:
+  ar: "تعذر إرسال رمز التحقق. حاول مرة أخرى لاحقًا."
+  en: "The verification code could not be sent. Please try again later."
+
+SURVEY_ALREADY_SUBMITTED:
+  ar: "سبق أن قدمت تقييمًا لهذا الطلب."
+  en: "You have already submitted a survey for this ticket."
+
+SURVEY_TICKET_NOT_RESOLVED:
+  ar: "لا يمكن تقديم التقييم إلا بعد إغلاق الطلب."
+  en: "A survey can only be submitted once the ticket is resolved."
+
+SURVEY_SUBMITTED:
+  ar: "تم تسجيل تقييمك. شكرًا لك."
+  en: "Your survey was submitted. Thank you."
+
+SURVEY_RATING_REQUIRED:
+  ar: "التقييم مطلوب."
+  en: "A rating is required."
+
+SURVEY_RATING_INVALID:
+  ar: "يجب أن يكون التقييم بين 1 و 5."
+  en: "Rating must be between 1 and 5."
+
+AI_PROVIDER_FAILED:
+  ar: "تعذر إكمال طلب الذكاء الاصطناعي. حاول مرة أخرى لاحقًا."
+  en: "The AI request could not be completed. Please try again later."
+
+AI_RATE_LIMITED:
+  ar: "تم تجاوز حد استخدام الذكاء الاصطناعي. حاول مرة أخرى بعد قليل."
+  en: "The AI usage limit has been reached. Please retry shortly."
+
+AI_CHAT_NOT_FOUND:
+  ar: "المحادثة غير موجودة."
+  en: "The conversation could not be found."

@@ -1,0 +1,346 @@
+<main class="mx-auto flex w-full max-w-5xl flex-col gap-6 md:flex-row">
+  <aside class="w-full shrink-0 md:w-64">
+    <nav class="flex gap-1 overflow-x-auto pb-4 md:flex-col md:pb-0" aria-label="Profile settings">
+      <button
+        type="button"
+        (click)="setTab('general')"
+        class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-label-lg whitespace-nowrap transition-colors"
+        [class.bg-secondary-container]="activeTab() === 'general'"
+        [class.text-on-secondary-container]="activeTab() === 'general'"
+        [class.text-on-surface-variant]="activeTab() !== 'general'"
+        [class.hover:bg-surface-container-low]="activeTab() !== 'general'"
+      >
+        <cs-icon name="person" [size]="20" />
+        {{ 'profile.general' | t }}
+      </button>
+      <button
+        type="button"
+        (click)="setTab('security')"
+        class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-label-lg whitespace-nowrap transition-colors"
+        [class.bg-secondary-container]="activeTab() === 'security'"
+        [class.text-on-secondary-container]="activeTab() === 'security'"
+        [class.text-on-surface-variant]="activeTab() !== 'security'"
+        [class.hover:bg-surface-container-low]="activeTab() !== 'security'"
+      >
+        <cs-icon name="security" [size]="20" />
+        {{ 'profile.security' | t }}
+      </button>
+      <button
+        type="button"
+        (click)="setTab('notifications')"
+        class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-label-lg whitespace-nowrap transition-colors"
+        [class.bg-secondary-container]="activeTab() === 'notifications'"
+        [class.text-on-secondary-container]="activeTab() === 'notifications'"
+        [class.text-on-surface-variant]="activeTab() !== 'notifications'"
+        [class.hover:bg-surface-container-low]="activeTab() !== 'notifications'"
+      >
+        <cs-icon name="notifications" [size]="20" />
+        {{ 'profile.notifications' | t }}
+      </button>
+      <button
+        type="button"
+        (click)="setTab('billing')"
+        class="flex items-center gap-2 rounded-lg px-4 py-2.5 text-label-lg whitespace-nowrap transition-colors"
+        [class.bg-secondary-container]="activeTab() === 'billing'"
+        [class.text-on-secondary-container]="activeTab() === 'billing'"
+        [class.text-on-surface-variant]="activeTab() !== 'billing'"
+        [class.hover:bg-surface-container-low]="activeTab() !== 'billing'"
+      >
+        <cs-icon name="payments" [size]="20" />
+        {{ 'profile.billing' | t }}
+      </button>
+    </nav>
+  </aside>
+
+  <div class="min-w-0 flex-1 space-y-6">
+    @if (loading()) {
+      <cs-loading-state [label]="'state.loading' | t" />
+    } @else {
+      @switch (activeTab()) {
+        @case ('general') {
+          <div>
+            <h1 class="text-headline-lg text-on-surface mb-2">
+              {{ 'profile.generalSettings' | t }}
+            </h1>
+            <p class="text-body-md text-on-surface-variant">
+              {{ 'profile.subtitle' | t }}
+            </p>
+          </div>
+
+          <cs-card [heading]="'profile.picture' | t">
+            <div class="flex flex-col sm:flex-row items-center gap-6 p-6">
+              <div class="size-24 rounded-full border border-border-subtle overflow-hidden bg-surface-container-highest flex items-center justify-center shrink-0">
+                @if (profileForm.controls.profileImageUrl.value; as imgUrl) {
+                  <img [src]="imgUrl" [alt]="'profile.picture' | t" class="size-full object-cover" />
+                } @else {
+                  <cs-icon name="person" [size]="40" class="text-on-surface-variant" />
+                }
+              </div>
+              <div class="space-y-2 text-center sm:text-start">
+                <div class="flex flex-wrap items-center gap-2 justify-center sm:justify-start">
+                  <input
+                    id="profile-photo-input"
+                    type="file"
+                    accept="image/*"
+                    (change)="onPhotoSelected($event)"
+                    class="sr-only"
+                  />
+                  <label
+                    for="profile-photo-input"
+                    class="inline-flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-4 py-2 text-label-lg font-semibold text-on-surface shadow-sm transition-all hover:bg-surface-bright active:scale-95"
+                  >
+                    @if (uploadingPhoto()) {
+                      <span class="inline-block size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent"></span>
+                    }
+                    {{ 'profile.changePhoto' | t }}
+                  </label>
+                  <button
+                    type="button"
+                    class="inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-label-lg font-semibold text-error transition-all hover:underline disabled:pointer-events-none disabled:opacity-50"
+                    [disabled]="!profileForm.controls.profileImageUrl.value || uploadingPhoto()"
+                    (click)="removePhoto()"
+                  >
+                    {{ 'profile.removePhoto' | t }}
+                  </button>
+                </div>
+                  <p class="text-body-sm text-on-surface-variant">
+                  {{ 'profile.photoHint' | t }}
+                </p>
+              </div>
+            </div>
+          </cs-card>
+
+          <cs-card [heading]="'profile.personalInfo' | t">
+            <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="flex flex-col gap-4 p-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <cs-input-field
+                  [label]="'profile.firstName' | t"
+                  [control]="profileForm.controls.firstName"
+                  [serverError]="fieldError('firstName')"
+                />
+                <cs-input-field
+                  [label]="'profile.lastName' | t"
+                  [control]="profileForm.controls.lastName"
+                  [serverError]="fieldError('lastName')"
+                />
+                <div class="md:col-span-2 flex flex-col gap-1">
+                  <span class="text-label-md text-on-surface">{{ 'profile.jobTitle' | t }}</span>
+                  <cs-placeholder [field]="'profile.jobTitle'" />
+                </div>
+                <div class="md:col-span-2 flex flex-col gap-1">
+                  <label for="email" class="text-label-md text-on-surface">{{ 'profile.email' | t }}</label>
+                  <input
+                    id="email"
+                    type="email"
+                    [value]="profile()?.email"
+                    readonly
+                    disabled
+                    aria-describedby="email-help"
+                    class="w-full rounded-md border border-border-subtle bg-surface-container-low px-3 py-2 text-body-md text-on-surface-variant cursor-not-allowed shadow-sm"
+                  />
+                  <p id="email-help" class="text-body-sm text-on-surface-variant mt-1">
+                    {{ 'profile.emailReadOnly' | t }}
+                  </p>
+                </div>
+                <div class="md:col-span-2 flex flex-col gap-1">
+                  <cs-input-field
+                    [label]="'profile.phone' | t"
+                    [control]="profileForm.controls.phoneNumber"
+                    [serverError]="fieldError('phoneNumber')"
+                  />
+                  @if (profile()?.phoneNumber) {
+                    <div class="flex items-center gap-2 mt-1">
+                      @if (profile()?.phoneNumberConfirmed) {
+                        <span class="inline-flex items-center gap-1 text-label-md text-success">
+                          <cs-icon name="check_circle" [size]="16" />
+                          {{ 'profile.phoneConfirmed' | t }}
+                        </span>
+                      } @else {
+                        <span class="inline-flex items-center gap-1 text-label-md text-warning">
+                          <cs-icon name="warning" [size]="16" />
+                          {{ 'profile.phoneUnconfirmed' | t }}
+                        </span>
+                        <button
+                          type="button"
+                          (click)="requiresPhoneVerification.set(true)"
+                          class="text-primary underline hover:opacity-80"
+                        >
+                          {{ 'profile.verifyPhone' | t }}
+                        </button>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+
+              @if (error(); as failure) {
+                @if (!failure.hasFieldErrors) {
+                  <p class="text-body-md text-error" role="alert">{{ failure.message_ }}</p>
+                }
+              }
+
+              @if (saved()) {
+                <p class="flex items-center gap-2 text-body-md text-success" role="status">
+                  <cs-icon name="check_circle" [size]="18" />
+                  {{ 'profile.saved' | t }}
+                </p>
+              }
+
+              <div class="flex items-center justify-end gap-3 border-t border-border-subtle pt-4">
+                <cs-button type="button" variant="secondary" (click)="cancelEdit()">
+                  {{ 'profile.cancel' | t }}
+                </cs-button>
+                <cs-button type="submit" [busy]="busy()" [disabled]="profileForm.invalid">
+                  {{ 'profile.saveChanges' | t }}
+                </cs-button>
+              </div>
+            </form>
+          </cs-card>
+
+          <cs-card [heading]="'profile.preferences' | t">
+            <div class="flex flex-col gap-2 p-6">
+              <span class="text-label-md text-on-surface">{{ 'profile.timezone' | t }}</span>
+              <cs-placeholder [field]="'profile.timezone'" />
+              <p class="text-body-sm text-on-surface-variant mt-1">
+                {{ 'profile.timezoneHint' | t }}
+              </p>
+            </div>
+          </cs-card>
+
+          @if (requiresPhoneVerification()) {
+            <cs-card [heading]="'otp.title' | t">
+              <form [formGroup]="otpForm" (ngSubmit)="verifyPhone()" class="flex flex-col gap-4 p-6">
+                <p class="text-body-md text-on-surface-variant">
+                  {{ 'otp.subtitle' | t }}
+                </p>
+                <cs-input-field
+                  [label]="'otp.code' | t"
+                  [control]="otpForm.controls.code"
+                  [serverError]="otpError()"
+                />
+                @if (otpDone()) {
+                  <p class="flex items-center gap-2 text-body-md text-success" role="status">
+                    <cs-icon name="check_circle" [size]="18" />
+                    {{ 'otp.success' | t }}
+                  </p>
+                }
+                <div class="flex items-center justify-between border-t border-border-subtle pt-4">
+                  <button
+                    type="button"
+                    (click)="resendOtp()"
+                    [disabled]="otpBusy()"
+                    class="text-primary hover:underline"
+                  >
+                    {{ 'otp.resend' | t }}
+                  </button>
+                  <div class="flex gap-2">
+                    <cs-button type="button" variant="secondary" (click)="requiresPhoneVerification.set(false)">
+                      {{ 'profile.cancel' | t }}
+                    </cs-button>
+                    <cs-button type="submit" [busy]="otpBusy()" [disabled]="otpForm.invalid">
+                      {{ 'otp.verify' | t }}
+                    </cs-button>
+                  </div>
+                </div>
+              </form>
+            </cs-card>
+          }
+        }
+
+        @case ('security') {
+          <div>
+            <h1 class="text-headline-lg text-on-surface mb-2">
+              {{ 'profile.security' | t }}
+            </h1>
+          </div>
+
+          <cs-card [heading]="'profile.identity' | t">
+            <div class="flex flex-col gap-4 p-6">
+              <div class="flex items-center gap-3">
+                <span class="grid size-12 shrink-0 place-items-center rounded-full bg-surface-highest text-on-surface">
+                  <cs-icon name="person" [size]="22" />
+                </span>
+                <span class="text-headline-md text-on-surface">{{ displayName() }}</span>
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <span class="text-label-md tracking-wider text-on-surface-variant uppercase">
+                  {{ 'profile.roles' | t }}
+                </span>
+                <div class="flex flex-wrap gap-1.5">
+                  @for (role of roles(); track role) {
+                    <span class="inline-flex items-center rounded bg-secondary-container px-2 py-0.5 text-label-md font-semibold text-on-secondary-container">
+                      {{ role }}
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          </cs-card>
+
+          <cs-card [heading]="'password.title' | t">
+            <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="flex flex-col gap-4 p-6">
+              <p class="text-body-md text-on-surface-variant">{{ 'password.subtitle' | t }}</p>
+              <cs-input-field
+                [label]="'password.current' | t"
+                type="password"
+                [control]="passwordForm.controls.currentPassword"
+                [serverError]="passwordFieldError('currentPassword')"
+              />
+              <cs-input-field
+                [label]="'password.new' | t"
+                type="password"
+                [control]="passwordForm.controls.newPassword"
+                [serverError]="passwordFieldError('newPassword')"
+              />
+
+              @if (passwordError(); as failure) {
+                @if (!failure.hasFieldErrors) {
+                  <p class="text-body-md text-error" role="alert">{{ failure.message_ }}</p>
+                }
+              }
+
+              @if (passwordDone()) {
+                <p class="flex items-center gap-2 text-body-md text-success" role="status">
+                  <cs-icon name="check_circle" [size]="18" />
+                  {{ 'password.done' | t }}
+                </p>
+              }
+
+              <div class="flex items-center gap-2 border-t border-border-subtle pt-4">
+                <cs-button type="submit" [busy]="passwordBusy()" [disabled]="passwordForm.invalid">
+                  {{ 'password.submit' | t }}
+                </cs-button>
+              </div>
+            </form>
+          </cs-card>
+        }
+
+        @case ('notifications') {
+          <div>
+            <h1 class="text-headline-lg text-on-surface mb-2">
+              {{ 'profile.notifications' | t }}
+            </h1>
+            <cs-card>
+              <div class="p-6">
+                <cs-placeholder [field]="'profile.notifications'" />
+              </div>
+            </cs-card>
+          </div>
+        }
+
+        @case ('billing') {
+          <div>
+            <h1 class="text-headline-lg text-on-surface mb-2">
+              {{ 'profile.billing' | t }}
+            </h1>
+            <cs-card>
+              <div class="p-6">
+                <cs-placeholder [field]="'profile.billing'" />
+              </div>
+            </cs-card>
+          </div>
+        }
+      }
+    }
+  </div>
+</main>

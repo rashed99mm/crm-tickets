@@ -1,0 +1,15 @@
+<div
+  class="mx-auto flex max-w-xl flex-col items-center gap-4 rounded-2xl border border-dashed border-border-subtle bg-surface-lowest px-6 py-12 text-center shadow-sm"
+>
+  <span
+    class="grid size-14 place-items-center rounded-2xl border border-border-subtle bg-surface-bright text-on-surface-variant shadow-sm"
+  >
+    <cs-icon name="inbox" [size]="26" />
+  </span>
+
+  <p class="max-w-md text-headline-md text-on-surface">{{ message() }}</p>
+
+  @if (hint()) {
+    <p class="max-w-md text-body-sm text-on-surface-variant">{{ hint() }}</p>
+  }
+</div>

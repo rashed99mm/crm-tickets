@@ -1,0 +1,100 @@
+<section class="mx-auto flex max-w-6xl flex-col gap-6">
+  <header class="rounded-lg border border-border-subtle bg-surface-lowest p-6 shadow-xs">
+    <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+      <div class="max-w-2xl">
+        <span class="inline-flex items-center gap-2 rounded-full bg-primary-container px-3 py-1 text-label-md font-semibold text-on-primary-container">
+          <cs-icon name="reviews" [size]="16" />
+          {{ 'portal.feedback.badge' | t }}
+        </span>
+        <h1 class="mt-4 font-display text-headline-lg text-on-surface">{{ 'portal.feedback.title' | t }}</h1>
+        <p class="mt-2 text-body-md text-on-surface-variant">{{ 'portal.feedback.subtitle' | t }}</p>
+      </div>
+      <a
+        routerLink="/app/tickets"
+        class="inline-flex items-center justify-center gap-2 rounded-lg border border-border-subtle bg-surface px-4 py-2.5 text-label-lg font-semibold text-primary shadow-xs transition-colors hover:bg-surface-high"
+      >
+        <cs-icon name="confirmation_number" [size]="18" />
+        {{ 'portal.nav.tickets' | t }}
+      </a>
+    </div>
+  </header>
+
+  @switch (state().status) {
+    @case ('loading') {
+      <cs-loading-state [label]="'tickets.loading' | t" />
+    }
+    @case ('error') {
+      @if (error(); as failure) {
+        <cs-error-state [error]="failure" (retry)="load()" />
+      }
+    }
+    @case ('empty') {
+      <cs-empty-state [message]="'portal.feedback.empty' | t" />
+    }
+    @default {
+      <div class="grid gap-6 lg:grid-cols-[1fr_20rem]">
+        <section class="flex flex-col gap-4">
+          <div class="flex items-end justify-between gap-4">
+            <div>
+              <h2 class="font-display text-headline-md text-on-surface">{{ 'portal.feedback.readyTitle' | t }}</h2>
+              <p class="text-body-sm text-on-surface-variant">{{ 'portal.feedback.readySubtitle' | t }}</p>
+            </div>
+            <span class="rounded-full bg-success-container/30 px-3 py-1 text-label-md font-semibold text-success">
+              {{ resolvedTickets().length }}
+            </span>
+          </div>
+
+          @if (resolvedTickets().length === 0) {
+            <div class="rounded-lg border border-dashed border-border-subtle bg-surface-lowest p-8 text-center">
+              <span class="mx-auto grid size-12 place-items-center rounded-lg bg-surface-high text-primary">
+                <cs-icon name="hourglass_empty" [size]="24" />
+              </span>
+              <p class="mt-4 text-label-lg text-on-surface">{{ 'portal.feedback.noResolved' | t }}</p>
+              <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'portal.feedback.noResolvedHint' | t }}</p>
+            </div>
+          } @else {
+            <div class="grid gap-3">
+              @for (ticket of resolvedTickets(); track ticket.id) {
+                <a
+                  [routerLink]="['/app/tickets', ticket.id]"
+                  class="group grid gap-3 rounded-lg border border-border-subtle bg-surface-lowest p-4 shadow-xs transition-all hover:border-primary/40 hover:shadow-card sm:grid-cols-[1fr_auto] sm:items-center"
+                >
+                  <span class="min-w-0">
+                    <span class="flex flex-wrap items-center gap-2">
+                      <span class="font-mono text-data-mono text-on-surface-variant">{{ ticket.reference }}</span>
+                      <cs-status-pill [value]="ticket.status" />
+                    </span>
+                    <span class="mt-2 block truncate text-label-lg text-on-surface">{{ ticket.subject }}</span>
+                    <span class="mt-1 block text-body-sm text-on-surface-variant">{{ ticket.createdAt }}</span>
+                  </span>
+                  <span class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-3 py-2 text-label-md font-semibold text-on-primary transition-opacity group-hover:opacity-90">
+                    {{ 'portal.feedback.reviewTicket' | t }}
+                    <cs-icon name="arrow_forward" [size]="16" />
+                  </span>
+                </a>
+              }
+            </div>
+          }
+        </section>
+
+        <aside class="flex flex-col gap-4">
+          <div class="rounded-lg border border-border-subtle bg-surface-lowest p-5 shadow-xs">
+            <span class="grid size-10 place-items-center rounded-lg bg-secondary-container/30 text-secondary">
+              <cs-icon name="tips_and_updates" [size]="22" />
+            </span>
+            <h2 class="mt-4 font-display text-headline-md text-on-surface">{{ 'portal.feedback.sideTitle' | t }}</h2>
+            <p class="mt-2 text-body-sm text-on-surface-variant">{{ 'portal.feedback.sideBody' | t }}</p>
+          </div>
+
+          <div class="rounded-lg border border-border-subtle bg-surface-lowest p-5 shadow-xs">
+            <div class="flex items-center justify-between">
+              <h2 class="font-display text-headline-md text-on-surface">{{ 'portal.feedback.pendingTitle' | t }}</h2>
+              <span class="text-label-md text-on-surface-variant">{{ pendingTickets().length }}</span>
+            </div>
+            <p class="mt-2 text-body-sm text-on-surface-variant">{{ 'portal.feedback.pendingBody' | t }}</p>
+          </div>
+        </aside>
+      </div>
+    }
+  }
+</section>

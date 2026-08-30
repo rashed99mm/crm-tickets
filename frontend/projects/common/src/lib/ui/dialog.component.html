@@ -1,0 +1,36 @@
+@if (open()) {
+  <div
+    class="fixed inset-0 z-50 grid place-items-center bg-on-surface/40 p-4"
+    (click)="dismiss()"
+    (keydown)="onBackdropKeydown($event)"
+  >
+    <div
+      #panel
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="heading()"
+      tabindex="-1"
+      (click)="$event.stopPropagation()"
+      class="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-xl border border-border-subtle bg-surface-lowest shadow-popover outline-none"
+    >
+      @if (heading(); as title) {
+        <div class="flex items-center justify-between border-b border-border-subtle px-6 py-4">
+          <h2 class="text-headline-md text-on-surface">{{ title }}</h2>
+          <button
+            type="button"
+            (click)="dismiss()"
+            [attr.aria-label]="'dialog.close' | t"
+            [title]="'dialog.close' | t"
+            class="grid size-8 shrink-0 place-items-center rounded text-on-surface-variant transition-colors hover:bg-surface-high"
+          >
+            <cs-icon name="close" [size]="20" />
+          </button>
+        </div>
+      }
+
+      <div class="overflow-y-auto p-6">
+        <ng-content />
+      </div>
+    </div>
+  </div>
+}

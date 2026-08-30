@@ -1,0 +1,13 @@
+<button
+  type="button"
+  (click)="locale.toggle()"
+  [attr.aria-label]="
+    locale.locale() === 'ar' ? 'Switch to English' : 'التبديل إلى العربية'
+  "
+  class="inline-flex h-9 min-w-9 items-center justify-center rounded-lg border border-border-subtle
+         px-2.5 text-label-md font-semibold text-on-surface-variant transition-colors
+         hover:bg-surface-high hover:text-on-surface focus-visible:outline-2
+         focus-visible:outline-offset-2 focus-visible:outline-primary"
+>
+  {{ locale.locale() === 'ar' ? 'EN' : 'ع' }}
+</button>

@@ -1,0 +1,119 @@
+<cs-card [heading]="'notes.title' | t" data-testid="customer-notes">
+  <!--
+    `customer_profile_history`'s "Quick Notes" panel, at the head of the feed rather than in the end
+    rail. A note is this product's only unit of customer activity, so the composer and the timeline
+    it writes into are one card — the spec records why splitting them across two columns was
+    rejected. The box sits above the list because notes are newest first and this is where one lands.
+  -->
+  <div class="flex flex-col gap-1.5 border-b border-border-subtle bg-surface-bright p-4">
+    <label for="customer-note" class="text-label-md text-on-surface-variant">
+      {{ 'notes.add' | t }}
+    </label>
+    <p class="text-label-md text-on-surface-variant/70">{{ 'notes.quickHint' | t }}</p>
+    <textarea
+      id="customer-note"
+      rows="3"
+      [value]="draft()"
+      (input)="updateDraft($any($event.target).value)"
+      [attr.aria-invalid]="fieldError('body') ? 'true' : null"
+      [attr.aria-describedby]="fieldError('body') ? 'customer-note-error' : null"
+      class="rounded-lg border border-outline-variant bg-surface-lowest px-3 py-2 text-body-md text-on-surface transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+    ></textarea>
+
+    @if (fieldError('body'); as failure) {
+      <p id="customer-note-error" role="alert" class="text-body-sm text-error">
+        {{ failure.message }}
+      </p>
+    }
+
+    @if (formLevelError(); as failure) {
+      <p role="alert" class="text-body-sm text-error">{{ failure.message_ }}</p>
+    }
+
+    <div>
+      <!--
+        Disabled until there is something to say. AC-75 requires the refusal to happen before any
+        request is sent, and `add()` re-checks it — a disabled attribute is a hint, not a guard.
+      -->
+      <cs-button type="button" [busy]="saving()" [disabled]="!canSubmit()" (pressed)="add()">
+        {{ 'notes.submit' | t }}
+      </cs-button>
+    </div>
+  </div>
+
+  <!--
+    The three states again, for the same reason as everywhere else: a history that failed to load
+    must not read as a customer nobody has ever spoken to.
+  -->
+  @switch (state().status) {
+    @case ('idle') {
+      <cs-loading-state [label]="'notes.loading' | t" />
+    }
+    @case ('loading') {
+      <cs-loading-state [label]="'notes.loading' | t" />
+    }
+    @case ('error') {
+      @if (loadError(); as failure) {
+        <cs-error-state [error]="failure" (retry)="load()" />
+      }
+    }
+    @case ('empty') {
+      <cs-empty-state [message]="'notes.empty' | t" />
+    }
+    @default {
+      <!--
+        `customer_360_history`'s interaction timeline: one continuous rule down the start edge, a
+        marker per entry, and each note in its own bordered card carrying its author and time.
+        Newest first, in the order the server returned them — not re-sorted here, see the component.
+      -->
+      <ol class="relative flex flex-col gap-4 p-4" data-testid="note-list">
+        <!--
+          The rule the markers sit on. Absolute rather than a `border-s` on each item, because
+          `customer_profile_history` insets the line 4 units from the top and bottom of the feed so
+          it stops short of the first and last marker instead of running past them. A per-item
+          border cannot do that: it either reaches both ends or leaves a gap at every entry.
+        -->
+        <span
+          class="absolute top-8 bottom-8 start-10 w-px bg-border-subtle"
+          aria-hidden="true"
+        ></span>
+
+        @for (note of notes(); track note.id) {
+          <li class="relative flex items-start gap-4">
+            <!--
+              The mockup's 48px marker: a circle on the card surface, not the rule's colour, so it
+              reads as sitting on top of the line rather than being a bead threaded onto it.
+            -->
+            <span
+              class="z-10 grid size-12 shrink-0 place-items-center rounded-full border border-border-subtle bg-surface-high text-on-surface shadow-card"
+            >
+              <cs-icon name="edit_note" [size]="20" />
+            </span>
+
+            <div class="min-w-0 flex-1 rounded-lg border border-border-subtle bg-surface-bright p-4">
+              <p class="flex flex-wrap items-baseline justify-between gap-2">
+                <span class="text-label-lg text-on-surface">
+                  {{ 'customers.activity.noteBy' | t: note.authorName }}
+                </span>
+                <time
+                  class="font-mono text-data-mono text-on-surface-variant"
+                  [attr.datetime]="note.createdAt"
+                >
+                  {{ note.createdAt | csDate : 'datetime' }}
+                </time>
+              </p>
+              <!--
+                The mockup insets a message body in its own tinted panel inside the entry card. Kept
+                here, because a note can be several paragraphs and the inset is what separates the
+                agent's words from the entry's own metadata.
+              -->
+              <div class="mt-2 rounded border border-border-subtle bg-surface-lowest p-3">
+                <p class="whitespace-pre-line text-body-md text-on-surface">{{ note.body }}</p>
+              </div>
+            </div>
+          </li>
+        }
+      </ol>
+    }
+  }
+</cs-card>

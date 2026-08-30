@@ -1,0 +1,163 @@
+<cs-card class="overflow-hidden border border-border-subtle bg-surface-bright shadow-card" [heading]="'messages.title' | t" data-testid="ticket-messages">
+  <div class="flex flex-col gap-4 border-b border-border-subtle bg-surface-bright p-5">
+    <div class="flex items-center justify-between gap-3">
+      <div>
+        <p class="text-label-md font-semibold uppercase tracking-widest text-primary">{{ 'messages.title' | t }}</p>
+        <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'messages.log' | t }}</p>
+      </div>
+      <span class="grid size-10 place-items-center rounded-full bg-secondary-container/20 text-secondary">
+        <cs-icon name="chat" [size]="20" />
+      </span>
+    </div>
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      <div class="flex flex-col gap-1">
+        <label for="message-direction" class="text-label-sm text-on-surface-variant">
+          {{ 'messages.direction' | t }}
+        </label>
+        <select
+          id="message-direction"
+          (change)="setDirection($any($event.target).value)"
+          class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+        >
+          @for (option of directions; track option) {
+            <option [value]="option" [selected]="option === direction()">
+              {{ (option === 'Outbound' ? 'messages.direction.outbound' : 'messages.direction.inbound') | t }}
+            </option>
+          }
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label for="message-channel" class="text-label-sm text-on-surface-variant">
+          {{ 'messages.channel' | t }}
+        </label>
+        <select
+          id="message-channel"
+          (change)="setChannel($any($event.target).value)"
+          class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+        >
+          @for (option of channels; track option) {
+            <option [value]="option" [selected]="option === channel()">
+              {{ channelKey(option) | t }}
+            </option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <label for="message-subject" class="mt-1 flex flex-col gap-1 text-label-sm text-on-surface-variant">
+      {{ 'messages.subject' | t }}
+    </label>
+    <input
+      id="message-subject"
+      type="text"
+      [value]="subject()"
+      (input)="updateSubject($any($event.target).value)"
+      class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+    />
+
+    @if (fieldError('body'); as failure) {
+      <p id="message-log-error" role="alert" class="text-body-sm text-error">
+        {{ failure.message }}
+      </p>
+    }
+
+    @if (formLevelError(); as failure) {
+      <p role="alert" class="text-body-sm text-error">{{ failure.message_ }}</p>
+    }
+
+    <div class="overflow-hidden rounded-xl border border-border-subtle bg-surface-container-lowest shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10">
+      <div class="flex items-center gap-1 border-b border-border-subtle bg-surface-container-low px-3 py-2">
+        <button type="button" class="grid size-8 place-items-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-high" [attr.aria-label]="'messages.formatBold' | t" [title]="'messages.formatBold' | t"><cs-icon name="format_bold" [size]="18" /></button>
+        <button type="button" class="grid size-8 place-items-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-high" [attr.aria-label]="'messages.formatItalic' | t" [title]="'messages.formatItalic' | t"><cs-icon name="format_italic" [size]="18" /></button>
+        <button type="button" class="grid size-8 place-items-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-high" [attr.aria-label]="'messages.insertLink' | t" [title]="'messages.insertLink' | t"><cs-icon name="link" [size]="18" /></button>
+        <span class="mx-1 h-5 w-px bg-border-subtle"></span>
+        <button type="button" class="grid size-8 place-items-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-high" [attr.aria-label]="'messages.attachFile' | t" [title]="'messages.attachFile' | t"><cs-icon name="attach_file" [size]="18" /></button>
+      </div>
+      <textarea
+        id="message-log"
+        rows="5"
+        [value]="body()"
+        (input)="updateBody($any($event.target).value)"
+        [attr.aria-label]="'messages.body' | t"
+        [attr.aria-invalid]="fieldError('body') ? 'true' : null"
+        [attr.aria-describedby]="fieldError('body') ? 'message-log-error' : null"
+        class="min-h-32 w-full resize-none border-0 bg-transparent px-4 py-3 text-body-md text-on-surface outline-none placeholder:text-on-surface-variant/60 focus:ring-0"
+        [placeholder]="'messages.body' | t"
+      ></textarea>
+      <div class="flex flex-wrap items-center justify-between gap-3 px-3 py-2">
+      <!--
+        AC-F13 — the Draft with AI affordance lives in the composer toolbar so an agent who
+        is already typing can summon a draft without leaving the form. The right-rail's
+        Suggested Replies card is the keyboard-free fast path; both share `insertDraft`.
+      -->
+      @if (aiAvailable()) {
+        <cs-button
+          type="button"
+          variant="secondary"
+          [busy]="drafting()"
+          [disabled]="drafting() || saving()"
+          (pressed)="draftWithAi()"
+          data-testid="composer-draft-with-ai"
+        >
+          <cs-icon name="auto_awesome" [size]="16" />
+          {{ 'ai.draftWithAi' | t }}
+        </cs-button>
+      }
+      <!--
+        Disabled until there is something to log. AC-113 requires the refusal to happen before any
+        request is sent, and log() re-checks it — a disabled attribute is a hint, not a guard.
+      -->
+      <cs-button type="button" [busy]="saving()" [disabled]="!canSubmit()" (pressed)="log()">
+        {{ 'messages.submit' | t }}
+      </cs-button>
+      </div>
+    </div>
+  </div>
+
+  @switch (state().status) {
+    @case ('idle') {
+      <cs-loading-state [label]="'messages.loading' | t" />
+    }
+    @case ('loading') {
+      <cs-loading-state [label]="'messages.loading' | t" />
+    }
+    @case ('error') {
+      @if (loadError(); as failure) {
+        <cs-error-state [error]="failure" (retry)="load()" />
+      }
+    }
+    @case ('empty') {
+      <cs-empty-state [message]="'messages.empty' | t" />
+    }
+    @default {
+      <!-- Oldest first — a conversation read top-to-bottom, unlike the notes timeline's newest-first. -->
+      <ol class="relative flex flex-col gap-5 bg-surface-bright p-5 before:absolute before:inset-y-5 before:start-9 before:w-px before:bg-border-subtle" data-testid="message-list">
+        @for (message of messages(); track message.id) {
+          <li class="relative z-10 flex gap-4">
+            <span class="grid size-8 shrink-0 place-items-center rounded-full border-2 border-surface-bright bg-primary text-on-primary shadow-sm">
+              <cs-icon [name]="message.direction === 'Outbound' ? 'call_made' : 'call_received'" [size]="16" />
+            </span>
+            <div class="min-w-0 flex-1 rounded-xl border border-border-subtle bg-surface-lowest p-4 shadow-sm">
+              <p class="flex flex-wrap items-baseline justify-between gap-2">
+                <span class="flex items-center gap-2 text-label-lg text-on-surface">
+                  {{ 'messages.sentBy' | t: message.senderName }}
+                  <span class="rounded bg-surface-variant px-1.5 py-0.5 text-label-sm text-on-surface-variant">
+                    {{ channelKey(message.channel) | t }}
+                  </span>
+                </span>
+                <time class="font-mono text-data-mono text-on-surface-variant" [attr.datetime]="message.sentAt">
+                  {{ message.sentAt | csDate : 'datetime' }}
+                </time>
+              </p>
+              @if (message.subject) {
+                <p class="mt-1 text-label-md text-on-surface">{{ message.subject }}</p>
+              }
+              <p class="mt-3 whitespace-pre-line text-body-md text-on-surface">{{ message.body }}</p>
+            </div>
+          </li>
+        }
+      </ol>
+    }
+  }
+</cs-card>

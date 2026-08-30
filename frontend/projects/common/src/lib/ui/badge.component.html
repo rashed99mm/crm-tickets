@@ -1,0 +1,9 @@
+<span
+  class="inline-flex items-center gap-1 rounded px-2 py-0.5 text-label-md font-semibold"
+  [class]="tone()"
+>
+  @if (kind() === 'priority') {
+    <span class="size-1.5 shrink-0 rounded-full" [class]="dot()"></span>
+  }
+  {{ text() }}
+</span>

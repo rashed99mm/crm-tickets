@@ -1,0 +1,138 @@
+<main class="mx-auto flex min-h-full w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
+  <header class="cs-page-heading">
+    <div class="relative z-10">
+      <p class="mb-sm text-label-md font-bold uppercase tracking-[0.14em] text-primary">
+        {{ 'portal.liveChat.title' | t }}
+      </p>
+      <h1 class="font-display text-headline-lg font-semibold text-on-surface">
+        {{ 'portal.liveChat.subtitle' | t }}
+      </h1>
+    </div>
+  </header>
+
+  @if (!started()) {
+    <cs-card class="overflow-hidden border border-outline-variant shadow-card">
+      <div class="border-b border-outline-variant bg-surface-container-low p-5">
+        <p class="text-label-md font-bold uppercase tracking-[0.12em] text-on-surface-variant">
+          {{ 'portal.liveChat.start' | t }}
+        </p>
+      </div>
+      <form [formGroup]="startForm" (ngSubmit)="startChat()" class="flex flex-col gap-4 bg-surface-container-lowest p-5 md:p-6">
+        <cs-input-field
+          [label]="'portal.liveChat.name' | t"
+          [control]="startForm.controls.customerName"
+        />
+        <cs-input-field
+          [label]="'portal.liveChat.email' | t"
+          type="email"
+          [control]="startForm.controls.customerEmail"
+        />
+        <div class="flex flex-col gap-1">
+          <label for="initial-message" class="font-label-md text-label-md text-on-surface">
+            {{ 'portal.liveChat.message' | t }}
+          </label>
+          <textarea
+            id="initial-message"
+            rows="4"
+            [formControl]="startForm.controls.initialMessage"
+            class="min-h-[112px] w-full resize-y rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-3 text-body-md text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+          ></textarea>
+        </div>
+
+        <div class="flex justify-end pt-2">
+          <cs-button type="submit" [busy]="starting()" [disabled]="startForm.invalid">
+            {{ 'portal.liveChat.start' | t }}
+          </cs-button>
+        </div>
+      </form>
+    </cs-card>
+  } @else {
+    <cs-card class="min-h-0 overflow-hidden border border-outline-variant shadow-card">
+      <div class="flex h-[620px] max-h-[calc(100vh-12rem)] min-h-0 flex-col justify-between bg-background">
+        <div class="flex items-center justify-between border-b border-outline-variant bg-surface-container-lowest p-4 md:p-5">
+          <div class="flex items-center gap-3">
+            <div class="grid size-10 shrink-0 place-items-center rounded-lg bg-primary text-label-md font-bold text-on-primary">
+              <cs-icon name="person" [size]="20" />
+            </div>
+            <div class="flex flex-col gap-1">
+              <p class="text-label-md font-bold text-on-surface">
+                {{ startForm.controls.customerName.value }}
+              </p>
+              <p class="text-body-sm text-on-surface-variant">
+              {{ 'portal.liveChat.waitingMessage' | t }}
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center gap-3">
+            <p class="flex items-center gap-2 text-label-md font-semibold text-on-surface-variant" [class.text-success]="connectionState() === 'connected'">
+              <span class="size-2 rounded-full bg-error" [class.bg-success]="connectionState() === 'connected'" aria-hidden="true"></span>
+              @switch (connectionState()) {
+                @case ('connected') { {{ 'chat.session.connected' | t }} }
+                @case ('reconnecting') { {{ 'chat.session.reconnecting' | t }} }
+                @case ('connecting') { {{ 'chat.session.connecting' | t }} }
+                @default { {{ 'chat.session.offline' | t }} }
+              }
+            </p>
+            @if (!isClosed()) {
+              <cs-button type="button" variant="ghost" class="text-error" (click)="endChat()">
+                {{ 'portal.liveChat.endChat' | t }}
+              </cs-button>
+            }
+          </div>
+        </div>
+
+        <div class="min-h-0 flex-1 overflow-y-auto bg-background p-4 md:p-6">
+          <ol class="flex flex-col gap-5">
+            @for (msg of messages(); track msg.id) {
+              <li
+                class="flex max-w-[86%] flex-col gap-1 rounded-xl p-4 shadow-sm md:max-w-[72%]"
+                [class.ms-auto]="msg.senderType === 'Customer'"
+                [class.bg-primary]="msg.senderType === 'Customer'"
+                [class.text-on-primary]="msg.senderType === 'Customer'"
+                [class.me-auto]="msg.senderType !== 'Customer'"
+                [class.border]="msg.senderType !== 'Customer'"
+                [class.border-outline-variant]="msg.senderType !== 'Customer'"
+                [class.bg-surface-container-high]="msg.senderType !== 'Customer'"
+                [class.text-on-surface]="msg.senderType !== 'Customer'"
+              >
+                <div class="flex items-center justify-between gap-4 text-label-md" [class.text-on-primary-container]="msg.senderType === 'Customer'" [class.text-on-surface-variant]="msg.senderType !== 'Customer'">
+                  <span class="font-semibold">{{ msg.senderName }}</span>
+                  <time class="font-mono text-data-mono" [attr.datetime]="msg.sentAt">
+                    {{ msg.sentAt | csDate: 'datetime' }}
+                  </time>
+                </div>
+                <p class="whitespace-pre-line text-body-md leading-relaxed">{{ msg.body }}</p>
+              </li>
+            }
+          </ol>
+        </div>
+
+        @if (!isClosed()) {
+          <form
+            [formGroup]="messageForm"
+            (ngSubmit)="send()"
+            class="border-t border-outline-variant bg-surface-container-lowest p-4 md:p-5"
+          >
+            <div class="flex items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-lowest p-2 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+              <label for="live-chat-input" class="sr-only">{{ 'chat.session.placeholder' | t }}</label>
+              <input
+                id="live-chat-input"
+                type="text"
+              [formControl]="messageForm.controls.body"
+              [placeholder]="'chat.session.placeholder' | t"
+                class="h-10 min-w-0 flex-1 border-0 bg-transparent px-2 text-body-md text-on-surface outline-none focus:ring-0"
+              />
+              <cs-button type="submit" [busy]="sending()" [disabled]="messageForm.invalid">
+                {{ 'chat.session.send' | t }}
+              </cs-button>
+            </div>
+          </form>
+        } @else {
+          <div class="border-t border-outline-variant bg-surface-container-low p-4 text-center text-body-md text-on-surface-variant">
+            {{ 'chat.session.closedNotice' | t }}
+          </div>
+        }
+      </div>
+    </cs-card>
+  }
+</main>

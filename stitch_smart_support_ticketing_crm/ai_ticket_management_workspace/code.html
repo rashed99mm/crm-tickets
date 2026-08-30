@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CommandCenter CRM - AI-Powered Ticket Workspace</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-fixed-variant": "#005137",
+                        "secondary-container": "#645efb",
+                        "surface-tint": "#3755c3",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#dde1ff",
+                        "outline": "#757684",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "status-pending": "#F59E0B",
+                        "on-background": "#0b1c30",
+                        "priority-medium": "#F59E0B",
+                        "surface-dim": "#cbdbf5",
+                        "border-subtle": "#E2E8F0",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "outline-variant": "#c4c5d5",
+                        "inverse-on-surface": "#eaf1ff",
+                        "inverse-surface": "#213145",
+                        "priority-high": "#EF4444",
+                        "on-primary-container": "#a8b8ff",
+                        "priority-low": "#10B981",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#173bab",
+                        "surface-container-low": "#eff4ff",
+                        "surface-bright": "#f8f9ff",
+                        "surface": "#F8FAFC",
+                        "surface-container-high": "#dce9ff",
+                        "status-open": "#4F46E5",
+                        "tertiary": "#003d28",
+                        "status-escalated": "#DC2626",
+                        "on-tertiary-fixed": "#002114",
+                        "secondary-fixed-dim": "#c3c0ff",
+                        "on-primary-fixed": "#001453",
+                        "priority-critical": "#B91C1C",
+                        "on-secondary-container": "#fffbff",
+                        "background": "#f8f9ff",
+                        "status-resolved": "#059669",
+                        "primary-container": "#1e40af",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#444653",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#0f0069",
+                        "primary": "#00288e",
+                        "inverse-primary": "#b8c4ff",
+                        "on-tertiary-container": "#5bcf9e",
+                        "on-surface": "#0b1c30",
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "secondary": "#4b41e1",
+                        "on-secondary-fixed-variant": "#3323cc",
+                        "surface-container-highest": "#d3e4fe",
+                        "tertiary-fixed": "#85f8c4",
+                        "secondary-fixed": "#e2dfff",
+                        "tertiary-container": "#00563a",
+                        "surface-container": "#e5eeff",
+                        "tertiary-fixed-dim": "#68dba9",
+                        "surface-variant": "#d3e4fe"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-sm": "8px",
+                        "margin-desktop": "24px",
+                        "container-lg": "24px",
+                        "gutter": "16px",
+                        "margin-mobile": "16px",
+                        "container-md": "16px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"],
+                        "data-mono": ["JetBrains Mono"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["13px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "data-mono": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface h-full flex flex-col antialiased">
+<!-- TopNavBar -->
+<header class="bg-surface text-primary font-headline-md text-headline-md docked full-width top-0 z-50 border-b border-border-subtle shadow-sm flex justify-between items-center h-[64px] px-margin-desktop w-full shrink-0">
+<div class="flex items-center gap-gutter">
+<span class="font-headline-md text-headline-md font-bold text-primary">CommandCenter CRM</span>
+</div>
+<div class="flex items-center gap-gutter">
+<div class="flex items-center bg-surface-container-lowest border border-border-subtle rounded-lg px-container-sm py-unit focus-within:border-primary focus-within:shadow-[0_0_0_2px_rgba(0,40,142,0.1)] transition-all">
+<span class="material-symbols-outlined text-outline mr-2 text-[20px]" data-icon="search">search</span>
+<input class="border-none bg-transparent focus:ring-0 text-body-md font-body-md text-on-surface w-64 outline-none placeholder:text-outline-variant" placeholder="Search tickets..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-gutter">
+<button class="bg-primary text-on-primary font-label-lg text-label-lg px-container-md py-container-sm rounded-lg hover:bg-primary-container transition-colors active:scale-95 duration-150 flex items-center gap-unit">
+<span class="material-symbols-outlined text-[18px]" data-icon="add">add</span>
+                New Ticket
+            </button>
+<div class="flex items-center gap-container-sm">
+<button class="p-container-sm text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150 relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 w-2 h-2 bg-priority-high rounded-full"></span>
+</button>
+<button class="p-container-sm text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-container-sm text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<img alt="Agent Profile" class="w-8 h-8 rounded-full border border-border-subtle object-cover ml-unit" data-alt="A professional headshot of a corporate customer support agent, brightly lit, looking confident, set against a neutral, soft white office background, emphasizing a clean and authoritative corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPwqK0X4ku6NZLhnFluQBJ2qb34I2Y1NMqD-UZugbdYfjyryPtV-LlGCbeqGmp6jZtp_-CgtLjHD3ojQBz4DbTVX_wSF7LNHinjEK16XrXN_TZtRk3M2npGUWBPBSHcUdI9-EJ_vpOhIgeYumIun_4z79nYAFmPu6qmMBPwUiK1g51fACdriCESuQcNSFBojJvmheh8bwJjfYL-3TiU39KZ1rpZmMj7448SHR0W8anE85ryZ_KH-PSIA"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low text-primary font-label-lg text-label-lg docked left-0 h-full w-[280px] border-r border-border-subtle flat no shadows flex flex-col py-container-lg px-container-md shrink-0">
+<div class="flex items-center gap-container-sm mb-container-lg px-container-sm">
+<img alt="CRM Logo" class="w-10 h-10 rounded-md object-cover" data-alt="A minimalist, geometric, abstract corporate logo symbolizing connectivity and control, using deep blue and crisp white tones, suitable for an enterprise software command center." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAKkZnDFaV3g9zQbYgpe0Z8XTysqYLtQAQSiVKybS7l0Uaavk53OD_rBtRCANmuYlxtEmB4NUw6JKHOvUK95egRBmPCQjmkqgDF6OzL-_4p5dobu4wfsMnTtVEOe78bJ8nIsCp6PF0RrTB2BS_JtcHeLgBMcdn0NjAG3IuhqS2BUedsL8AFrVOVV5Dv0Alr5lQFt6AefG0wN2lPxu49nd3FWZfqRO3-cZYup2jtz0Jm16EEfsDjCDfJSg"/>
+<div>
+<div class="font-headline-md text-headline-md font-bold text-primary leading-tight">Support Engine</div>
+<div class="font-label-md text-label-md text-on-surface-variant">Enterprise Tier</div>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-unit">
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer flex items-center gap-container-sm px-container-md py-container-sm rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+<a class="bg-secondary-container text-on-secondary-container rounded-lg transition-all duration-200 cursor-pointer flex items-center gap-container-sm px-container-md py-container-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="confirmation_number">confirmation_number</span>
+                    Tickets
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer flex items-center gap-container-sm px-container-md py-container-sm rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="group">group</span>
+                    Customers
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer flex items-center gap-container-sm px-container-md py-container-sm rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="menu_book">menu_book</span>
+                    Knowledge Base
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer flex items-center gap-container-sm px-container-md py-container-sm rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="bar_chart">bar_chart</span>
+                    Reports
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer flex items-center gap-container-sm px-container-md py-container-sm rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+                    System Settings
+                </a>
+</div>
+<div class="mt-auto flex flex-col gap-container-sm pt-container-lg border-t border-border-subtle">
+<button class="bg-surface-container-highest text-primary font-label-lg text-label-lg py-container-sm rounded-lg hover:bg-primary-container hover:text-on-primary-container transition-colors flex items-center justify-center gap-unit w-full shadow-sm">
+<span class="material-symbols-outlined text-[18px]" data-icon="auto_awesome">auto_awesome</span>
+                    Pulse AI Assistant
+                </button>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer flex items-center gap-container-sm px-container-md py-container-sm rounded-lg mt-unit" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="contact_support">contact_support</span>
+                    Help Center
+                </a>
+<a class="text-on-surface-variant hover:bg-surface-container-high transition-all duration-200 cursor-pointer flex items-center gap-container-sm px-container-md py-container-sm rounded-lg" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+                    Logout
+                </a>
+</div>
+</nav>
+<!-- Main Workspace -->
+<main class="flex-1 flex overflow-hidden bg-background">
+<!-- Central Column: Ticket & Feed -->
+<div class="flex-1 flex flex-col min-w-0 border-r border-border-subtle overflow-y-auto">
+<!-- Ticket Header -->
+<div class="bg-surface-container-lowest border-b border-border-subtle p-margin-desktop shadow-[0_4px_4px_-4px_rgba(0,0,10,0.02)] z-10 sticky top-0">
+<div class="flex justify-between items-start mb-container-sm">
+<div class="flex items-center gap-container-md">
+<span class="font-data-mono text-data-mono text-outline-variant bg-surface-bright px-2 py-1 rounded border border-border-subtle">#TK-8492</span>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Unable to access enterprise dashboard after update</h1>
+</div>
+<div class="flex items-center gap-container-sm bg-surface-container-lowest border border-border-subtle rounded-lg px-3 py-1.5 shadow-sm">
+<div class="w-2 h-2 rounded-full bg-status-open"></div>
+<select class="font-label-lg text-label-lg text-on-surface border-none bg-transparent p-0 pr-6 focus:ring-0 outline-none cursor-pointer">
+<option>Open</option>
+<option>Pending</option>
+<option>Resolved</option>
+<option>Escalated</option>
+</select>
+</div>
+</div>
+<div class="flex flex-wrap gap-gutter text-body-sm font-body-sm text-on-surface-variant mt-container-md items-center">
+<div class="flex items-center gap-unit">
+<span class="material-symbols-outlined text-[16px]" data-icon="person">person</span>
+<span>Assignee: <strong>Sarah Jenkins</strong></span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-unit">
+<span class="material-symbols-outlined text-[16px]" data-icon="folder">folder</span>
+<span>Category: <strong>Authentication / Access</strong></span>
+</div>
+<div class="w-1 h-1 rounded-full bg-outline-variant"></div>
+<div class="flex items-center gap-unit bg-surface-container px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[16px]" data-icon="mail">mail</span>
+<span class="font-label-md text-label-md">Email</span>
+</div>
+</div>
+</div>
+<!-- Feed Canvas -->
+<div class="flex-1 p-margin-desktop flex flex-col gap-container-lg">
+<!-- Customer Message -->
+<div class="flex gap-container-md max-w-[85%]">
+<img alt="Customer Avatar" class="w-10 h-10 rounded-full object-cover shrink-0" data-alt="A professional headshot of a corporate client, smiling slightly, well-lit, conveying a sense of frustration but maintaining a professional demeanor, isolated on a light gray background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBnsknjq2dLb-QMicCopbN7cgHjCqkW7agTKZd2XZLVG_TE5njKMKFSDPwZiBES3ITd2DmO7WsD_hEVdXK7iIeMXe1DsVP8yIN7rqtgP1Jm2cD7dl0E6E3nppOc9kkl0E7UdviOnfPGUoqyV_bdZ_Pj2t61zZ6V8vcVRUqjRgQF_lWCwLB86sYxaqPFkf7iH8YY80d9FWy9ekUAT5Asn72hPyZMQeefttkkR0ITn1c4QQoJ7YDRB57LBQ"/>
+<div class="flex flex-col gap-unit">
+<div class="flex items-baseline gap-container-sm">
+<span class="font-label-lg text-label-lg text-on-surface">Michael Vance (TechCorp)</span>
+<span class="font-body-sm text-body-sm text-outline-variant">Today at 09:14 AM</span>
+</div>
+<div class="bg-surface-container-lowest border border-border-subtle p-container-md rounded-lg rounded-tl-none shadow-[0_4px_4px_-4px_rgba(0,0,10,0.02)] font-body-md text-body-md text-on-surface">
+                                Hi Support Team, <br/><br/>
+                                Since the v2.4 update rolled out last night, none of our admins can access the main enterprise dashboard. We get a 403 Forbidden error after logging in via SSO. <br/><br/>
+                                This is halting our morning reporting. Please advise ASAP.
+                            </div>
+</div>
+</div>
+<!-- SLA Alert -->
+<div class="mx-auto bg-surface-dim border border-status-pending/30 text-status-pending px-container-md py-container-sm rounded-full flex items-center gap-container-sm font-label-md text-label-md shadow-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="timer">timer</span>
+                        SLA First Response breach in 45m 12s
+                    </div>
+<!-- Internal Note -->
+<div class="flex gap-container-md max-w-[85%] ml-auto justify-end">
+<div class="flex flex-col gap-unit items-end">
+<div class="flex items-baseline gap-container-sm flex-row-reverse">
+<span class="font-label-lg text-label-lg text-on-surface">Sarah Jenkins (Agent)</span>
+<span class="font-body-sm text-body-sm text-outline-variant">Internal Note • Today at 09:22 AM</span>
+</div>
+<div class="bg-[#FFFBEB] border border-[#FDE68A] p-container-md rounded-lg rounded-tr-none shadow-sm font-body-md text-body-md text-on-surface">
+                                Checked logs. It looks like the SSO token validation is failing due to the new strict origin policy. Escalating to engineering tier 2 to verify if TechCorp's IdP configuration needs updating on our end.
+                            </div>
+</div>
+<img alt="Agent Avatar" class="w-10 h-10 rounded-full object-cover shrink-0 border border-border-subtle" data-alt="A professional headshot of a corporate customer support agent, brightly lit, looking confident, set against a neutral, soft white office background, emphasizing a clean and authoritative corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-cExYRElCAF1R7UX7OwqTbEJ345ZE6ywqj5FKkBVHTuLkO-iJJPx-dh6uQb1sRNKBw47YMOrcB_ORL36Clt2-s4P2ShfQNnZySORUC4zxmS-AckJKYzSkUPYTx6fQ4Y334LDEbK2Et2n4JfqmX_P_CFiaDRLVyRLUkQCtB6kL2Ldce6Qvxy-eBe8A3S17t8BD81LKWdJ8GL8fPXpcjVMDXK1XFddzOFhgXvnwT00v4JFXUG63bYMHtg"/>
+</div>
+</div>
+<!-- Editor -->
+<div class="bg-surface-container-lowest border-t border-border-subtle p-margin-desktop sticky bottom-0 z-10 shadow-[0_-4px_12px_rgba(0,0,0,0.03)]">
+<div class="border border-border-subtle rounded-lg focus-within:border-primary focus-within:shadow-[0_0_0_2px_rgba(0,40,142,0.1)] transition-all bg-surface-bright flex flex-col">
+<div class="bg-surface-container-lowest border-b border-border-subtle px-container-md py-container-sm flex items-center gap-container-md rounded-t-lg">
+<button class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="format_bold">format_bold</span></button>
+<button class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="format_italic">format_italic</span></button>
+<button class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="link">link</span></button>
+<div class="w-[1px] h-4 bg-border-subtle"></div>
+<button class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="attach_file">attach_file</span></button>
+<button class="text-outline hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[18px]" data-icon="image">image</span></button>
+</div>
+<textarea class="w-full h-24 p-container-md bg-transparent border-none resize-none focus:ring-0 font-body-md text-body-md text-on-surface outline-none placeholder:text-outline-variant" placeholder="Type your reply to Michael Vance..."></textarea>
+<div class="px-container-md py-container-sm flex justify-between items-center rounded-b-lg">
+<div class="flex items-center gap-container-sm bg-surface-container-lowest border border-border-subtle rounded px-2 py-1">
+<span class="font-label-md text-label-md text-outline-variant">Send via:</span>
+<select class="font-label-md text-label-md text-on-surface border-none bg-transparent p-0 focus:ring-0 outline-none cursor-pointer">
+<option>Email</option>
+<option>WhatsApp</option>
+<option>SMS</option>
+</select>
+</div>
+<div class="flex gap-container-sm">
+<button class="px-container-md py-container-sm rounded border border-border-subtle font-label-lg text-label-lg text-on-surface hover:bg-surface-container-low transition-colors bg-surface-container-lowest shadow-sm">Save Draft</button>
+<button class="px-container-md py-container-sm rounded bg-primary text-on-primary font-label-lg text-label-lg hover:bg-primary-container transition-colors shadow-sm flex items-center gap-unit">
+                                    Send Reply
+                                    <span class="material-symbols-outlined text-[16px]" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Sidebar: Pulse AI -->
+<aside class="w-[320px] bg-surface-bright flex flex-col shrink-0 border-l border-border-subtle overflow-y-auto">
+<div class="p-container-lg border-b border-border-subtle bg-surface-container-lowest flex items-center gap-container-sm sticky top-0 z-10 shadow-sm">
+<div class="p-1.5 bg-secondary-container/20 rounded text-secondary-container">
+<span class="material-symbols-outlined text-[20px]" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Pulse AI Insights</h2>
+</div>
+<div class="p-container-lg flex flex-col gap-container-lg">
+<!-- Sentiment & Summary -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-container-md shadow-[0_4px_4px_-4px_rgba(0,0,10,0.02)]">
+<div class="flex justify-between items-center mb-container-sm">
+<span class="font-label-md text-label-md text-outline-variant uppercase tracking-wider">Sentiment</span>
+<span class="bg-error-container text-on-error-container px-2 py-0.5 rounded font-label-md text-label-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="sentiment_dissatisfied">sentiment_dissatisfied</span>
+                                Frustrated
+                            </span>
+</div>
+<div class="w-full h-[1px] bg-border-subtle my-container-sm"></div>
+<h3 class="font-label-lg text-label-lg text-on-surface mb-unit">Auto-Summary</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+                            Customer reports 403 Forbidden error on enterprise dashboard following v2.4 update. Issue affects multiple admins via SSO login. High priority due to reporting blockade.
+                        </p>
+</div>
+<!-- Suggested Replies -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-container-md shadow-[0_4px_4px_-4px_rgba(0,0,10,0.02)]">
+<h3 class="font-label-lg text-label-lg text-on-surface mb-container-md flex items-center gap-unit">
+<span class="material-symbols-outlined text-[16px] text-primary" data-icon="smart_toy">smart_toy</span>
+                             Suggested Actions
+                         </h3>
+<div class="flex flex-col gap-container-sm">
+<button class="text-left bg-surface-container-low hover:bg-surface-container-high border border-border-subtle rounded-lg p-container-sm transition-colors group">
+<div class="font-label-md text-label-md text-primary mb-1 group-hover:underline">Acknowledge &amp; Investigate</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">"Hi Michael, checking the SSO logs now..."</div>
+</button>
+<button class="text-left bg-surface-container-low hover:bg-surface-container-high border border-border-subtle rounded-lg p-container-sm transition-colors group">
+<div class="font-label-md text-label-md text-primary mb-1 group-hover:underline">Request IdP Details</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">"Could you confirm if your IdP cert was..."</div>
+</button>
+</div>
+</div>
+<!-- Knowledge Base -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-container-md shadow-[0_4px_4px_-4px_rgba(0,0,10,0.02)]">
+<h3 class="font-label-lg text-label-lg text-on-surface mb-container-md flex items-center gap-unit">
+<span class="material-symbols-outlined text-[16px] text-tertiary" data-icon="library_books">library_books</span>
+                             Related Articles
+                         </h3>
+<ul class="flex flex-col gap-container-sm">
+<li>
+<a class="flex items-start gap-container-sm text-on-surface hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[18px] text-outline-variant mt-0.5 group-hover:text-primary" data-icon="article">article</span>
+<div>
+<div class="font-label-md text-label-md leading-tight mb-0.5">Troubleshooting SSO 403 Errors in v2.4</div>
+<div class="font-body-sm text-body-sm text-outline-variant text-[11px]">Internal DB • 98% Match</div>
+</div>
+</a>
+</li>
+<li class="w-full h-[1px] bg-border-subtle"></li>
+<li>
+<a class="flex items-start gap-container-sm text-on-surface hover:text-primary transition-colors group" href="#">
+<span class="material-symbols-outlined text-[18px] text-outline-variant mt-0.5 group-hover:text-primary" data-icon="article">article</span>
+<div>
+<div class="font-label-md text-label-md leading-tight mb-0.5">Updating IdP Configuration Guidelines</div>
+<div class="font-body-sm text-body-sm text-outline-variant text-[11px]">Public KB • 75% Match</div>
+</div>
+</a>
+</li>
+</ul>
+</div>
+</div>
+</aside>
+</main>
+</div>
+</body></html>

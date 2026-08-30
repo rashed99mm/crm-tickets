@@ -1,0 +1,354 @@
+<main class="relative flex-grow flex flex-col overflow-hidden bg-gradient-to-b from-surface via-surface-low to-surface">
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_8%,rgba(59,130,246,0.12),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(99,102,241,0.10),transparent_26%),radial-gradient(circle_at_50%_70%,rgba(14,165,233,0.06),transparent_30%)]"></div>
+    <!-- Hero Section -->
+    <section class="relative flex flex-col items-center overflow-hidden border-b border-border-subtle bg-surface-lowest/90 px-4 pb-24 pt-16 text-center sm:px-8 sm:pt-20">
+      <div class="pointer-events-none absolute -start-24 top-24 size-72 rounded-full border border-primary/10 bg-primary/5 blur-sm"></div>
+      <div class="pointer-events-none absolute -end-20 top-12 size-80 rounded-full border-[18px] border-secondary-container/10"></div>
+      <div class="pointer-events-none absolute start-1/2 bottom-8 size-2 -translate-x-1/2 rounded-full bg-primary/40 shadow-[0_0_0_14px_rgba(59,130,246,0.06),0_0_0_28px_rgba(59,130,246,0.04)]"></div>
+
+      <span
+        class="mb-6 inline-flex items-center gap-2 rounded-full bg-secondary-container/90 px-4 py-1.5 font-label-lg text-label-lg font-bold text-on-secondary-container shadow-xs transition-transform hover:scale-105"
+      >
+        <cs-icon name="auto_awesome" [size]="16" />
+        {{ 'landing.hero.badge' | t }}
+      </span>
+
+      <h1 class="relative z-10 font-display-lg text-display-lg text-on-background max-w-4xl mb-6 tracking-tight">
+        {{ 'landing.hero.title' | t }}
+        <span class="text-primary block sm:inline">{{ 'landing.hero.titleHighlight' | t }}</span>
+      </h1>
+
+      <p class="relative z-10 font-body-lg text-body-lg text-on-surface-variant max-w-3xl mb-10 leading-relaxed">
+        {{ 'landing.hero.subtitle' | t }}
+      </p>
+
+      <div class="relative z-10 flex flex-col sm:flex-row gap-4 w-full sm:w-auto mb-14">
+        <a
+          routerLink="/signup"
+          class="flex items-center justify-center gap-2.5 rounded-lg bg-secondary px-8 py-4 font-label-lg text-label-lg font-bold text-on-secondary shadow-md transition-all hover:bg-secondary/90 active:scale-95"
+        >
+          {{ 'landing.hero.ctaTrial' | t }}
+          <cs-icon name="arrow_forward" [size]="18" />
+        </a>
+        <a
+          routerLink="/live-chat"
+          class="flex items-center justify-center gap-2.5 rounded-lg border border-border-subtle bg-surface px-8 py-4 font-label-lg text-label-lg font-bold text-primary shadow-xs transition-all hover:bg-surface-container-low active:scale-95"
+        >
+          {{ 'landing.hero.ctaDemo' | t }}
+          <cs-icon name="chat" [size]="18" />
+        </a>
+      </div>
+
+      <!-- Quick Trust Indicators -->
+      <div class="relative z-10 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-label-sm text-on-surface-variant font-medium">
+        <span class="flex items-center gap-1.5">
+          <cs-icon name="check_circle" [size]="16" class="text-success" />
+          {{ 'landing.stats.uptime' | t }}
+        </span>
+        <span class="flex items-center gap-1.5">
+          <cs-icon name="speed" [size]="16" class="text-primary" />
+          {{ 'landing.stats.responseTime' | t }}
+        </span>
+        <span class="flex items-center gap-1.5">
+          <cs-icon name="smart_toy" [size]="16" class="text-secondary-container" />
+          {{ 'landing.stats.deflection' | t }}
+        </span>
+        <span class="flex items-center gap-1.5">
+          <cs-icon name="star" [size]="16" class="text-warning" />
+          {{ 'landing.stats.satisfaction' | t }}
+        </span>
+      </div>
+    </section>
+
+    <!-- Social Proof Section -->
+    <section class="relative z-10 py-12 bg-surface/80 border-y border-border-subtle backdrop-blur-sm">
+      <div class="max-w-6xl mx-auto px-4 sm:px-8">
+        <p class="text-center font-label-md text-on-surface-variant mb-8 uppercase tracking-widest text-xs">
+          {{ 'landing.socialProof.trusted' | t }}
+        </p>
+        <div
+          class="flex flex-wrap justify-center items-center gap-8 sm:gap-14 opacity-70 grayscale hover:grayscale-0 transition-all duration-300"
+        >
+          <div class="h-8 w-32 bg-on-surface-variant/15 rounded flex items-center justify-center font-bold text-on-surface-variant tracking-wider">
+            {{ 'landing.logo.techcorp' | t }}
+          </div>
+          <div class="h-8 w-32 bg-on-surface-variant/15 rounded flex items-center justify-center font-bold text-on-surface-variant tracking-wider">
+            {{ 'landing.logo.globalx' | t }}
+          </div>
+          <div class="h-8 w-32 bg-on-surface-variant/15 rounded flex items-center justify-center font-bold text-on-surface-variant tracking-wider">
+            {{ 'landing.logo.nexus' | t }}
+          </div>
+          <div class="h-8 w-32 bg-on-surface-variant/15 rounded flex items-center justify-center font-bold text-on-surface-variant tracking-wider">
+            {{ 'landing.logo.quantum' | t }}
+          </div>
+          <div class="h-8 w-32 bg-on-surface-variant/15 rounded flex items-center justify-center font-bold text-on-surface-variant tracking-wider">
+            {{ 'landing.logo.velocity' | t }}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Preview Showcase -->
+    <section class="relative z-10 -mt-12 px-4 sm:px-8">
+      <div class="mx-auto grid max-w-6xl gap-4 rounded-lg border border-border-subtle bg-surface p-4 shadow-[0_14px_45px_rgb(15,23,42,0.10)] lg:grid-cols-[15rem_1fr]">
+        <aside class="hidden rounded-lg bg-surface-low p-4 lg:block">
+          <div class="mb-6 flex items-center gap-2 text-primary">
+            <span class="grid size-8 place-items-center rounded-lg bg-primary text-on-primary">
+              <cs-icon name="support_agent" [size]="18" />
+            </span>
+            <span class="font-display text-headline-md">{{ 'portal.name' | t }}</span>
+          </div>
+          <div class="flex flex-col gap-2 text-start text-label-md">
+            <span class="rounded-lg bg-primary-container px-3 py-2 text-on-primary-container">{{ 'portal.nav.dashboard' | t }}</span>
+            <span class="rounded-lg px-3 py-2 text-on-surface-variant">{{ 'portal.nav.submit' | t }}</span>
+            <span class="rounded-lg px-3 py-2 text-on-surface-variant">{{ 'portal.nav.tickets' | t }}</span>
+            <span class="rounded-lg px-3 py-2 text-on-surface-variant">{{ 'portal.nav.feedback' | t }}</span>
+          </div>
+        </aside>
+        <div class="grid gap-4">
+          <div class="grid gap-3 md:grid-cols-3">
+            <div class="rounded-lg border border-border-subtle bg-surface-lowest p-4 text-start">
+              <cs-icon name="pending_actions" class="text-primary" [size]="24" />
+              <p class="mt-3 font-display text-display text-on-surface">{{ 'portal.home.previewOpenCount' | t }}</p>
+              <p class="text-label-md uppercase text-on-surface-variant">{{ 'portal.dashboard.openRequests' | t }}</p>
+            </div>
+            <div class="rounded-lg border border-border-subtle bg-surface-lowest p-4 text-start">
+              <cs-icon name="task_alt" class="text-success" [size]="24" />
+              <p class="mt-3 font-display text-display text-on-surface">{{ 'portal.home.previewFeedbackCount' | t }}</p>
+              <p class="text-label-md uppercase text-on-surface-variant">{{ 'portal.dashboard.readyFeedback' | t }}</p>
+            </div>
+            <div class="rounded-lg border border-border-subtle bg-surface-lowest p-4 text-start">
+              <cs-icon name="travel_explore" class="text-secondary" [size]="24" />
+              <p class="mt-3 font-display text-display text-on-surface">{{ 'portal.dashboard.kbValue' | t }}</p>
+              <p class="text-label-md uppercase text-on-surface-variant">{{ 'portal.dashboard.kbMetric' | t }}</p>
+            </div>
+          </div>
+          <div class="grid gap-4 lg:grid-cols-[1fr_18rem]">
+            <div class="rounded-lg border border-border-subtle bg-surface-lowest">
+              <div class="border-b border-border-subtle px-4 py-3 text-start">
+                <p class="font-display text-headline-md text-on-surface">{{ 'portal.dashboard.recentTitle' | t }}</p>
+              </div>
+              <div class="divide-y divide-border-subtle text-start">
+                <div class="flex items-center justify-between gap-4 px-4 py-3">
+                  <span>
+                    <span class="block font-mono text-data-mono text-on-surface-variant">{{ 'portal.home.previewRequestOne' | t }}</span>
+                    <span class="block text-label-lg text-on-surface">{{ 'portal.home.previewSubjectOne' | t }}</span>
+                  </span>
+                  <span class="rounded-full bg-success-container/30 px-3 py-1 text-label-md text-success">{{ 'portal.home.previewResolved' | t }}</span>
+                </div>
+                <div class="flex items-center justify-between gap-4 px-4 py-3">
+                  <span>
+                    <span class="block font-mono text-data-mono text-on-surface-variant">{{ 'portal.home.previewRequestTwo' | t }}</span>
+                    <span class="block text-label-lg text-on-surface">{{ 'portal.home.previewSubjectTwo' | t }}</span>
+                  </span>
+                  <span class="rounded-full bg-primary-container px-3 py-1 text-label-md text-on-primary-container">{{ 'portal.home.previewOpen' | t }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="rounded-lg bg-primary p-5 text-start text-on-primary">
+              <cs-icon name="psychology_alt" [size]="26" />
+              <p class="mt-4 font-display text-headline-md">{{ 'portal.kb.heroTitle' | t }}</p>
+              <p class="mt-2 text-body-sm opacity-80">{{ 'portal.kb.heroSubtitle' | t }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Omnichannel Capabilities (FEAT-24..27) -->
+    <section class="py-24 max-w-6xl mx-auto px-4 sm:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="font-display text-headline-lg font-bold text-on-surface mb-4">
+          {{ 'landing.sections.channels.title' | t }}
+        </h2>
+        <p class="text-body-lg text-on-surface-variant">
+          {{ 'landing.sections.channels.subtitle' | t }}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- WhatsApp -->
+        <div class="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface-lowest p-6 shadow-xs hover:shadow-md transition-all hover:-translate-y-1">
+          <span class="grid size-12 place-items-center rounded-xl bg-success-container/30 text-success">
+            <cs-icon name="chat" [size]="26" />
+          </span>
+          <h3 class="font-display text-headline-md font-bold text-on-surface">
+            {{ 'landing.channels.whatsapp' | t }}
+          </h3>
+          <p class="text-body-md text-on-surface-variant">
+            {{ 'landing.channels.whatsapp.desc' | t }}
+          </p>
+        </div>
+
+        <!-- Live Chat -->
+        <div class="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface-lowest p-6 shadow-xs hover:shadow-md transition-all hover:-translate-y-1">
+          <span class="grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
+            <cs-icon name="forum" [size]="26" />
+          </span>
+          <h3 class="font-display text-headline-md font-bold text-on-surface">
+            {{ 'landing.channels.chat' | t }}
+          </h3>
+          <p class="text-body-md text-on-surface-variant">
+            {{ 'landing.channels.chat.desc' | t }}
+          </p>
+        </div>
+
+        <!-- SMS -->
+        <div class="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface-lowest p-6 shadow-xs hover:shadow-md transition-all hover:-translate-y-1">
+          <span class="grid size-12 place-items-center rounded-xl bg-secondary-container/10 text-secondary-container">
+            <cs-icon name="sms" [size]="26" />
+          </span>
+          <h3 class="font-display text-headline-md font-bold text-on-surface">
+            {{ 'landing.channels.sms' | t }}
+          </h3>
+          <p class="text-body-md text-on-surface-variant">
+            {{ 'landing.channels.sms.desc' | t }}
+          </p>
+        </div>
+
+        <!-- Web Forms -->
+        <div class="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface-lowest p-6 shadow-xs hover:shadow-md transition-all hover:-translate-y-1">
+          <span class="grid size-12 place-items-center rounded-xl bg-surface-container-high text-on-surface">
+            <cs-icon name="contact_mail" [size]="26" />
+          </span>
+          <h3 class="font-display text-headline-md font-bold text-on-surface">
+            {{ 'landing.channels.webForm' | t }}
+          </h3>
+          <p class="text-body-md text-on-surface-variant">
+            {{ 'landing.channels.webForm.desc' | t }}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pulse AI Intelligence (FEAT-21) -->
+    <section class="py-20 bg-surface-container-low border-y border-border-subtle">
+      <div class="max-w-6xl mx-auto px-4 sm:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+          <span class="inline-block bg-secondary-container text-on-secondary-container font-label-md text-label-md px-3.5 py-1 rounded-full mb-3 font-bold">
+            {{ 'landing.ai.badge' | t }}
+          </span>
+          <h2 class="font-display text-headline-lg font-bold text-on-surface mb-4">
+            {{ 'landing.ai.title' | t }}
+          </h2>
+          <p class="text-body-lg text-on-surface-variant">
+            {{ 'landing.ai.subtitle' | t }}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface-lowest p-6 shadow-sm">
+            <span class="grid size-12 place-items-center rounded-xl bg-primary/10 text-primary">
+              <cs-icon name="smart_toy" [size]="28" />
+            </span>
+            <h3 class="font-display text-headline-md font-bold text-on-surface">
+              {{ 'landing.ai.f1.title' | t }}
+            </h3>
+            <p class="text-body-md text-on-surface-variant">
+              {{ 'landing.ai.f1.desc' | t }}
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface-lowest p-6 shadow-sm">
+            <span class="grid size-12 place-items-center rounded-xl bg-secondary-container/10 text-secondary-container">
+              <cs-icon name="edit_note" [size]="28" />
+            </span>
+            <h3 class="font-display text-headline-md font-bold text-on-surface">
+              {{ 'landing.ai.f2.title' | t }}
+            </h3>
+            <p class="text-body-md text-on-surface-variant">
+              {{ 'landing.ai.f2.desc' | t }}
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-4 rounded-xl border border-border-subtle bg-surface-lowest p-6 shadow-sm">
+            <span class="grid size-12 place-items-center rounded-xl bg-success/10 text-success">
+              <cs-icon name="route" [size]="28" />
+            </span>
+            <h3 class="font-display text-headline-md font-bold text-on-surface">
+              {{ 'landing.ai.f3.title' | t }}
+            </h3>
+            <p class="text-body-md text-on-surface-variant">
+              {{ 'landing.ai.f3.desc' | t }}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-24 max-w-6xl mx-auto px-4 sm:px-8">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="font-display text-headline-lg font-bold text-on-surface mb-4">
+          {{ 'landing.how.title' | t }}
+        </h2>
+        <p class="text-body-lg text-on-surface-variant">
+          {{ 'landing.how.subtitle' | t }}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="relative flex flex-col gap-3 rounded-xl border border-border-subtle bg-surface-lowest p-6">
+          <span class="font-display text-headline-lg font-bold text-primary">
+            {{ 'landing.how.stepNumber1' | t }}
+          </span>
+          <h3 class="font-display text-headline-md font-bold text-on-surface">
+            {{ 'landing.how.step1.title' | t }}
+          </h3>
+          <p class="text-body-md text-on-surface-variant">
+            {{ 'landing.how.step1.desc' | t }}
+          </p>
+        </div>
+
+        <div class="relative flex flex-col gap-3 rounded-xl border border-border-subtle bg-surface-lowest p-6">
+          <span class="font-display text-headline-lg font-bold text-secondary-container">
+            {{ 'landing.how.stepNumber2' | t }}
+          </span>
+          <h3 class="font-display text-headline-md font-bold text-on-surface">
+            {{ 'landing.how.step2.title' | t }}
+          </h3>
+          <p class="text-body-md text-on-surface-variant">
+            {{ 'landing.how.step2.desc' | t }}
+          </p>
+        </div>
+
+        <div class="relative flex flex-col gap-3 rounded-xl border border-border-subtle bg-surface-lowest p-6">
+          <span class="font-display text-headline-lg font-bold text-success">
+            {{ 'landing.how.stepNumber3' | t }}
+          </span>
+          <h3 class="font-display text-headline-md font-bold text-on-surface">
+            {{ 'landing.how.step3.title' | t }}
+          </h3>
+          <p class="text-body-md text-on-surface-variant">
+            {{ 'landing.how.step3.desc' | t }}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Conversion CTA -->
+    <section class="pb-24 px-4 sm:px-8">
+      <div class="max-w-5xl mx-auto rounded-3xl bg-gradient-to-r from-primary via-primary-container to-secondary p-8 sm:p-14 text-center text-on-primary shadow-xl">
+        <h2 class="font-display text-headline-lg sm:text-display-lg font-bold mb-4">
+          {{ 'landing.cta.title' | t }}
+        </h2>
+        <p class="text-body-lg text-on-primary/80 max-w-2xl mx-auto mb-8">
+          {{ 'landing.cta.subtitle' | t }}
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <a
+            routerLink="/signup"
+            class="bg-surface-lowest text-primary font-label-lg text-label-lg px-8 py-4 rounded-xl font-bold shadow-md hover:bg-surface-bright transition-all active:scale-95 w-full sm:w-auto"
+          >
+            {{ 'landing.cta.start' | t }}
+          </a>
+          <a
+            routerLink="/live-chat"
+            class="bg-primary-container/40 border border-on-primary/30 text-on-primary font-label-lg text-label-lg px-8 py-4 rounded-xl font-bold hover:bg-primary-container/60 transition-all active:scale-95 w-full sm:w-auto"
+          >
+            {{ 'landing.cta.chat' | t }}
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>

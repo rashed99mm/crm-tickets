@@ -1,0 +1,102 @@
+<section class="mx-auto flex w-full max-w-7xl flex-col gap-6">
+  <header class="flex flex-col gap-2">
+    <p class="text-label-md uppercase tracking-[0.12em] text-primary">{{ 'reports.overview.title' | t }}</p>
+    <h1 class="text-headline-lg text-on-surface">{{ 'reports.ticketVolume.title' | t }}</h1>
+  </header>
+
+  <cs-card>
+    <div class="p-4 md:p-5">
+      <cs-report-date-range-filter [from]="from()" [to]="to()" (apply)="applyRange($event)" />
+
+      @switch (state().status) {
+        @case ('loading') {
+          <div class="pt-5"><cs-loading-state /></div>
+        }
+        @case ('error') {
+          @if (loadError(); as failure) {
+            <div class="pt-5"><cs-error-state [error]="failure" (retry)="load()" /></div>
+          }
+        }
+        @default {
+          @if (report(); as r) {
+            <div class="mt-6 flex flex-col gap-6">
+              <div class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-outline-variant/60 bg-surface-container-lowest px-4 py-3">
+                <div class="flex items-center gap-2 text-label-md text-on-surface-variant">
+                  <span>{{ 'reports.ticketVolume.groupBy' | t }}</span>
+                  <span class="rounded-full bg-primary/10 px-2 py-1 text-label-sm font-semibold text-primary">
+                    {{ groupByLabel(groupBy()) | t }}
+                  </span>
+                </div>
+
+                <label class="flex items-center gap-2 text-body-sm text-on-surface-variant" for="group-by">
+                  <span class="sr-only">{{ 'reports.ticketVolume.groupBy' | t }}</span>
+                  <select
+                    id="group-by"
+                    [value]="groupBy()"
+                    (change)="setGroupBy($any($event.target).value)"
+                    class="h-10 rounded-lg border border-outline-variant bg-surface px-3 text-body-md text-on-surface shadow-sm outline-none ring-0 transition focus:border-primary"
+                  >
+                    @for (option of groupByOptions; track option) {
+                      <option [value]="option">{{ groupByLabel(option) | t }}</option>
+                    }
+                  </select>
+                </label>
+              </div>
+
+              @if (r.byPeriod.length === 0 && r.byCategory.length === 0 && r.byPriority.length === 0) {
+                <div class="pt-2"><cs-empty-state [message]="'reports.empty' | t" /></div>
+              } @else {
+                <div class="grid gap-5 xl:grid-cols-3">
+                  <section class="rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-4 shadow-sm">
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                      <h2 class="text-label-lg font-semibold text-on-surface">{{ 'reports.ticketVolume.byPeriod' | t }}</h2>
+                      <span class="rounded-full bg-primary/10 px-2 py-1 text-label-sm font-medium text-primary">{{ r.byPeriod.length }}</span>
+                    </div>
+                    <ul class="space-y-2">
+                      @for (bucket of r.byPeriod; track bucket.key) {
+                        <li class="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2">
+                          <span class="truncate text-body-sm text-on-surface">{{ bucket.key }}</span>
+                          <span class="inline-flex min-w-10 justify-center rounded-full bg-surface-container-high px-2 py-1 font-mono text-label-sm font-semibold text-on-surface">{{ bucket.count }}</span>
+                        </li>
+                      }
+                    </ul>
+                  </section>
+
+                  <section class="rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-4 shadow-sm">
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                      <h2 class="text-label-lg font-semibold text-on-surface">{{ 'reports.ticketVolume.byCategory' | t }}</h2>
+                      <span class="rounded-full bg-secondary/10 px-2 py-1 text-label-sm font-medium text-secondary">{{ r.byCategory.length }}</span>
+                    </div>
+                    <ul class="space-y-2">
+                      @for (bucket of r.byCategory; track bucket.key) {
+                        <li class="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2">
+                          <span class="truncate text-body-sm text-on-surface">{{ formatBucketLabel(bucket.key) }}</span>
+                          <span class="inline-flex min-w-10 justify-center rounded-full bg-surface-container-high px-2 py-1 font-mono text-label-sm font-semibold text-on-surface">{{ bucket.count }}</span>
+                        </li>
+                      }
+                    </ul>
+                  </section>
+
+                  <section class="rounded-2xl border border-outline-variant/60 bg-surface-container-lowest p-4 shadow-sm">
+                    <div class="mb-3 flex items-center justify-between gap-3">
+                      <h2 class="text-label-lg font-semibold text-on-surface">{{ 'reports.ticketVolume.byPriority' | t }}</h2>
+                      <span class="rounded-full bg-tertiary/10 px-2 py-1 text-label-sm font-medium text-tertiary">{{ r.byPriority.length }}</span>
+                    </div>
+                    <ul class="space-y-2">
+                      @for (bucket of r.byPriority; track bucket.key) {
+                        <li class="flex items-center justify-between gap-3 rounded-xl bg-surface px-3 py-2">
+                          <span class="truncate text-body-sm text-on-surface">{{ bucket.key }}</span>
+                          <span class="inline-flex min-w-10 justify-center rounded-full bg-surface-container-high px-2 py-1 font-mono text-label-sm font-semibold text-on-surface">{{ bucket.count }}</span>
+                        </li>
+                      }
+                    </ul>
+                  </section>
+                </div>
+              }
+            </div>
+          }
+        }
+      }
+    </div>
+  </cs-card>
+</section>

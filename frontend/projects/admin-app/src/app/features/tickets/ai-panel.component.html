@@ -1,0 +1,258 @@
+@if (available()) {
+  <aside class="flex max-h-[calc(100vh-2rem)] flex-col overflow-y-auto rounded-2xl border border-border-subtle bg-surface-bright shadow-card xl:sticky xl:top-4" data-testid="ai-rail">
+    <!-- AC-F11 — chrome-free header band, one per page, no <cs-card> chrome. -->
+    <div class="flex items-center gap-3 border-b border-border-subtle bg-surface-container-lowest px-5 py-4">
+      <span class="grid size-9 place-items-center rounded-lg bg-secondary-container text-on-secondary-container">
+        <cs-icon name="auto_awesome" [size]="20" />
+      </span>
+      <h2 class="text-headline-md font-semibold text-on-surface">
+        {{ 'ai.pulseInsights' | t }}
+      </h2>
+    </div>
+
+    <!-- AC-F12 — Context Summary first. -->
+      <section class="border-b border-border-subtle" data-testid="ai-summary-card">
+      <div class="border-b border-border-subtle bg-surface-lowest px-5 py-3">
+        <h3 class="text-label-lg font-semibold text-on-surface">{{ 'ai.autoSummary' | t }}</h3>
+      </div>
+      <div class="p-5">
+        <p class="mb-2 text-label-sm font-semibold uppercase tracking-widest text-on-surface-variant">
+          {{ 'ai.sentiment' | t }}
+        </p>
+        <cs-button
+          variant="secondary"
+          (pressed)="summarise()"
+          [disabled]="summary().status === 'loading'"
+        >
+          <cs-icon name="summarize" [size]="16" />
+          {{ 'ai.summary' | t }}
+        </cs-button>
+
+        @switch (summary().status) {
+          @case ('error') {
+            @if (summary(); as s) {
+              @if (s.status === 'error') {
+                <cs-error-state [error]="s.error" (retry)="summarise()" />
+              }
+            }
+          }
+          @case ('loaded') {
+            @if (summaryText(); as text) {
+              <div class="mt-3 flex flex-col gap-2" data-testid="ai-summary-result">
+                <!-- AC-F9 — sentiment chip; null sentiment renders no chip. -->
+                @if (summarySentiment(); as sentiment) {
+                  <span
+                    class="inline-flex w-fit items-center gap-1 rounded px-2 py-0.5 text-label-md"
+                    [class.bg-error-container]="sentiment === 'Frustrated'"
+                    [class.text-on-error-container]="sentiment === 'Frustrated'"
+                    [class.bg-surface-container-highest]="sentiment === 'Neutral'"
+                    [class.text-on-surface]="sentiment === 'Neutral'"
+                    [class.bg-tertiary-container]="sentiment === 'Satisfied'"
+                    [class.text-on-tertiary-container]="sentiment === 'Satisfied'"
+                    data-testid="ai-summary-sentiment"
+                    [attr.data-sentiment]="sentiment"
+                  >
+                    <cs-icon
+                      [name]="
+                        sentiment === 'Frustrated'
+                          ? 'sentiment_dissatisfied'
+                          : sentiment === 'Neutral'
+                            ? 'sentiment_neutral'
+                            : 'sentiment_satisfied'
+                      "
+                      [size]="14"
+                    />
+                    @switch (sentiment) {
+                      @case ('Frustrated') {
+                        {{ 'ai.sentiment.frustrated' | t }}
+                      }
+                      @case ('Neutral') {
+                        {{ 'ai.sentiment.neutral' | t }}
+                      }
+                      @case ('Satisfied') {
+                        {{ 'ai.sentiment.satisfied' | t }}
+                      }
+                    }
+                  </span>
+                }
+                <p class="whitespace-pre-line text-body-md text-on-surface">{{ text }}</p>
+              </div>
+            }
+            <!-- AC-F6 — Accept/Reject only while Pending. -->
+            <div class="mt-3 flex items-center gap-2">
+              <cs-button (pressed)="resolve('summary', 'accept')">
+                {{ 'ai.accept' | t }}
+              </cs-button>
+              <cs-button variant="ghost" (pressed)="resolve('summary', 'reject')">
+                {{ 'ai.reject' | t }}
+              </cs-button>
+            </div>
+          }
+        }
+      </div>
+    </section>
+
+    <!-- AC-F12 — Suggested Replies second. -->
+    <section class="border-b border-border-subtle" data-testid="ai-replies-card">
+      <div class="border-b border-border-subtle bg-surface-lowest px-5 py-3">
+        <h3 class="text-label-lg font-semibold text-on-surface">{{ 'ai.suggestedReplies' | t }}</h3>
+      </div>
+      <div class="p-5">
+        <cs-button
+          variant="secondary"
+          (pressed)="suggestReplies()"
+          [disabled]="replies().status === 'loading'"
+        >
+          <cs-icon name="reply" [size]="16" />
+          {{ 'ai.draftReply' | t }}
+        </cs-button>
+
+        @switch (replies().status) {
+          @case ('error') {
+            @if (replies(); as s) {
+              @if (s.status === 'error') {
+                <cs-error-state [error]="s.error" (retry)="suggestReplies()" />
+              }
+            }
+          }
+          @case ('loaded') {
+            @if (drafts().length > 0) {
+              <ul class="mt-3 flex flex-col gap-2" data-testid="ai-replies-list">
+                @for (draft of drafts(); track $index) {
+                  <li>
+                    <button
+                      type="button"
+                      class="group flex w-full flex-col items-start gap-1 rounded-lg border border-outline-variant p-2 text-start text-body-sm text-on-surface hover:bg-surface-container-high"
+                      (click)="onInsert(draft)"
+                      [attr.data-testid]="'ai-insert-' + $index"
+                    >
+                      <span class="line-clamp-2">{{ draft }}</span>
+                      <span
+                        class="text-label-md text-primary opacity-0 group-hover:opacity-100"
+                        data-testid="ai-insert-label"
+                      >
+                        {{ 'ai.insert' | t }}
+                      </span>
+                    </button>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="mt-3 text-body-sm text-on-surface-variant" data-testid="ai-no-drafts">
+                {{ 'ai.noDrafts' | t }}
+              </p>
+            }
+            <div class="mt-3 flex items-center gap-2">
+              <cs-button (pressed)="resolve('replies', 'accept')">
+                {{ 'ai.accept' | t }}
+              </cs-button>
+              <cs-button variant="ghost" (pressed)="resolve('replies', 'reject')">
+                {{ 'ai.reject' | t }}
+              </cs-button>
+            </div>
+          }
+        }
+      </div>
+    </section>
+
+    <!-- AC-F12 — Knowledge Base third. -->
+    <section class="border-b border-border-subtle" data-testid="ai-solutions-card">
+      <div class="border-b border-border-subtle bg-surface-lowest px-5 py-3">
+        <h3 class="text-label-lg font-semibold text-on-surface">{{ 'ai.relatedArticles' | t }}</h3>
+      </div>
+      <div class="p-5">
+        <cs-button
+          variant="secondary"
+          (pressed)="suggestSolutions()"
+          [disabled]="solutions().status === 'loading'"
+        >
+          <cs-icon name="menu_book" [size]="16" />
+          {{ 'ai.relatedArticles' | t }}
+        </cs-button>
+
+        @switch (solutions().status) {
+          @case ('error') {
+            @if (solutions(); as s) {
+              @if (s.status === 'error') {
+                <cs-error-state [error]="s.error" (retry)="suggestSolutions()" />
+              }
+            }
+          }
+          @case ('loaded') {
+            @if (articleLinks().length > 0) {
+              <ul class="mt-3 flex flex-col gap-2" data-testid="ai-solutions-list">
+                @for (article of articleLinks(); track article.id) {
+                  <li>
+                    <a
+                      [routerLink]="['/kb-admin']"
+                      class="flex items-start gap-2 text-body-sm font-semibold text-primary hover:underline"
+                    >
+                      <cs-icon name="article" [size]="16" />
+                      {{ article.title }}
+                    </a>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="mt-3 text-body-sm text-on-surface-variant">{{ 'ai.noDrafts' | t }}</p>
+            }
+            <div class="mt-3 flex items-center gap-2">
+              <cs-button (pressed)="resolve('solutions', 'accept')">
+                {{ 'ai.accept' | t }}
+              </cs-button>
+              <cs-button variant="ghost" (pressed)="resolve('solutions', 'reject')">
+                {{ 'ai.reject' | t }}
+              </cs-button>
+            </div>
+          }
+        }
+      </div>
+    </section>
+
+    <!-- AC-F12 — Categories fourth. -->
+    <section data-testid="ai-categories-card">
+      <div class="border-b border-border-subtle bg-surface-lowest px-5 py-3">
+        <h3 class="text-label-lg font-semibold text-on-surface">{{ 'ai.categories' | t }}</h3>
+      </div>
+      <div class="p-5">
+        <cs-button
+          variant="secondary"
+          (pressed)="suggestCategories()"
+          [disabled]="categories().status === 'loading'"
+        >
+          <cs-icon name="category" [size]="16" />
+          {{ 'ai.categories' | t }}
+        </cs-button>
+
+        @switch (categories().status) {
+          @case ('error') {
+            @if (categories(); as s) {
+              @if (s.status === 'error') {
+                <cs-error-state [error]="s.error" (retry)="suggestCategories()" />
+              }
+            }
+          }
+          @case ('loaded') {
+            @if (categoryNames().length > 0) {
+              <ul class="mt-3 list-disc ps-5 text-body-md text-on-surface" data-testid="ai-categories-list">
+                @for (name of categoryNames(); track name) {
+                  <li>{{ name }}</li>
+                }
+              </ul>
+            } @else {
+              <p class="mt-3 text-body-sm text-on-surface-variant">{{ 'ai.noDrafts' | t }}</p>
+            }
+            <div class="mt-3 flex items-center gap-2">
+              <cs-button (pressed)="resolve('categories', 'accept')">
+                {{ 'ai.accept' | t }}
+              </cs-button>
+              <cs-button variant="ghost" (pressed)="resolve('categories', 'reject')">
+                {{ 'ai.reject' | t }}
+              </cs-button>
+            </div>
+          }
+        }
+      </div>
+    </section>
+  </aside>
+}

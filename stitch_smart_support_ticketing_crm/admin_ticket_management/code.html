@@ -1,0 +1,354 @@
+<!DOCTYPE html><html class="h-full" lang="en" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CRM Pulse - Ticket Management</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;600&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#0b1c30",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "secondary-container": "#d5e3fd",
+                        "primary-container": "#131b2e",
+                        "surface-tint": "#565e74",
+                        "surface-container": "#e5eeff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed-variant": "#004c6e",
+                        "on-tertiary-fixed": "#001e2f",
+                        "tertiary-fixed-dim": "#89ceff",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#45464d",
+                        "surface": "#f8f9ff",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-low": "#eff4ff",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-container": "#008cc7",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-container": "#001e2f",
+                        "primary-fixed": "#dae2fd",
+                        "error": "#ba1a1a",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#c9e6ff",
+                        "secondary": "#515f74",
+                        "primary-fixed-dim": "#bec6e0",
+                        "primary": "#000000",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c6c6cd",
+                        "on-secondary-container": "#57657b",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d5e3fd",
+                        "background": "#f8f9ff",
+                        "outline": "#76777d",
+                        "surface-variant": "#d3e4fe",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#7c839b",
+                        "tertiary": "#000000",
+                        "inverse-on-surface": "#eaf1ff"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "margin": "24px",
+                        "gutter": "20px",
+                        "sm": "8px",
+                        "2xl": "48px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "base": "4px",
+                        "xl": "32px"
+                    },
+                    fontFamily: {
+                        "display": ["Hanken Grotesk"],
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "display": ["36px", { lineHeight: "44px", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "data-mono": ["13px", { lineHeight: "20px", fontWeight: "400" }],
+                        "headline-lg": ["28px", { lineHeight: "34px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "label-md": ["12px", { lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600" }],
+                        "headline-md": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "body-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "body-sm": ["13px", { lineHeight: "18px", fontWeight: "400" }],
+                        "body-lg": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        /* Custom scrollbar for clean aesthetic */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c6c6cd; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #76777d; }
+    </style>
+</head>
+<body class="h-full flex overflow-hidden bg-background text-on-background antialiased">
+<!-- SideNavBar (Shared Component) -->
+<nav class="bg-surface-container-low dark:bg-surface-container-lowest text-primary dark:text-primary-fixed font-label-md text-label-md docked h-screen w-64 left-0 border-r border-outline-variant dark:border-outline flex flex-col h-screen fixed left-0 top-0 py-lg px-md z-50 flat no shadows">
+<!-- Header -->
+<div class="mb-xl flex items-center gap-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-surface-container-highest">
+<img alt="Organization Logo" class="w-full h-full object-cover" data-alt="A minimalist and geometric organization logo consisting of clean lines and simple shapes in deep blues and subtle grays, suitable for a modern corporate CRM application. White background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCbotEAFYow-Qclgoyuoy3ApnaC1Yl52YmN59Ydc13hgURkGNUqY7rLv5iPpKNqJUGOq7NKIWm8pmgQgi1ZkV9SUKkQLFvbA1gVTT-4-W2cXBol1KT5TRZgb0LxTe-6qSf-rD5040UrkQesXlqITkfI2AK3XOTUie97YkGTgsIn4E7L3aLZ-Wzc87Bp3_mpgpstj6mCIsos5zEpEmuikC0dITKOFOCdS1ohm9EzFFSJQI47W3Jjc2kCaw">
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-semibold text-on-surface">Support Desk</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Enterprise Tier</p>
+</div>
+</div>
+<!-- Main Navigation -->
+<ul class="space-y-sm flex-grow">
+<li class="">
+<a class="flex items-center gap-md p-md rounded-lg text-secondary hover:bg-surface-container-high hover:bg-surface-container-highest dark:hover:bg-surface-dim transition-all scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+<span class="">Dashboard</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-md p-md rounded-lg bg-secondary-container text-on-secondary-container font-semibold scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="confirmation_number">confirmation_number</span>
+<span class="">Tickets</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-md p-md rounded-lg text-secondary hover:bg-surface-container-high hover:bg-surface-container-highest dark:hover:bg-surface-dim transition-all scale-95 active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span class="">Settings</span>
+</a>
+</li>
+</ul>
+<!-- CTA -->
+<div class="mt-auto mb-lg">
+<button class="w-full bg-primary text-on-primary font-label-md text-label-md py-md rounded-lg hover:bg-primary-container transition-colors flex justify-center items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">add</span> New Ticket
+            </button>
+</div>
+<!-- Footer Navigation -->
+<ul class="border-t border-outline-variant pt-md space-y-sm">
+<li class="">
+<a class="flex items-center gap-md p-md rounded-lg text-secondary hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="contact_support">contact_support</span>
+<span class="">Support</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-md p-md rounded-lg text-secondary hover:bg-surface-container-high transition-all" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+<span class="">Sign Out</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col ml-64 min-w-0">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-low text-primary dark:text-primary-fixed font-body-md text-body-md docked full-width top-0 border-b border-outline-variant dark:border-outline flex justify-between items-center w-full px-lg h-16 z-40 sticky top-0 flat no shadows">
+<div class="flex items-center gap-lg">
+<span class="font-display text-display font-bold text-on-surface dark:text-on-surface-variant tracking-tight text-xl">CRM Pulse</span>
+<!-- Search Bar -->
+<div class="relative w-64 hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-high border-none rounded-full font-body-sm text-body-sm focus:ring-1 focus:ring-primary outline-none transition-shadow" placeholder="Search tickets..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-full cursor-pointer transition-all duration-150 relative">
+<span class="material-symbols-outlined text-[24px]" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-2 text-on-secondary-fixed-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-full cursor-pointer transition-all duration-150">
+<span class="material-symbols-outlined text-[24px]" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden cursor-pointer ml-sm">
+<img alt="Agent Profile" class="w-full h-full object-cover" data-alt="Professional headshot of a customer service agent, a person with a warm smile, wearing a subtle headset, shot against a clean light gray background with soft, even studio lighting. Corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8ceJP6CkIQrW4Eg3cwZrCyouaTJJiqTYvGPdel7Fc7G9wNt9UNyqNPOBQGtbx2pyA5il34WhTeM_ElE1EmYethEIqOzd5hQIfApIewuDvGB-ASio9KHvTMg_7Jc9-yhZ803MllsEOokrm09DcR42qIgOf6-nJaSwJeaJVxK7IOc2bx5Ceh2-7C9rNHanyAdOprnJzh52-_NyTTuq0DX4B2hTjtVS8DnUwRGc4IhDrxpwSgv5HvZ13Dg">
+</div>
+</div>
+</header>
+<!-- Ticket Workspace -->
+<div class="flex-1 flex overflow-hidden">
+<!-- Conversation Area -->
+<div class="flex-1 flex flex-col bg-surface-bright border-r border-outline-variant overflow-hidden">
+<!-- Ticket Header -->
+<div class="p-lg border-b border-outline-variant bg-surface-container-lowest shrink-0">
+<div class="flex justify-between items-start mb-md">
+<div>
+<div class="flex items-center gap-sm mb-xs">
+<span class="font-data-mono text-data-mono text-secondary">#TKT-8942</span>
+<span class="px-2 py-0.5 rounded-full bg-[#fef2f2] text-[#991b1b] border border-[#f87171] font-label-md text-label-md uppercase tracking-wide flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-[#dc2626]"></span> Critical
+                                </span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">System outage preventing deployment in US-East</h2>
+</div>
+<div class="flex gap-sm">
+<button class="px-md py-sm bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md rounded hover:bg-surface-container-low transition-colors flex items-center gap-sm">
+<span class="material-symbols-outlined text-[18px]">share</span> Share
+                            </button>
+</div>
+</div>
+</div>
+<!-- Chat Scroll Area -->
+<div class="flex-1 overflow-y-auto p-lg flex flex-col gap-lg bg-surface">
+<!-- Customer Message -->
+<div class="flex gap-md max-w-3xl">
+<div class="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-surface-variant">
+<img alt="Customer Avatar" class="w-full h-full object-cover" data-alt="Avatar image for a corporate client user, abstract geometric pattern in cool blue and gray tones, minimalist and professional style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB55ABrPW1Pgg066Ph0cNihCnRDtbGRidadRmHAsIYw5uZR_3nhGbjdWn1WQbRsa4eGkkong1h4d4SwChJWyCPOax4givRE_awcKQOm0XRDqBDqzdpx3bDXjbNlBOz0sOa8ukYi47b_mOTYVjUHOM8F2t6alAselZt5vNjPrhYD9Xd-S5LMSRHkx7c0dRJgTgC-AM_0hwjfzItzMJPLS8uzVBgYrTNTNLWttW9ARSjfO0PKq37yzMUy0Q">
+</div>
+<div class="flex flex-col gap-xs">
+<div class="flex items-baseline gap-sm">
+<span class="font-label-md text-label-md text-on-surface">Sarah Jenkins (TechCorp)</span>
+<span class="font-body-sm text-body-sm text-secondary">Today, 09:42 AM</span>
+</div>
+<div class="bg-surface-container-low p-md rounded-xl rounded-tl-sm border border-outline-variant">
+<p class="font-body-md text-body-md text-on-surface">Hi team, our automated deployment pipeline just failed with a 503 error on the main API endpoint for the US-East region. This is blocking our morning release. Logs attached below. Need immediate assistance.</p>
+<div class="mt-md p-sm bg-surface-container-lowest border border-outline-variant rounded flex items-center gap-sm">
+<span class="material-symbols-outlined text-outline">description</span>
+<span class="font-data-mono text-data-mono text-on-surface">deploy_error_log_0942.txt</span>
+<button class="ml-auto text-primary hover:underline font-label-md text-label-md">Download</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Internal Note (System) -->
+<div class="self-center flex items-center gap-sm py-sm px-md bg-[#fffbeb] border border-[#fcd34d] text-[#92400e] rounded-full text-xs font-semibold uppercase tracking-wider">
+<span class="material-symbols-outlined text-[16px]">visibility_off</span>
+                        Ticket escalated to Tier 3 Support by Automaton
+                    </div>
+<!-- Agent Message -->
+<div class="flex gap-md max-w-3xl self-end flex-row-reverse">
+<div class="w-10 h-10 rounded-full overflow-hidden shrink-0 bg-primary-container">
+<img alt="Agent Avatar" class="w-full h-full object-cover" data-alt="Professional headshot of a customer service agent, a person with a warm smile, wearing a subtle headset, shot against a clean light gray background with soft, even studio lighting. Corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDZTvXS9gJB2kbIcib_t1k7iLU6mgRBhzPIMZ7ec7n4kRx9hZFczyooXndrMLEUsxoXDUXOHqHAoSzkkaPNn6ahIkiiTfqlzkQtxd8rgwz2ZMuxoCrkQdllOyBGy7VS1MsTM-SfsMJFjzhBa2O7kSxoDHJvVMf3RQ5LTS8aojMKV1HqkxejX5G7LJEPSG5ERaILy8K6BNChTRLtVbm75TG9grcQuad_zp-tCpZ8yzdp6UEXlWDYL1oMA">
+</div>
+<div class="flex flex-col gap-xs items-end">
+<div class="flex items-baseline gap-sm flex-row-reverse">
+<span class="font-label-md text-label-md text-on-surface">You</span>
+<span class="font-body-sm text-body-sm text-secondary">Today, 09:48 AM</span>
+</div>
+<div class="bg-primary text-on-primary p-md rounded-xl rounded-tr-sm">
+<p class="font-body-md text-body-md">Hi Sarah, acknowledging this critical issue. We are currently seeing increased latency in the US-East region which is likely causing the 503s on your pipeline. I'm escalating this to the infrastructure team immediately to investigate the root cause. Will update you in 15 minutes.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Response Editor -->
+<div class="p-md bg-surface-container-lowest border-t border-outline-variant shrink-0">
+<div class="flex gap-sm mb-sm border-b border-outline-variant pb-sm">
+<button class="font-label-md text-label-md px-sm py-xs text-primary font-semibold border-b-2 border-primary -mb-[1px]">Reply to Customer</button>
+<button class="font-label-md text-label-md px-sm py-xs text-secondary hover:text-on-surface transition-colors hover:bg-surface-container-low rounded">Add Internal Note</button>
+</div>
+<div class="border border-outline-variant rounded-lg bg-surface-bright focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-shadow overflow-hidden">
+<textarea class="w-full h-24 p-md font-body-md text-body-md bg-transparent border-none resize-none outline-none focus:ring-0" placeholder="Type your response here..."></textarea>
+<div class="bg-surface-container-low px-md py-sm flex justify-between items-center border-t border-outline-variant">
+<div class="flex gap-sm text-secondary">
+<button class="hover:text-on-surface transition-colors p-1"><span class="material-symbols-outlined text-[20px]">format_bold</span></button>
+<button class="hover:text-on-surface transition-colors p-1"><span class="material-symbols-outlined text-[20px]">format_italic</span></button>
+<button class="hover:text-on-surface transition-colors p-1"><span class="material-symbols-outlined text-[20px]">link</span></button>
+<div class="w-px h-5 bg-outline-variant mx-1"></div>
+<button class="hover:text-on-surface transition-colors p-1"><span class="material-symbols-outlined text-[20px]">attach_file</span></button>
+</div>
+<div class="flex gap-md items-center">
+<div class="relative group">
+<button class="font-label-md text-label-md text-secondary border border-outline-variant px-md py-1.5 rounded bg-surface-container-lowest flex items-center gap-1 hover:bg-surface-container-low">
+                                        Send as Open <span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-lg py-1.5 rounded hover:bg-primary-container transition-colors shadow-sm">Send</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Context/Inspector Sidebar -->
+<div class="w-80 shrink-0 bg-surface-container-lowest overflow-y-auto hidden lg:flex flex-col">
+<!-- Status Control -->
+<div class="p-lg border-b border-outline-variant">
+<h3 class="font-label-md text-label-md text-secondary uppercase tracking-wider mb-sm">Status</h3>
+<div class="flex p-1 bg-surface-container rounded-lg border border-outline-variant">
+  <button class="flex-1 py-1.5 text-label-md font-semibold rounded bg-surface-container-lowest text-secondary shadow-sm">Pending</button>
+  <button class="flex-1 py-1.5 text-label-md font-semibold rounded bg-primary text-on-primary">Open</button>
+  <button class="flex-1 py-1.5 text-label-md font-semibold rounded text-secondary hover:bg-surface-container-high transition-colors">Resolved</button>
+</div>
+</div>
+<!-- User Metadata -->
+<div class="p-lg border-b border-outline-variant"><h3 class="font-label-md text-label-md text-secondary uppercase tracking-wider mb-md">Customer Info</h3>
+<div class="flex items-center gap-md mb-lg p-md bg-surface-container-low rounded-xl">
+  <div class="w-12 h-12 rounded-lg bg-surface-variant overflow-hidden shrink-0">
+    <img alt="Customer Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDGoC8IFh1ZcEC8okSlQrGCHhJ-JJV45hMv_JFOBN0UrT3aDUvl_PLwZ5UCXqMNzE90VpCZlyb2cEt2EfBvb74yatkcKgvTdUAsAcxqtK_pBpgqGuhLwQRsIYnS8s4bJzy0MG-1rhM6ZWvv70r9DIFpBV2kjEm_6yohn72wi6Lbp-p1HA7kuLx9cnb265_-ZnMadx8ZsUxzPE3ofT1gs2aycvte4dM7NfELd5D_6jM-BMGuM6p9TIeFA">
+  </div>
+  <div class="min-w-0">
+    <div class="font-headline-md text-headline-md text-on-surface leading-tight truncate">Sarah Jenkins</div>
+    <div class="font-body-sm text-body-sm text-primary font-medium">TechCorp Inc.</div>
+  </div>
+</div>
+<div class="space-y-md px-xs">
+  <div class="flex flex-col gap-xs">
+    <span class="font-label-md text-label-md text-secondary flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">mail</span> Email</span>
+    <a class="font-body-sm text-body-sm text-on-surface hover:text-primary hover:underline" href="mailto:sarah.j@techcorp.com">sarah.j@techcorp.com</a>
+  </div>
+  <div class="flex justify-between items-center pt-sm border-t border-outline-variant">
+    <span class="font-body-sm text-body-sm text-secondary flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">domain</span> Plan</span>
+    <span class="font-label-md text-label-md px-2 py-0.5 bg-secondary-container text-on-secondary-container rounded-full">Enterprise</span>
+  </div>
+  <div class="flex justify-between items-center">
+    <span class="font-body-sm text-body-sm text-secondary flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">schedule</span> Timezone</span>
+    <span class="font-body-sm text-body-sm text-on-surface">EST (GMT-5)</span>
+  </div>
+</div></div>
+<!-- Properties -->
+<div class="p-lg border-b border-outline-variant"><h3 class="font-label-md text-label-md text-secondary uppercase tracking-wider mb-md">Properties</h3>
+<div class="space-y-lg">
+  <div class="space-y-xs">
+    <label class="font-label-md text-label-md text-secondary flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">person</span> Assignee</label>
+    <div class="relative">
+      <select class="w-full font-body-sm text-body-sm border border-outline-variant rounded-lg p-sm bg-surface-container-lowest outline-none focus:border-primary appearance-none">
+        <option>Me (Agent Smith)</option>
+        <option>Unassigned</option>
+        <option>Tier 3 Queue</option>
+      </select>
+      <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">expand_more</span>
+    </div>
+  </div>
+  <div class="space-y-xs">
+    <label class="font-label-md text-label-md text-secondary flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">category</span> Category</label>
+    <div class="relative">
+      <select class="w-full font-body-sm text-body-sm border border-outline-variant rounded-lg p-sm bg-surface-container-lowest outline-none focus:border-primary appearance-none">
+        <option>Infrastructure</option>
+        <option>Billing</option>
+        <option>Bug Report</option>
+      </select>
+      <span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-secondary">expand_more</span>
+    </div>
+  </div>
+</div></div>
+</div>
+</div>
+</main>
+
+
+</body></html>

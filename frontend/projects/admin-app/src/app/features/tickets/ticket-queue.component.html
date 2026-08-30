@@ -1,0 +1,244 @@
+<section class="flex flex-col gap-6">
+  <!--
+    The mockups' page header. The topbar names the route as well; this repeats it deliberately —
+    the topbar is chrome that scrolls out of mind, the page header is the screen announcing itself.
+  -->
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-headline-lg text-on-surface">{{ 'tickets.queue.title' | t }}</h1>
+      <p class="mt-1 text-body-md text-on-surface-variant">{{ 'tickets.queue.subtitle' | t }}</p>
+    </div>
+
+    <!--
+      An anchor, not a `cs-button`. It navigates, so it must be a link — and the empty state
+      asserts there is no `<button>` anywhere on this screen, which is how AC-58 keeps the empty
+      state distinguishable from the error state's retry.
+    -->
+    <div class="flex flex-wrap items-center gap-3">
+      <a
+        routerLink="/tickets/new"
+        class="inline-flex h-10 items-center gap-2 rounded-lg bg-primary px-4 text-label-lg font-semibold text-on-primary shadow-card transition-all hover:opacity-90 active:scale-95"
+      >
+        <cs-icon name="add" />
+        {{ 'tickets.raise' | t }}
+      </a>
+    </div>
+  </header>
+
+  @if (state().status === 'loaded') {
+    <div class="grid gap-3 md:grid-cols-4">
+      <div class="rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-card">
+        <p class="text-label-md uppercase tracking-wider text-on-surface-variant">
+          {{ 'tickets.queue.total' | t }}
+        </p>
+        <p class="mt-2 text-headline-lg text-on-surface">{{ totalCount() }}</p>
+      </div>
+      <div class="rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-card">
+        <p class="text-label-md uppercase tracking-wider text-on-surface-variant">
+          {{ 'tickets.queue.openOnPage' | t }}
+        </p>
+        <p class="mt-2 text-headline-lg text-on-surface">{{ openCount() }}</p>
+      </div>
+      <div class="rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-card">
+        <p class="text-label-md uppercase tracking-wider text-on-surface-variant">
+          {{ 'tickets.queue.escalatedOnPage' | t }}
+        </p>
+        <p class="mt-2 text-headline-lg text-status-escalated">{{ escalatedCount() }}</p>
+      </div>
+      <div class="rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-card">
+        <p class="text-label-md uppercase tracking-wider text-on-surface-variant">
+          {{ 'tickets.queue.unassignedOnPage' | t }}
+        </p>
+        <p class="mt-2 text-headline-lg text-on-surface">{{ unassignedCount() }}</p>
+      </div>
+    </div>
+  }
+
+  <cs-card>
+    <cs-data-toolbar
+      [search]="search()"
+      [searchPlaceholder]="'tickets.queue.search' | t"
+      [status]="status() ?? ''"
+      [statusLabel]="'field.status' | t"
+      [allStatusLabel]="'tickets.allStatuses' | t"
+      [statusOptions]="statusOptions()"
+      [sort]="sortMode()"
+      [sortLabel]="'tickets.queue.sort' | t"
+      [sortOptions]="sortOptions()"
+      (searchChanged)="updateSearch($event)"
+      (statusChanged)="selectStatus($event)"
+      (sortChanged)="setSortMode($event)"
+    />
+
+    <div class="flex flex-wrap items-center gap-4 border-b border-border-subtle px-4 py-3">
+      <label class="flex items-center gap-2 text-label-md text-on-surface-variant">
+        <input type="checkbox" [checked]="mine()" (change)="toggleMine()" class="accent-primary" />
+        {{ 'tickets.mine' | t }}
+      </label>
+
+      <label class="flex items-center gap-2 text-label-md text-on-surface-variant">
+        <input
+          type="checkbox"
+          [checked]="escalationSort()"
+          (change)="sortByEscalation()"
+          class="accent-primary"
+        />
+        {{ 'tickets.queue.sortByEscalation' | t }}
+      </label>
+    </div>
+
+    <!--
+      All five AsyncState members are reachable. `empty` and `error` render different components on
+      purpose: the error state carries a retry, the empty state does not, and that absence is both
+      the honest signal (nothing failed) and the visual difference AC-58 asks for.
+    -->
+    @switch (state().status) {
+      @case ('idle') {
+        <cs-loading-state [label]="'tickets.loading' | t" />
+      }
+      @case ('loading') {
+        <cs-loading-state [label]="'tickets.loading' | t" />
+      }
+      @case ('error') {
+        @if (listError(); as failure) {
+          <cs-error-state [error]="failure" (retry)="load()" />
+        }
+      }
+      @case ('empty') {
+        <cs-empty-state [message]="emptyMessage()" />
+      }
+      @default {
+        @if (searchHasNoMatches()) {
+          <cs-empty-state [message]="'tickets.queue.noSearchResults' | t" />
+        } @else {
+        <div class="overflow-x-auto">
+          <!--
+            AC-A3 — `ticket_queue`'s six-column data table (replacing the grid). The mockup's rows
+            are whole-row links, but a `<tr>` cannot be an anchor, so the Reference cell carries the
+            link (matching the dashboard's "my tickets" table). The header row is `label-md`,
+            tracked and upper-cased, on the low tint — the same treatment the dashboard uses.
+          -->
+          <table class="cs-data-table min-w-5xl">
+            <thead>
+              <tr
+                class="border-b border-border-subtle bg-surface-low text-start text-label-md tracking-wider text-on-surface-variant uppercase"
+              >
+                <th scope="col" class="px-4 py-2 text-start">{{ 'field.reference' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'field.subject' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'field.category' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'field.priority' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'field.status' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'tickets.channel' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'tickets.sla' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'tickets.assignee' | t }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border-subtle">
+              @for (ticket of tickets(); track ticket.id) {
+                <!--
+                  `ticket_queue` stripes alternate rows — the eye tracks across six columns without
+                  losing the row. `even:` here because `tbody` restarts the child count at the first
+                  data row (the header is a separate `<thead>`), so the first data row is child 1 and
+                  `even:` tints the second and fourth, where the mockup has it.
+                -->
+                <tr class="transition-colors even:bg-surface-low hover:bg-surface-high">
+                  <td class="px-4 py-3">
+                    <a
+                      [routerLink]="['/tickets', ticket.id]"
+                      class="font-mono text-data-mono text-on-surface-variant hover:text-primary"
+                    >
+                      {{ ticket.reference }}
+                    </a>
+                  </td>
+
+                  <!-- The mockup's two-line primary cell: what it is, over who it is for. -->
+                  <td class="px-4 py-3">
+                    <span class="flex min-w-0 flex-col">
+                      <span class="truncate text-label-lg text-on-surface">{{ ticket.subject }}</span>
+                      <span class="truncate text-body-sm text-on-surface-variant">
+                        {{ ticket.customerName }}
+                      </span>
+                    </span>
+                  </td>
+
+                  <!-- The mockup's "Department" — this product's equivalent is the ticket category. -->
+                  <td class="px-4 py-3 text-body-sm text-on-surface">{{ ticket.categoryName }}</td>
+
+                  <td class="px-4 py-3">
+                    <cs-badge kind="priority" [value]="ticket.priority" />
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <cs-status-pill [value]="ticket.status" />
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <cs-channel-pill [channel]="channel(ticket)" />
+                  </td>
+
+                  <td class="px-4 py-3">
+                    <cs-sla-pill [state]="slaState(ticket)" />
+                  </td>
+
+                  <!--
+                    `ticket_queue`'s assignee cell, with its own italic "Unassigned" for a ticket
+                    nobody holds. When held, the list gives an id and no name, so the placeholder
+                    stands in rather than surfacing a bare guid.
+                  -->
+                  <td class="px-4 py-3">
+                    <span class="flex min-w-0 items-center gap-2">
+                      @if (escalationLabel(ticket); as level) {
+                        <span
+                          data-testid="escalation-badge"
+                          class="inline-flex shrink-0 items-center gap-1 rounded bg-status-escalated/12 px-2 py-0.5 text-label-md font-semibold text-status-escalated"
+                        >
+                          {{ level }}
+                        </span>
+                      }
+                      @if (ticket.assigneeId) {
+                        <span
+                          class="grid size-6 shrink-0 place-items-center rounded-full bg-surface-highest text-on-surface"
+                        >
+                          <cs-icon name="person" [size]="14" />
+                        </span>
+                        <span class="truncate text-body-sm text-on-surface">
+                          {{ assigneeLabel(ticket) }}
+                        </span>
+                      } @else {
+                        <span class="truncate text-body-sm text-on-surface-variant italic">
+                          {{ 'dashboard.unassigned' | t }}
+                        </span>
+                      }
+                    </span>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!--
+          The mockup's table footer: the page summary at the start, chevron controls at the end.
+          Icon-only, so each carries its own accessible name — a control whose entire label is a
+          font ligature announces the ligature's own name to a screen reader otherwise.
+
+          The chevron glyphs are the one physical direction in this template that `rtl-safety`
+          cannot catch: a ligature is a font name, not a utility class, so the guard's regexes never
+          see it. In Arabic "previous" points the other way, hence `rtl:rotate-180` on each control
+          — the same mirroring the logical utilities give everything else for free.
+        -->
+        <cs-pagination
+          [summary]="'tickets.pageSummary' | t: page() : totalCount()"
+          [page]="page()"
+          [hasMore]="hasMore()"
+          [totalCount]="totalCount()"
+          [pageSize]="10"
+          (previous)="goToPage($event)"
+          (next)="goToPage($event)"
+          (pageSelected)="goToPage($event)"
+        />
+        }
+      }
+    }
+  </cs-card>
+</section>

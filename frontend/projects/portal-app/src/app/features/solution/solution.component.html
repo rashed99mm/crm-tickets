@@ -1,0 +1,100 @@
+<main class="flex flex-1 flex-col bg-background">
+  <section class="border-b border-border-subtle bg-surface-lowest px-4 py-16 sm:px-8 sm:py-20">
+    <div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+      <div>
+        <span class="mb-5 inline-flex items-center gap-2 rounded-full bg-primary-container px-4 py-1.5 text-label-lg font-bold text-on-primary-container">
+          <cs-icon name="deployed_code" [size]="16" />
+          {{ 'landing.nav.solutions' | t }}
+        </span>
+        <h1 class="max-w-3xl font-display-lg text-display-lg tracking-tight text-on-background">
+          {{ 'landing.sections.channels.title' | t }}
+        </h1>
+        <p class="mt-5 max-w-2xl text-body-lg text-on-surface-variant">
+          {{ 'landing.sections.channels.subtitle' | t }}
+        </p>
+        <div class="mt-8 flex flex-col gap-4 sm:flex-row">
+          <a
+            routerLink="/contact"
+            class="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-label-lg font-bold text-on-primary transition-all hover:bg-surface-tint"
+          >
+            {{ 'landing.nav.newTicket' | t }}
+            <cs-icon name="arrow_forward" [size]="18" />
+          </a>
+          <a
+            routerLink="/kb"
+            class="inline-flex items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface px-6 py-3 text-label-lg font-bold text-primary transition-all hover:bg-surface-container-low"
+          >
+            {{ 'landing.nav.resources' | t }}
+            <cs-icon name="menu_book" [size]="18" />
+          </a>
+        </div>
+      </div>
+
+      <div class="grid gap-4 rounded-[28px] border border-border-subtle bg-surface p-5 shadow-[0_20px_65px_rgb(15,23,42,0.10)]">
+        <div class="rounded-2xl bg-surface-lowest p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-label-md uppercase tracking-[0.2em] text-on-surface-variant">{{ 'landing.ai.badge' | t }}</p>
+              <p class="mt-2 font-display text-headline-md text-on-surface">{{ 'landing.ai.title' | t }}</p>
+            </div>
+            <span class="grid size-12 place-items-center rounded-2xl bg-secondary-container/20 text-secondary-container">
+              <cs-icon name="smart_toy" [size]="26" />
+            </span>
+          </div>
+          <p class="mt-4 text-body-md text-on-surface-variant">{{ 'landing.ai.subtitle' | t }}</p>
+        </div>
+        <div class="grid gap-4 md:grid-cols-3">
+          <div class="rounded-2xl border border-border-subtle bg-surface-lowest p-4">
+            <cs-icon name="forum" class="text-primary" [size]="22" />
+            <p class="mt-3 font-display text-headline-md text-on-surface">{{ 'landing.channels.chat' | t }}</p>
+            <p class="mt-2 text-body-sm text-on-surface-variant">{{ 'landing.channels.chat.desc' | t }}</p>
+          </div>
+          <div class="rounded-2xl border border-border-subtle bg-surface-lowest p-4">
+            <cs-icon name="contact_mail" class="text-secondary-container" [size]="22" />
+            <p class="mt-3 font-display text-headline-md text-on-surface">{{ 'landing.channels.webForm' | t }}</p>
+            <p class="mt-2 text-body-sm text-on-surface-variant">{{ 'landing.channels.webForm.desc' | t }}</p>
+          </div>
+          <div class="rounded-2xl border border-border-subtle bg-surface-lowest p-4">
+            <cs-icon name="route" class="text-success" [size]="22" />
+            <p class="mt-3 font-display text-headline-md text-on-surface">{{ 'landing.ai.f3.title' | t }}</p>
+            <p class="mt-2 text-body-sm text-on-surface-variant">{{ 'landing.ai.f3.desc' | t }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="px-4 py-16 sm:px-8">
+    <div class="mx-auto max-w-6xl">
+      <div class="max-w-3xl">
+        <h2 class="font-display text-headline-lg font-bold text-on-surface">{{ 'landing.nav.solutions' | t }}</h2>
+        <p class="mt-3 text-body-lg text-on-surface-variant">
+          {{ 'landing.solution.description' | t }}
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <article class="rounded-3xl border border-border-subtle bg-surface-lowest p-6">
+          <cs-icon name="support_agent" class="text-primary" [size]="26" />
+          <h3 class="mt-4 font-display text-headline-md text-on-surface">{{ 'landing.channels.chat' | t }}</h3>
+          <p class="mt-2 text-body-md text-on-surface-variant">{{ 'landing.channels.chat.desc' | t }}</p>
+        </article>
+        <article class="rounded-3xl border border-border-subtle bg-surface-lowest p-6">
+          <cs-icon name="smart_toy" class="text-secondary-container" [size]="26" />
+          <h3 class="mt-4 font-display text-headline-md text-on-surface">{{ 'landing.ai.f1.title' | t }}</h3>
+          <p class="mt-2 text-body-md text-on-surface-variant">{{ 'landing.ai.f1.desc' | t }}</p>
+        </article>
+        <article class="rounded-3xl border border-border-subtle bg-surface-lowest p-6">
+          <cs-icon name="edit_note" class="text-primary" [size]="26" />
+          <h3 class="mt-4 font-display text-headline-md text-on-surface">{{ 'landing.ai.f2.title' | t }}</h3>
+          <p class="mt-2 text-body-md text-on-surface-variant">{{ 'landing.ai.f2.desc' | t }}</p>
+        </article>
+        <article class="rounded-3xl border border-border-subtle bg-surface-lowest p-6">
+          <cs-icon name="verified_user" class="text-success" [size]="26" />
+          <h3 class="mt-4 font-display text-headline-md text-on-surface">{{ 'landing.how.step3.title' | t }}</h3>
+          <p class="mt-2 text-body-md text-on-surface-variant">{{ 'landing.how.step3.desc' | t }}</p>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>

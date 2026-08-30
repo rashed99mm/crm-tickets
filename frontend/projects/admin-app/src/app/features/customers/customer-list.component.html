@@ -1,0 +1,124 @@
+<section class="flex flex-col gap-6">
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-headline-lg text-on-surface">{{ 'customers.title' | t }}</h1>
+      <p class="mt-1 text-body-md text-on-surface-variant">{{ 'customers.subtitle' | t }}</p>
+    </div>
+
+    <!-- An anchor, not a `cs-button`: the empty state asserts this screen has no `<button>`. -->
+    <a
+      routerLink="/customers/new"
+      class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-label-lg font-semibold text-on-primary shadow-card transition-all hover:opacity-90 active:scale-95"
+    >
+      <cs-icon name="person_add" />
+      {{ 'customers.add' | t }}
+    </a>
+  </header>
+
+  <cs-card>
+    <cs-data-toolbar
+      [search]="search()"
+      [searchPlaceholder]="'customers.search' | t"
+      (searchChanged)="search.set($event)"
+      (searchSubmitted)="applySearch(search())"
+    />
+
+    <!--
+      All the reachable AsyncState members. `empty` and `error` render different components on
+      purpose: the error state carries a retry, the empty state does not, and that absence is both
+      the honest signal (nothing failed) and the visual difference AC-69 asks for.
+    -->
+    @switch (state().status) {
+      @case ('idle') {
+        <cs-loading-state [label]="'customers.loading' | t" />
+      }
+      @case ('loading') {
+        <cs-loading-state [label]="'customers.loading' | t" />
+      }
+      @case ('error') {
+        @if (listError(); as failure) {
+          <cs-error-state [error]="failure" (retry)="load()" />
+        }
+      }
+      @case ('empty') {
+        <cs-empty-state [message]="emptyMessage()" />
+      }
+      @default {
+        <div class="overflow-x-auto">
+          <table class="cs-data-table min-w-[42rem]">
+            <thead>
+              <tr>
+                <th>{{ 'field.name' | t }}</th>
+                <th>{{ 'field.phone' | t }}</th>
+                <th class="text-end">{{ 'field.created' | t }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border-subtle">
+              @for (customer of customers(); track customer.id) {
+                <tr class="transition-colors hover:bg-surface-high">
+                  <td>
+                    <a [routerLink]="['/customers', customer.id]" class="group flex min-w-0 items-center gap-3">
+                <!--
+                  The stripe is `odd:`, not `even:`, and that is not a style choice. These rows
+                  are anchors sitting as siblings AFTER the header row inside the same container, so
+                  `nth-child` counts the header as child 1 — `even:` would tint the FIRST data row,
+                  which reads as a selected row rather than a stripe. `odd:` puts the tint on the
+                  second and fourth, where the mockup has it. The `<table>` screens use `even:` for
+                  the same visual result, because there `tbody` restarts the count.
+                -->
+                <!--
+                  The two-line primary cell AC-88 asks for: the name over the address. The mockups'
+                  rows lead with a photograph; nothing stores one, so it is an initials mark — a
+                  real value derived from a real field, which is what makes two adjacent rows
+                  visibly different rather than two identical grey circles.
+                -->
+                  <span
+                    class="grid size-9 shrink-0 place-items-center rounded-full bg-surface-high text-label-md font-semibold text-primary"
+                  >
+                    {{ initials(customer.name) }}
+                  </span>
+                  <span class="flex min-w-0 flex-col">
+                    <span class="truncate text-label-lg text-on-surface group-hover:text-primary">
+                      {{ customer.name }}
+                    </span>
+                    <span class="truncate text-body-sm text-on-surface-variant">
+                      {{ customer.email }}
+                    </span>
+                  </span>
+                    </a>
+                  </td>
+
+                <!-- An absent phone is a dash, not a blank cell that reads as a rendering fault. -->
+                  <td class="truncate font-mono text-data-mono text-on-surface-variant">
+                  {{ customer.phone ?? '—' }}
+                  </td>
+
+                  <td class="text-end text-body-sm text-on-surface-variant">
+                    <time [attr.datetime]="customer.createdAt">{{ customer.createdAt | csDate : 'date' }}</time>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!--
+          The mockups' table footer: the summary at the start, chevron controls at the end. Each is
+          icon-only and therefore carries its own accessible name — a control whose whole label is a
+          font ligature otherwise announces the ligature. The glyphs are the one physical direction
+          `rtl-safety` cannot see, so they are mirrored explicitly for Arabic.
+        -->
+        <cs-pagination
+          [summary]="'customers.pageSummary' | t: page() : totalCount()"
+          [page]="page()"
+          [hasMore]="hasMore()"
+          [totalCount]="totalCount()"
+          [pageSize]="10"
+          (previous)="goToPage($event)"
+          (next)="goToPage($event)"
+          (pageSelected)="goToPage($event)"
+        />
+      }
+    }
+  </cs-card>
+</section>

@@ -1,0 +1,68 @@
+<section class="mx-auto flex max-w-5xl flex-col gap-6">
+  <header>
+    <h1 class="text-headline-lg text-on-surface">{{ 'reports.csat.title' | t }}</h1>
+    <p class="mt-1 text-body-md text-on-surface-variant">{{ 'reports.csat.subtitle' | t }}</p>
+  </header>
+
+  <cs-report-date-range-filter [from]="from()" [to]="to()" (apply)="applyRange($event)" />
+
+  @switch (state().status) {
+    @case ('loading') {
+      <cs-loading-state />
+    }
+    @case ('error') {
+      @if (loadError(); as failure) {
+        <cs-error-state [error]="failure" (retry)="load()" />
+      }
+    }
+    @case ('empty') {
+      <cs-empty-state [message]="'reports.csat.empty' | t" />
+    }
+    @default {
+      @if (report(); as csat) {
+        <div class="grid gap-4 sm:grid-cols-4">
+          <cs-card class="p-4 text-center">
+            <p class="text-data-lg font-bold text-on-surface">{{ csat.averageRating }}</p>
+            <p class="text-label-md text-on-surface-variant">
+              {{ 'reports.csat.scoreOutOf' | t: csat.averageRating }}
+            </p>
+          </cs-card>
+          <cs-card class="p-4 text-center">
+            <p class="text-data-lg font-bold text-on-surface">{{ csat.totalResponses }}</p>
+            <p class="text-label-md text-on-surface-variant">{{ 'reports.csat.responses' | t }}</p>
+          </cs-card>
+          <cs-card class="p-4 text-center">
+            <p class="text-data-lg font-bold text-success">{{ csat.promoters }}</p>
+            <p class="text-label-md text-on-surface-variant">{{ 'reports.csat.promoters' | t }}</p>
+          </cs-card>
+          <cs-card class="p-4 text-center">
+            <p class="text-data-lg font-bold text-error">{{ csat.detractors }}</p>
+            <p class="text-label-md text-on-surface-variant">{{ 'reports.csat.detractors' | t }}</p>
+          </cs-card>
+        </div>
+
+        <cs-card>
+          <h2 class="mb-3 text-headline-md text-on-surface">{{ 'reports.csat.byRating' | t }}</h2>
+          <table class="cs-data-table">
+            <thead class="text-label-sm uppercase text-on-surface-variant">
+              <tr>
+                <th class="py-2 pe-4">{{ 'reports.csat.rating' | t }}</th>
+                <th class="py-2 pe-4">{{ 'reports.csat.count' | t }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border-subtle">
+              @for (bucket of csat.byRating; track bucket.rating) {
+                <tr>
+                  <td class="py-2 pe-4 text-on-surface">
+                    {{ 'reports.csat.scoreOutOf' | t: bucket.rating }}
+                  </td>
+                  <td class="py-2 pe-4 font-mono text-label-md">{{ bucket.count }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </cs-card>
+      }
+    }
+  }
+</section>

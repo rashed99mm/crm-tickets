@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>AdminApp</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!--
+      The theme names Hanken Grotesk, Inter and JetBrains Mono, and the design
+      needs Material Symbols Outlined for its icons (assumption `A21`). None of
+      them were ever requested, so every screen fell back to system fonts.
+      `preconnect` first: without it the browser opens the font connection only
+      after the stylesheet parses, which shows the fallback face for a beat.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400..800&family=Inter:wght@400..700&family=JetBrains+Mono:wght@400..600&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    />
+  </head>
+  <body>
+    <admin-root></admin-root>
+  </body>
+</html>

@@ -1,0 +1,443 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Knowledge Base - CRM Pulse</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts: Inter and Hanken Grotesk -->
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;600&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "background": "#f8f9ff",
+                    "surface-tint": "#565e74",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-surface": "#0b1c30",
+                    "on-surface-variant": "#45464d",
+                    "on-tertiary-container": "#008cc7",
+                    "tertiary-fixed": "#c9e6ff",
+                    "surface-variant": "#d3e4fe",
+                    "tertiary-fixed-dim": "#89ceff",
+                    "error": "#ba1a1a",
+                    "on-tertiary-fixed": "#001e2f",
+                    "on-tertiary": "#ffffff",
+                    "on-background": "#0b1c30",
+                    "inverse-on-surface": "#eaf1ff",
+                    "surface-dim": "#cbdbf5",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary": "#515f74",
+                    "on-secondary": "#ffffff",
+                    "primary-fixed-dim": "#bec6e0",
+                    "inverse-surface": "#213145",
+                    "outline-variant": "#c6c6cd",
+                    "surface-container": "#e5eeff",
+                    "surface-bright": "#f8f9ff",
+                    "primary-fixed": "#dae2fd",
+                    "on-secondary-container": "#57657b",
+                    "on-primary": "#ffffff",
+                    "secondary-fixed": "#d5e3fd",
+                    "surface-container-highest": "#d3e4fe",
+                    "primary": "#000000",
+                    "surface-container-high": "#dce9ff",
+                    "on-secondary-fixed": "#0d1c2f",
+                    "surface-container-low": "#eff4ff",
+                    "inverse-primary": "#bec6e0",
+                    "on-tertiary-fixed-variant": "#004c6e",
+                    "tertiary": "#000000",
+                    "secondary-container": "#d5e3fd",
+                    "on-primary-fixed": "#131b2e",
+                    "outline": "#76777d",
+                    "on-error": "#ffffff",
+                    "tertiary-container": "#001e2f",
+                    "primary-container": "#131b2e",
+                    "surface": "#f8f9ff",
+                    "on-primary-container": "#7c839b",
+                    "on-error-container": "#93000a",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed-variant": "#3a485c",
+                    "secondary-fixed-dim": "#b9c7e0"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "margin": "24px",
+                    "xl": "32px",
+                    "2xl": "48px",
+                    "xs": "4px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "gutter": "20px"
+            },
+            "fontFamily": {
+                    "data-mono": [
+                            "JetBrains Mono"
+                    ],
+                    "headline-lg": [
+                            "Hanken Grotesk"
+                    ],
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Hanken Grotesk"
+                    ],
+                    "display": [
+                            "Hanken Grotesk"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "data-mono": [
+                            "13px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg": [
+                            "28px",
+                            {
+                                    "lineHeight": "34px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "label-md": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-sm": [
+                            "13px",
+                            {
+                                    "lineHeight": "18px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display": [
+                            "36px",
+                            {
+                                    "lineHeight": "44px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+        },
+        },
+      }
+    </script>
+</head>
+<body class="bg-background text-on-background min-h-screen flex font-body-md">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-lowest text-primary dark:text-primary-fixed font-label-md text-label-md docked h-screen w-64 left-0 border-r border-outline-variant dark:border-outline flat no shadows flex flex-col h-screen fixed left-0 top-0 py-lg px-md z-50">
+<!-- Header -->
+<div class="mb-xl flex items-center gap-md px-sm">
+<img class="w-10 h-10 rounded-lg object-cover bg-surface-container" data-alt="A clean, modern geometric logo for a corporate support desk application. The logo uses deep blues and slate grays, featuring a stylized headset or interconnected nodes. The aesthetic is professional, minimalist, and trustworthy, suitable for enterprise software." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJq9FtjHPacIVkTYzIEpeCGjssOflL2LOyw9DMuL4IjLj3IoFn1C2zD97BhnpiwWAANWSk3UaaubEbUzaq1HiyQnpsTFAhPo0Qw1ujuM7M5mqTsQ2mw7kn3Xuynx-1RsEy3J8E2T91GQcJzewLASzRjuVdUFAQ15h43XQt9HI16IwvXCSb15yGiBHOv0g4ttmAOQrSO1solqq9XGRMw1NfZxkNvbAohWBwE1X9BsVFN_RBUsrooPOsIA">
+<div>
+<h1 class="font-headline-md text-headline-md font-semibold text-on-surface">Support Desk</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Enterprise Tier</p>
+</div>
+</div>
+<!-- CTA -->
+<button class="mb-xl w-full flex items-center justify-center gap-sm bg-primary text-on-primary py-2 px-4 rounded-lg font-label-md text-label-md hover:bg-surface-tint transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add</span>
+            New Ticket
+        </button>
+<!-- Main Navigation -->
+<ul class="flex flex-col gap-base flex-grow">
+<li class="">
+<a class="flex items-center gap-md px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-high transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">confirmation_number</span>
+                    Tickets
+                </a>
+</li>
+<li class="">
+<!-- Active State for Knowledge Base context (falling under Settings or a dedicated KB section if it existed, choosing Settings as best fit from given JSON, or highlighting none if it's a separate entity. Will highlight Settings based on instructions to pick closest match, but realistically KB is its own thing. Let's highlight Settings for now) -->
+<a class="flex items-center gap-md px-4 py-3 rounded-lg bg-secondary-container text-on-secondary-container font-semibold transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<!-- Footer Navigation -->
+<ul class="flex flex-col gap-base mt-auto">
+<li class="">
+<a class="flex items-center gap-md px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-highest dark:hover:bg-surface-dim transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+                    Support
+                </a>
+</li>
+<li class="">
+<a class="flex items-center gap-md px-4 py-3 rounded-lg text-secondary hover:bg-surface-container-highest dark:hover:bg-surface-dim transition-all scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">logout</span>
+                    Sign Out
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen bg-surface-bright">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-surface-container-low text-primary dark:text-primary-fixed font-body-md text-body-md docked full-width top-0 border-b border-outline-variant dark:border-outline flat no shadows flex justify-between items-center w-full px-lg h-16 z-40 sticky top-0">
+<div class="flex items-center gap-xl">
+<span class="font-display text-display font-bold text-on-surface dark:text-on-surface-variant text-xl tracking-tight">CRM Pulse</span>
+<!-- Search Bar (on_left) -->
+<div class="relative hidden md:block w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="w-full bg-surface-container-low border border-outline-variant rounded-full py-1.5 pl-10 pr-4 font-body-sm text-body-sm focus:outline-none focus:border-tertiary focus:ring-1 focus:ring-tertiary transition-all placeholder:text-outline shadows" placeholder="Search KB articles..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-full cursor-pointer transition-all duration-150">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors rounded-full cursor-pointer transition-all duration-150">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full border border-outline-variant overflow-hidden ml-2 cursor-pointer">
+<img alt="Agent Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a customer service agent. The agent is smiling slightly, wearing a neat navy blue collared shirt. The background is a soft, blurred modern office environment with neutral tones and soft natural lighting. High quality corporate portrait." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhk-pDWSP25yhMdZzEMFerogxcjWKancEdK2oSAc47XKCX2cHE4-5xJUQ9G1vKvhzB9Mgje42qEKy-6OOymtG6i2MCRzlg0qt1Sj1CykVsl4dRGSaAzM3n85RtZgtgtBl87xhtKjWv6VN6-Ka_uCIFZo9JaeWz8ApIkiGIeP8MFfz2YKpkRjkluOb1Vie_9tZw98zH66JHYbIJ_hTckhv5_7vDYvoF-JXP_fkWX22TWoAmPDcbZ8b3Rw">
+</div>
+</div>
+</header>
+<!-- Workspace Container -->
+<div class="flex-1 p-lg flex flex-col lg:flex-row gap-lg overflow-y-auto">
+<!-- Left Column: KB Content (Fluid) -->
+<div class="flex-1 flex flex-col gap-lg min-w-0">
+<!-- Header Actions -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Knowledge Base</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage articles, FAQs, and help documentation.</p>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md py-2 px-5 rounded-lg hover:bg-surface-tint transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">edit_document</span>
+                        Create New Article
+                    </button>
+</div>
+<!-- Categories Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-md">
+<!-- Category 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-sm hover:border-primary transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">school</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-lg">Onboarding</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Getting started guides and initial setup instructions for new clients.</p>
+<div class="mt-auto pt-2 flex items-center justify-between text-on-surface-variant">
+<span class="font-label-md text-label-md">24 Articles</span>
+<span class="material-symbols-outlined text-sm">school</span>
+</div>
+</div>
+<!-- Category 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-sm hover:border-primary transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">handyman</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-lg">Troubleshooting</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Common issues, error codes, and step-by-step resolution paths.</p>
+<div class="mt-auto pt-2 flex items-center justify-between text-on-surface-variant">
+<span class="font-label-md text-label-md">86 Articles</span>
+<span class="material-symbols-outlined text-sm">handyman</span>
+</div>
+</div>
+<!-- Category 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex flex-col gap-sm hover:border-primary transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined">receipt_long</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface text-lg">Billing</h3>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Invoices, payment methods, and subscription management.</p>
+<div class="mt-auto pt-2 flex items-center justify-between text-on-surface-variant">
+<span class="font-label-md text-label-md">12 Articles</span>
+<span class="material-symbols-outlined text-sm">receipt_long</span>
+</div>
+</div>
+</div>
+<!-- Articles Data Table -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+<h3 class="font-headline-md text-headline-md text-on-surface text-lg">Recent Articles</h3>
+<div class="flex gap-2">
+<button class="px-3 py-1.5 border border-outline-variant rounded-lg font-label-md text-label-md text-on-surface-variant hover:bg-surface-container-low transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">filter_list</span> Filter
+                            </button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-bright border-b border-outline-variant text-on-surface-variant font-label-md text-label-md">
+<th class="py-3 px-4 font-semibold">Title</th>
+<th class="py-3 px-4 font-semibold">Category</th>
+<th class="py-3 px-4 font-semibold">Author</th>
+<th class="py-3 px-4 font-semibold">Last Updated</th>
+<th class="py-3 px-4 font-semibold text-right">Visibility</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface divide-y divide-surface-container">
+<tr class="hover:bg-surface-container-lowest transition-colors group cursor-pointer">
+<td class="py-3 px-4 font-semibold group-hover:text-tertiary transition-colors py-4">How to reset user passwords</td>
+<td class="py-3 px-4 text-on-surface-variant py-4">Troubleshooting</td>
+<td class="py-3 px-4 py-4">Jane Smith</td>
+<td class="py-3 px-4 font-data-mono text-data-mono text-on-surface-variant py-4">Oct 12, 2023</td>
+<td class="py-3 px-4 text-right py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-surface-container-highest text-on-surface-variant border border-outline-variant">Public</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group cursor-pointer">
+<td class="py-3 px-4 font-semibold group-hover:text-tertiary transition-colors py-4">Configuring SSO for Enterprise Accounts</td>
+<td class="py-3 px-4 text-on-surface-variant py-4">Onboarding</td>
+<td class="py-3 px-4 py-4">Alex Chen</td>
+<td class="py-3 px-4 font-data-mono text-data-mono text-on-surface-variant py-4">Oct 10, 2023</td>
+<td class="py-3 px-4 text-right py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-surface-container-low text-on-secondary-container border border-outline-variant">Internal</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group cursor-pointer">
+<td class="py-3 px-4 font-semibold group-hover:text-tertiary transition-colors py-4">Processing Refund Requests (Policy V2)</td>
+<td class="py-3 px-4 text-on-surface-variant py-4">Billing</td>
+<td class="py-3 px-4 py-4">Maria Garcia</td>
+<td class="py-3 px-4 font-data-mono text-data-mono text-on-surface-variant py-4">Oct 05, 2023</td>
+<td class="py-3 px-4 text-right py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-surface-container-low text-on-secondary-container border border-outline-variant">Internal</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group cursor-pointer">
+<td class="py-3 px-4 font-semibold group-hover:text-tertiary transition-colors py-4">Client API Rate Limits</td>
+<td class="py-3 px-4 text-on-surface-variant py-4">Developer</td>
+<td class="py-3 px-4 py-4">System Admin</td>
+<td class="py-3 px-4 font-data-mono text-data-mono text-on-surface-variant py-4">Sep 28, 2023</td>
+<td class="py-3 px-4 text-right py-4">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-surface-container-highest text-on-surface-variant border border-outline-variant">Public</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-3 border-t border-outline-variant bg-surface-bright flex justify-center">
+<button class="font-label-md text-label-md text-primary hover:text-surface-tint transition-colors">View All Articles</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Inspector / Analytics Sidebar (Fixed Width) -->
+<div class="w-full lg:w-80 flex flex-col gap-lg shrink-0">
+<!-- Analytics Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4 text-base">KB Insights</h3>
+<div class="space-y-6">
+<!-- Stat 1 -->
+<div>
+<div class="flex justify-between items-end mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant">Total Views (30d)</span>
+<span class="font-data-mono text-data-mono text-lg font-semibold text-on-surface">14,208</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-1.5 h-2">
+<div class="bg-primary h-1.5 rounded-full h-2" style="width: 75%;"></div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 text-xs">+12% from last month</p>
+</div>
+<!-- Top Articles -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-3 uppercase tracking-wider">Most Viewed Articles</h4>
+<ul class="space-y-3 font-body-sm text-body-sm">
+<li class="flex justify-between items-start gap-2">
+<a class="text-on-surface hover:text-tertiary truncate flex-1" href="#">Password Reset Guide</a>
+<span class="font-data-mono text-data-mono text-on-surface-variant text-xs shrink-0">1.2k</span>
+</li>
+<li class="flex justify-between items-start gap-2">
+<a class="text-on-surface hover:text-tertiary truncate flex-1" href="#">SSO Configuration</a>
+<span class="font-data-mono text-data-mono text-on-surface-variant text-xs shrink-0">854</span>
+</li>
+<li class="flex justify-between items-start gap-2">
+<a class="text-on-surface hover:text-tertiary truncate flex-1" href="#">Update Billing Info</a>
+<span class="font-data-mono text-data-mono text-on-surface-variant text-xs shrink-0">620</span>
+</li>
+</ul>
+</div>
+<!-- Missing Content -->
+<div>
+<h4 class="font-label-md text-label-md text-on-surface-variant mb-3 uppercase tracking-wider">Searches with No Results</h4>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 bg-error-container text-on-error-container rounded font-data-mono text-data-mono text-xs border border-error/20">"export to pdf"</span>
+<span class="px-2 py-1 bg-error-container text-on-error-container rounded font-data-mono text-data-mono text-xs border border-error/20">"custom domain mapping"</span>
+<span class="px-2 py-1 bg-surface-container-high text-on-surface rounded font-data-mono text-data-mono text-xs">"dark mode"</span>
+</div>
+<button class="mt-3 text-primary font-label-md text-label-md text-xs hover:underline flex items-center gap-1">
+                                Review Search Logs <span class="material-symbols-outlined text-xs">open_in_new</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Helpful Tip Card -->
+<div class="bg-surface-container-low border border-surface-dim rounded-xl p-md">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-tertiary">lightbulb</span>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface mb-1">Content Strategy</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Articles with embedded videos reduce support ticket volume by 15% on average.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

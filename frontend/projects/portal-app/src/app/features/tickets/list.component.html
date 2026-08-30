@@ -1,0 +1,67 @@
+<section class="mx-auto flex max-w-7xl flex-col gap-6">
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="font-display text-headline-lg text-on-surface">{{ 'portal.nav.tickets' | t }}</h1>
+      <p class="mt-1 text-body-md text-on-surface-variant">{{ 'portal.tickets.subtitle' | t }}</p>
+    </div>
+    <a
+      routerLink="/app/tickets/new"
+      class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-label-lg font-semibold text-on-primary shadow-card transition-all hover:opacity-90 active:scale-95"
+    >
+      <cs-icon name="add" />
+      {{ 'portal.nav.submit' | t }}
+    </a>
+  </header>
+
+  <cs-card>
+    @switch (state().status) {
+      @case ('idle') {
+        <cs-loading-state [label]="'tickets.loading' | t" />
+      }
+      @case ('loading') {
+        <cs-loading-state [label]="'tickets.loading' | t" />
+      }
+      @case ('error') {
+        @if (listError(); as failure) {
+          <cs-error-state [error]="failure" (retry)="load()" />
+        }
+      }
+      @case ('empty') {
+        <cs-empty-state [message]="'tickets.empty.all' | t" />
+      }
+      @default {
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-2xl border-collapse text-body-md">
+            <thead>
+              <tr
+                class="border-b border-border-subtle bg-surface-low text-start text-label-md tracking-wider text-on-surface-variant uppercase"
+              >
+                <th scope="col" class="px-4 py-2 text-start">{{ 'field.reference' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'field.subject' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'field.status' | t }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border-subtle">
+              @for (ticket of tickets(); track ticket.id) {
+                <tr class="transition-colors even:bg-surface-low hover:bg-surface-high">
+                  <td class="px-4 py-3">
+                    <a
+                      [routerLink]="['/app/tickets', ticket.id]"
+                      class="font-mono text-data-mono text-on-surface-variant hover:text-primary"
+                    >
+                      {{ ticket.reference }}
+                    </a>
+                  </td>
+                  <td class="px-4 py-3 text-label-lg text-on-surface">{{ ticket.subject }}</td>
+                  <td class="px-4 py-3">
+                    <cs-status-pill [value]="ticket.status" />
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+  </cs-card>
+</section>

@@ -1,0 +1,15 @@
+<section class="min-h-72 rounded-lg border border-border-subtle bg-surface-lowest p-4">
+  <h2 class="text-headline-md text-on-surface">{{ title() }}</h2>
+
+  @if (loading()) {
+    <cs-loading-state />
+  } @else if (error()) {
+    <cs-error-state [error]="error()!" />
+  } @else if (empty()) {
+    <cs-empty-state [message]="emptyMessage()" />
+  } @else {
+    <div class="mt-4 min-h-52">
+      <ng-content />
+    </div>
+  }
+</section>

@@ -1,0 +1,64 @@
+<main class="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-surface via-surface-low to-primary-container/30 px-4 py-8" data-design-system="command-center">
+  <div class="pointer-events-none absolute -start-24 -top-24 size-80 rounded-full bg-primary/10 blur-3xl"></div>
+  <div class="pointer-events-none absolute -end-24 -bottom-24 size-96 rounded-full bg-secondary-container/10 blur-3xl"></div>
+  <div class="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-border-subtle bg-surface-lowest/95 shadow-[0_24px_80px_rgb(15,23,42,0.12)] lg:grid-cols-[0.9fr_1.1fr]">
+    <div class="relative hidden flex-col justify-between overflow-hidden bg-primary p-10 text-on-primary lg:flex">
+      <div class="pointer-events-none absolute -end-20 -top-20 size-64 rounded-full border-[32px] border-on-primary/10"></div>
+      <div class="pointer-events-none absolute -bottom-28 -start-20 size-72 rounded-full border-[40px] border-on-primary/10"></div>
+      <div class="relative z-10">
+        <div class="mb-8 flex items-center gap-3">
+          <span class="grid size-12 place-items-center rounded-2xl bg-surface-lowest text-primary shadow-card">
+            <cs-icon name="support_agent" [size]="28" />
+          </span>
+          <span class="text-headline-lg font-bold">{{ 'app.name' | t }}</span>
+        </div>
+        <p class="text-label-md font-semibold uppercase tracking-[0.2em] text-primary-fixed-dim">{{ 'nav.agentWorkspace' | t }}</p>
+        <h2 class="mt-4 max-w-sm text-display-sm font-semibold">{{ 'auth.signIn' | t }}</h2>
+      </div>
+      <div class="relative z-10 grid grid-cols-3 gap-3">
+        <span class="grid size-14 place-items-center rounded-2xl bg-surface-lowest/15 ring-1 ring-on-primary/15"><cs-icon name="confirmation_number" [size]="24" /></span>
+        <span class="grid size-14 place-items-center rounded-2xl bg-surface-lowest/15 ring-1 ring-on-primary/15"><cs-icon name="insights" [size]="24" /></span>
+        <span class="grid size-14 place-items-center rounded-2xl bg-surface-lowest/15 ring-1 ring-on-primary/15"><cs-icon name="auto_awesome" [size]="24" /></span>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-6 p-6 sm:p-10">
+      <div class="flex flex-col items-center gap-3 text-center lg:hidden">
+        <span class="grid size-14 place-items-center rounded-2xl bg-primary text-on-primary shadow-card">
+          <cs-icon name="support_agent" [size]="32" />
+        </span>
+        <span class="text-headline-lg font-bold text-primary">{{ 'app.name' | t }}</span>
+      </div>
+
+    <cs-card class="overflow-hidden">
+      <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-5 p-6 sm:p-8">
+        <h1 class="text-headline-md font-semibold text-on-surface">{{ 'auth.signIn' | t }}</h1>
+
+        <cs-input-field [label]="'field.email' | t" type="email" [control]="form.controls.email" />
+        <cs-input-field
+          [label]="'field.password' | t"
+          type="password"
+          [control]="form.controls.password"
+        />
+
+        @if (error(); as failure) {
+          <p role="alert" class="text-body-sm text-error">
+            {{ failure.code === 'INVALID_CREDENTIALS' ? ('auth.invalidCredentials' | t) : failure.message_ }}
+          </p>
+        }
+
+        <cs-button type="submit" [busy]="busy()" [disabled]="busy()" class="w-full">
+          {{ 'auth.signIn' | t }}
+        </cs-button>
+
+        <a
+          href="mailto:support@example.com?subject=Password%20reset%20request"
+          class="self-center text-label-md font-semibold text-primary hover:underline"
+        >
+          {{ 'auth.forgotPassword' | t }}
+        </a>
+      </form>
+    </cs-card>
+    </div>
+  </div>
+</main>

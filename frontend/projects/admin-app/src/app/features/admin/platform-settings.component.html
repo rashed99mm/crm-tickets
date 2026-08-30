@@ -1,0 +1,370 @@
+<section class="flex flex-col gap-6 p-4 lg:p-6">
+  <header class="cs-page-heading flex flex-col gap-4 border-b border-border-subtle pb-6 sm:flex-row sm:items-end sm:justify-between">
+    <div class="min-w-0">
+      <p class="mb-2 text-label-md font-semibold tracking-[0.16em] text-primary uppercase">
+        {{ 'nav.settings' | t }}
+      </p>
+      <h1 class="text-display-lg text-on-surface">{{ 'platformSettings.title' | t }}</h1>
+      <p class="mt-2 max-w-2xl text-body-lg text-on-surface-variant">{{ 'platformSettings.subtitle' | t }}</p>
+    </div>
+    <cs-button variant="secondary" type="button" (pressed)="refresh()">
+      <cs-icon name="refresh" [size]="18" />
+      {{ 'action.refresh' | t }}
+    </cs-button>
+  </header>
+
+  <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+    <!-- Global Branding (col-span-8) -->
+    <section class="md:col-span-8 bg-surface-container-lowest border border-border-subtle rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] p-container-lg">
+      <h3 class="text-headline-md text-on-surface border-b border-border-subtle pb-3 mb-4 flex items-center gap-2">
+        <cs-icon name="palette" [size]="20" class="text-primary" />
+        {{ 'platformSettings.branding.title' | t }}
+      </h3>
+      @switch (brandingState().status) {
+        @case ('loading') {
+          <cs-loading-state />
+        }
+        @case ('error') {
+          <cs-error-state [error]="brandingLoadError()!" (retry)="loadBranding()" />
+        }
+        @default {
+          <form [formGroup]="brandingForm" (ngSubmit)="saveBranding()" class="flex flex-col gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">{{ 'platformSettings.branding.logoUrl' | t }}</label>
+                  <div class="flex items-center gap-4">
+                    <div class="w-16 h-16 bg-surface-container rounded border border-border-subtle flex items-center justify-center overflow-hidden">
+                      @if (brandingForm.controls.logoUrl.value) {
+                        <img [src]="brandingForm.controls.logoUrl.value" alt="" class="h-full w-full object-contain" />
+                      } @else {
+                        <cs-icon name="image" [size]="24" class="text-on-surface-variant" />
+                      }
+                    </div>
+                    <label class="cursor-pointer px-4 py-2 bg-surface text-on-surface border border-border-subtle rounded-lg text-label-lg hover:bg-surface-container-low transition-colors">
+                      {{ 'platformSettings.branding.uploadNew' | t }}
+                      <input type="file" accept="image/*" class="sr-only" (change)="useSelectedLogo($event)" />
+                    </label>
+                    <button type="button" class="text-label-md text-on-surface-variant hover:text-error" (click)="clearLogo()">
+                      {{ 'action.clear' | t }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <label class="block text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">{{ 'platformSettings.branding.primaryColor' | t }}</label>
+                <div class="flex items-center gap-3">
+                  <input type="color" formControlName="primaryColor" class="h-10 w-10 rounded border border-border-subtle cursor-pointer p-0" />
+                  <input type="text" formControlName="primaryColor" class="font-mono text-data-mono flex-1 px-3 py-2 border border-border-subtle rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">{{ 'platformSettings.branding.logoUrl' | t }}</label>
+                <input type="url" formControlName="logoUrl" class="w-full px-3 py-2 border border-border-subtle rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-body-md" />
+              </div>
+              <div>
+                <label class="block text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">{{ 'platformSettings.branding.accentColor' | t }}</label>
+                <div class="flex items-center gap-3">
+                  <input type="color" formControlName="accentColor" class="h-10 w-10 rounded border border-border-subtle cursor-pointer p-0" />
+                  <input type="text" formControlName="accentColor" class="font-mono text-data-mono flex-1 px-3 py-2 border border-border-subtle rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" />
+                </div>
+              </div>
+            </div>
+            @if (brandingSaveError(); as err) {
+              <p class="text-body-sm text-error" role="alert">{{ err.message_ }}</p>
+            }
+          </form>
+        }
+      }
+    </section>
+
+    <!-- Platform Settings -->
+    <section class="md:col-span-12 bg-surface-container-lowest border border-border-subtle rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] overflow-hidden">
+      <div class="p-container-lg border-b border-border-subtle bg-surface-container-lowest">
+        <h3 class="text-headline-md text-on-surface flex items-center gap-2">
+          <cs-icon name="tune" [size]="20" class="text-primary" />
+          {{ 'platformSettings.general.title' | t }}
+        </h3>
+      </div>
+      @switch (state().status) {
+        @case ('loading') {
+          <cs-loading-state />
+        }
+        @case ('error') {
+          @if (loadError(); as failure) {
+            <cs-error-state [error]="failure" (retry)="load()" />
+          }
+        }
+        @case ('empty') {
+          <cs-empty-state [message]="'platformSettings.empty' | t" />
+        }
+        @default {
+          <div class="overflow-x-auto">
+            <table class="cs-data-table">
+              <thead class="border-b border-border-subtle bg-surface">
+                <tr>
+                  <th class="px-4 py-3 text-start text-label-md text-on-surface-variant uppercase">{{ 'platformSettings.key' | t }}</th>
+                  <th class="px-4 py-3 text-start text-label-md text-on-surface-variant uppercase">{{ 'platformSettings.category' | t }}</th>
+                  <th class="px-4 py-3 text-start text-label-md text-on-surface-variant uppercase">{{ 'platformSettings.value' | t }}</th>
+                  <th class="px-4 py-3 text-end text-label-md text-on-surface-variant uppercase">{{ 'departments.actions' | t }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-subtle">
+                @for (setting of items(); track setting.key) {
+                  <tr>
+                    <td class="px-4 py-3 font-mono text-data-mono text-on-surface">{{ setting.key }}</td>
+                    <td class="px-4 py-3 text-on-surface-variant">{{ setting.category }}</td>
+                    <td class="px-4 py-3">
+                      @if (editingKey() === setting.key) {
+                        <form [formGroup]="form" class="flex items-center gap-2" (ngSubmit)="save(setting)">
+                          <input formControlName="value" class="h-10 flex-1 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface" />
+                          <cs-button type="submit" [busy]="saving()" [disabled]="form.invalid">{{ 'kb.form.save' | t }}</cs-button>
+                        </form>
+                      } @else {
+                        <span [class.font-mono]="setting.isEncrypted" class="break-all text-on-surface">
+                          {{ setting.isEncrypted ? '********' : setting.value }}
+                        </span>
+                      }
+                    </td>
+                    <td class="px-4 py-3 text-end">
+                      @if (editingKey() === setting.key) {
+                        <button type="button" class="text-label-md text-on-surface-variant hover:text-primary" (click)="cancelEdit()">
+                          {{ 'kb.form.cancel' | t }}
+                        </button>
+                      } @else {
+                        <button type="button" class="text-label-md text-primary hover:underline" (click)="startEdit(setting)">
+                          {{ 'kb.edit' | t }}
+                        </button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+      @if (saveError(); as err) {
+        <p class="px-4 py-3 text-body-sm text-error" role="alert">{{ err.message_ }}</p>
+      }
+    </section>
+
+    <div class="hidden" aria-hidden="true">
+    <!-- Legacy visual-only cards are intentionally not rendered. Live values appear below. -->
+    <!-- API Configuration (col-span-4) -->
+    <section class="md:col-span-4 bg-surface-container-lowest border border-border-subtle rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] p-container-lg flex flex-col">
+      <h3 class="text-headline-md text-on-surface border-b border-border-subtle pb-3 mb-4 flex items-center gap-2">
+        <cs-icon name="key" [size]="20" class="text-primary" />
+        {{ 'platformSettings.apiConfig.title' | t }}
+      </h3>
+      <div class="space-y-4 flex-grow">
+        <div class="p-3 bg-surface-container-low rounded-lg border border-border-subtle">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-label-lg text-on-surface">{{ 'platformSettings.apiConfig.productionKey' | t }}</span>
+            <span class="bg-status-resolved text-on-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">{{ 'platformSettings.apiConfig.active' | t }}</span>
+          </div>
+          <div class="flex items-center gap-2 mt-2">
+            <input class="bg-transparent border-none p-0 flex-1 font-mono text-data-mono text-on-surface-variant focus:ring-0" readonly type="password" value="sk_live_1234567890abcdef" />
+            <button type="button" class="text-on-surface-variant hover:text-primary">
+              <cs-icon name="content_copy" [size]="18" />
+            </button>
+            <button type="button" class="text-on-surface-variant hover:text-primary">
+              <cs-icon name="visibility" [size]="18" />
+            </button>
+          </div>
+        </div>
+        <div class="p-3 bg-surface rounded-lg border border-border-subtle border-dashed">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-label-lg text-on-surface-variant">{{ 'platformSettings.apiConfig.stagingKey' | t }}</span>
+          </div>
+          <button type="button" class="w-full mt-2 py-1.5 border border-primary text-primary rounded text-label-md hover:bg-primary hover:text-on-primary transition-colors">
+            {{ 'platformSettings.apiConfig.generateKey' | t }}
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integrations (col-span-12) -->
+    <section class="md:col-span-12 bg-surface-container-lowest border border-border-subtle rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] p-container-lg">
+      <div class="flex justify-between items-center border-b border-border-subtle pb-3 mb-4">
+        <h3 class="text-headline-md text-on-surface flex items-center gap-2">
+          <cs-icon name="hub" [size]="20" class="text-primary" />
+          {{ 'platformSettings.integrations.title' | t }}
+        </h3>
+        <button type="button" class="text-primary text-label-md hover:underline flex items-center gap-1">
+          <cs-icon name="add" [size]="16" /> {{ 'platformSettings.integrations.add' | t }}
+        </button>
+      </div>
+      @if (erpImportMessage(); as message) {
+        <p class="mb-4 rounded-lg bg-status-resolved/10 px-3 py-2 text-body-sm text-status-resolved" role="status">{{ message }}</p>
+      }
+      @if (erpImportError(); as error) {
+        <p class="mb-4 rounded-lg bg-error/10 px-3 py-2 text-body-sm text-error" role="alert">{{ error }}</p>
+      }
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- CMS ERP -->
+        <div class="border border-primary/30 rounded-lg p-4 bg-primary/5 flex flex-col h-full relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <div class="w-10 h-10 bg-white border border-primary/20 rounded shadow-sm flex items-center justify-center p-1">
+              <cs-icon name="account_balance" [size]="24" class="text-primary" />
+            </div>
+            <span class="bg-status-resolved text-on-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">{{ 'platformSettings.integrations.cmsMock' | t }}</span>
+          </div>
+          <h4 class="text-label-lg text-on-surface">{{ 'platformSettings.integrations.erpTicketFeed' | t }}</h4>
+          <p class="text-body-sm text-on-surface-variant mt-1 mb-4 flex-grow">{{ 'platformSettings.integrations.importDescription' | t }}</p>
+          <button type="button" class="w-full py-2 bg-primary text-on-primary rounded text-label-md hover:opacity-90 disabled:opacity-50" [disabled]="erpImporting()" (click)="importErpTickets()">
+            {{ erpImporting() ? ('platformSettings.integrations.importing' | t) : ('platformSettings.integrations.importTickets' | t) }}
+          </button>
+        </div>
+        <!-- Gmail -->
+        <div class="border border-border-subtle rounded-lg p-4 hover:border-primary transition-colors cursor-pointer bg-surface flex flex-col h-full relative overflow-hidden">
+          <div class="absolute top-0 end-0 w-16 h-16 bg-primary opacity-5 rounded-es-full"></div>
+          <div class="flex justify-between items-start mb-3">
+            <div class="w-10 h-10 bg-white border border-border-subtle rounded shadow-sm flex items-center justify-center p-1">
+              <cs-icon name="mail" [size]="24" class="text-primary" />
+            </div>
+            <span class="bg-status-resolved text-on-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">{{ 'platformSettings.integrations.connected' | t }}</span>
+          </div>
+          <h4 class="text-label-lg text-on-surface">{{ 'platformSettings.integrations.gmail' | t }}</h4>
+          <p class="text-body-sm text-on-surface-variant mt-1 mb-4 flex-grow">{{ 'platformSettings.integrations.gmailDescription' | t }}</p>
+          <div class="flex justify-between items-center pt-2 border-t border-border-subtle">
+            <span class="font-mono text-data-mono text-xs text-on-surface-variant">{{ 'platformSettings.integrations.lastSyncValue' | t }}</span>
+            <button type="button" class="text-on-surface-variant hover:text-primary">
+              <cs-icon name="settings" [size]="18" />
+            </button>
+          </div>
+        </div>
+        <!-- WhatsApp -->
+        <div class="border border-border-subtle rounded-lg p-4 hover:border-primary transition-colors cursor-pointer bg-surface flex flex-col h-full relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <div class="w-10 h-10 bg-white border border-border-subtle rounded shadow-sm flex items-center justify-center p-1">
+              <cs-icon name="chat" [size]="24" class="text-[#25D366]" />
+            </div>
+            <span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">{{ 'platformSettings.integrations.notConfigured' | t }}</span>
+          </div>
+          <h4 class="text-label-lg text-on-surface">{{ 'platformSettings.integrations.whatsapp' | t }}</h4>
+          <p class="text-body-sm text-on-surface-variant mt-1 mb-4 flex-grow">{{ 'platformSettings.integrations.whatsappDescription' | t }}</p>
+          <button type="button" class="w-full py-1.5 border border-border-subtle text-on-surface rounded text-label-md hover:bg-surface-container-low transition-colors">
+            {{ 'platformSettings.integrations.configure' | t }}
+          </button>
+        </div>
+        <!-- SMS -->
+        <div class="border border-border-subtle rounded-lg p-4 hover:border-primary transition-colors cursor-pointer bg-surface flex flex-col h-full relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <div class="w-10 h-10 bg-white border border-border-subtle rounded shadow-sm flex items-center justify-center p-1">
+              <cs-icon name="sms" [size]="24" class="text-primary" />
+            </div>
+            <span class="bg-status-pending text-on-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">{{ 'platformSettings.integrations.setupIncomplete' | t }}</span>
+          </div>
+          <h4 class="text-label-lg text-on-surface">{{ 'platformSettings.integrations.sms' | t }}</h4>
+          <p class="text-body-sm text-on-surface-variant mt-1 mb-4 flex-grow">{{ 'platformSettings.integrations.smsDescription' | t }}</p>
+          <div class="flex justify-between items-center pt-2 border-t border-border-subtle">
+            <span class="font-mono text-data-mono text-xs text-status-pending">{{ 'platformSettings.integrations.missingAuth' | t }}</span>
+            <button type="button" class="text-primary text-label-md hover:underline">{{ 'platformSettings.integrations.resume' | t }}</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Routing Rules (col-span-12) -->
+    <section class="md:col-span-12 bg-surface-container-lowest border border-border-subtle rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] overflow-hidden">
+      <div class="p-container-lg border-b border-border-subtle flex justify-between items-center bg-surface-container-lowest">
+        <h3 class="text-headline-md text-on-surface flex items-center gap-2">
+          <cs-icon name="route" [size]="20" class="text-primary" />
+          {{ 'platformSettings.routing.title' | t }}
+        </h3>
+        <button type="button" class="bg-primary text-on-primary px-4 py-2 rounded-lg text-label-md shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2">
+          <cs-icon name="add" [size]="16" /> {{ 'platformSettings.routing.addRule' | t }}
+        </button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="cs-data-table">
+          <thead>
+            <tr class="bg-surface border-b border-border-subtle">
+              <th class="px-4 py-3 text-label-md text-on-surface-variant uppercase tracking-wider text-start">{{ 'platformSettings.routing.priority' | t }}</th>
+              <th class="px-4 py-3 text-label-md text-on-surface-variant uppercase tracking-wider text-start">{{ 'platformSettings.routing.condition' | t }}</th>
+              <th class="px-4 py-3 text-label-md text-on-surface-variant uppercase tracking-wider text-start">{{ 'platformSettings.routing.action' | t }}</th>
+              <th class="px-4 py-3 text-label-md text-on-surface-variant uppercase tracking-wider text-start">{{ 'field.status' | t }}</th>
+              <th class="px-4 py-3 text-label-md text-on-surface-variant uppercase tracking-wider text-end">{{ 'departments.actions' | t }}</th>
+            </tr>
+          </thead>
+          <tbody class="text-body-md text-on-surface">
+            @for (rule of routingRules; track rule.priority) {
+              <tr class="border-b border-border-subtle hover:bg-slate-50 transition-colors" [class.bg-surface]="$index % 2 === 1">
+                <td class="px-4 py-3 font-mono text-data-mono text-on-surface-variant">{{ rule.priority }}</td>
+                <td class="px-4 py-3">{{ rule.conditionKey | t }}</td>
+                <td class="px-4 py-3 flex items-center gap-2">
+                  <cs-icon name="turn_right" [size]="16" class="text-on-surface-variant" />
+                  <span>{{ rule.actionKey | t }}</span>
+                </td>
+                <td class="px-4 py-3">
+                  <label class="relative inline-flex items-center cursor-pointer">
+                    <input checked type="checkbox" class="sr-only peer" />
+                    <div class="w-9 h-5 bg-border-subtle peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                  </label>
+                </td>
+                <td class="px-4 py-3 text-end text-on-surface-variant">
+                  <button type="button" class="hover:text-primary mx-1"><cs-icon name="edit" [size]="18" /></button>
+                  <button type="button" class="hover:text-error mx-1"><cs-icon name="delete" [size]="18" /></button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      <div class="p-3 bg-surface-container-low border-t border-border-subtle text-center">
+        <span class="text-body-sm text-on-surface-variant">{{ 'platformSettings.routing.hint' | t }}</span>
+      </div>
+    </section>
+
+    </div>
+
+    <section class="md:col-span-12 rounded-xl border border-border-subtle bg-surface-container-lowest p-container-lg shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+      <div class="mb-4 flex items-center justify-between border-b border-border-subtle pb-3">
+        <div>
+          <h3 class="flex items-center gap-2 text-headline-md text-on-surface">
+            <cs-icon name="database" [size]="20" class="text-primary" />
+            {{ 'platformSettings.live.title' | t }}
+          </h3>
+          <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'platformSettings.live.subtitle' | t }}</p>
+        </div>
+        <span class="rounded-full bg-success/12 px-3 py-1 text-label-md font-semibold text-success">{{ items().length }}</span>
+      </div>
+      @if (categories().length === 0) {
+        <cs-empty-state [message]="'platformSettings.empty' | t" />
+      } @else {
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          @for (category of categories(); track category) {
+            <article class="rounded-xl border border-border-subtle bg-surface p-4">
+              <div class="mb-3 flex items-center justify-between">
+                <h4 class="text-label-lg font-semibold text-on-surface">{{ category }}</h4>
+                <span class="text-label-sm text-on-surface-variant">{{ settingsFor(category).length }}</span>
+              </div>
+              <div class="space-y-2">
+                @for (setting of settingsFor(category); track setting.key) {
+                  <button type="button" class="flex w-full items-center justify-between gap-3 rounded-lg border border-border-subtle px-3 py-2 text-start transition-colors hover:border-primary hover:bg-primary/5" (click)="startEdit(setting)">
+                    <span class="min-w-0 truncate font-mono text-data-mono text-on-surface">{{ setting.key }}</span>
+                    <span class="max-w-32 truncate text-body-sm text-on-surface-variant">{{ setting.isEncrypted ? '********' : setting.value }}</span>
+                  </button>
+                }
+              </div>
+            </article>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Action Footer -->
+    <div class="md:col-span-12 flex justify-end gap-4 pt-4 border-t border-border-subtle mt-4">
+      <button type="button" (click)="discardBranding()" [disabled]="brandingSaving()" class="px-6 py-2 border border-border-subtle text-on-surface rounded-lg text-label-lg hover:bg-surface transition-colors disabled:cursor-not-allowed disabled:opacity-50">
+        {{ 'action.discard' | t }}
+      </button>
+      <button type="button" (click)="saveBranding()" [disabled]="brandingSaving()" class="px-6 py-2 bg-primary text-on-primary rounded-lg text-label-lg shadow-sm hover:opacity-90 transition-opacity flex items-center gap-2 disabled:cursor-not-allowed disabled:opacity-50">
+        <cs-icon name="save" [size]="18" />
+        {{ 'action.saveChanges' | t }}
+      </button>
+    </div>
+  </div>
+</section>

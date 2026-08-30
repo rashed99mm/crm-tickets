@@ -1,0 +1,136 @@
+<section data-design-system="command-center" class="mx-auto flex min-h-full max-w-7xl flex-col gap-6 bg-surface px-4 py-6 sm:px-6 lg:px-8">
+  <header class="flex flex-col gap-4 border-b border-outline-variant pb-6 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <div class="mb-2 inline-flex items-center gap-2 text-label-sm font-bold uppercase tracking-[0.16em] text-primary">
+        <span class="size-2 rounded-full bg-success shadow-[0_0_0_4px] shadow-success/15"></span>
+        {{ 'admin.liveQueue.liveOperations' | t }}
+      </div>
+      <h1 class="font-display text-headline-lg font-bold tracking-tight text-on-surface">{{ 'admin.liveQueue.title' | t }}</h1>
+      <p class="mt-1 text-body-md text-on-surface-variant">{{ 'admin.liveQueue.subtitle' | t }}</p>
+    </div>
+    <button
+      type="button"
+      class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-label-md font-bold text-on-primary shadow-sm transition-all hover:bg-primary-container hover:text-on-primary-container active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+      (click)="load()"
+      [disabled]="loading()"
+    >
+      <cs-icon name="refresh" [size]="18" />
+      {{ 'admin.liveQueue.refresh' | t }}
+    </button>
+  </header>
+
+  <div class="grid gap-3 sm:grid-cols-3">
+    <article class="rounded-xl border border-outline-variant bg-surface-lowest p-4 shadow-xs">
+      <div class="flex items-center justify-between text-on-surface-variant">
+        <span class="text-label-sm font-bold uppercase tracking-wide">{{ 'admin.liveQueue.unassignedMetric' | t }}</span>
+        <span class="grid size-9 place-items-center rounded-lg bg-primary-container text-primary"><cs-icon name="inbox" [size]="20" /></span>
+      </div>
+      <p class="mt-4 font-display text-display-sm font-bold text-on-surface">{{ unassigned().length }}</p>
+      <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'admin.liveQueue.waitingForOwner' | t }}</p>
+    </article>
+    <article class="rounded-xl border border-error/20 bg-error-container/20 p-4 shadow-xs">
+      <div class="flex items-center justify-between text-on-error-container">
+        <span class="text-label-sm font-bold uppercase tracking-wide">{{ 'admin.liveQueue.urgentMetric' | t }}</span>
+        <span class="grid size-9 place-items-center rounded-lg bg-error-container text-error"><cs-icon name="priority_high" [size]="20" /></span>
+      </div>
+      <p class="mt-4 font-display text-display-sm font-bold text-on-error-container">{{ urgentCount() }}</p>
+      <p class="mt-1 text-body-sm text-on-error-container/80">{{ 'admin.liveQueue.overThreshold' | t }}</p>
+    </article>
+    <article class="rounded-xl border border-outline-variant bg-surface-lowest p-4 shadow-xs">
+      <div class="flex items-center justify-between text-on-surface-variant">
+        <span class="text-label-sm font-bold uppercase tracking-wide">{{ 'admin.liveQueue.openWorkload' | t }}</span>
+        <span class="grid size-9 place-items-center rounded-lg bg-secondary-container text-on-secondary-container"><cs-icon name="speed" [size]="20" /></span>
+      </div>
+      <p class="mt-4 font-display text-display-sm font-bold text-on-surface">{{ openCount() }}</p>
+      <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'admin.liveQueue.acrossAgents' | t : activeAgents() }}</p>
+    </article>
+  </div>
+
+  @if (error(); as failure) {
+    <cs-error-state [error]="failure" (retry)="load()" />
+  } @else if (loading() && !hasUnassigned() && !hasAgentLoad()) {
+    <cs-loading-state [label]="'admin.liveQueue.loading' | t" />
+  }
+
+  <!-- Unassigned queue: oldest first, urgent flagged -->
+  <cs-card class="overflow-hidden rounded-xl border border-outline-variant shadow-card">
+    <div class="flex items-center justify-between gap-4 border-b border-outline-variant pb-4">
+      <div>
+        <h2 class="text-headline-md font-bold text-on-surface">{{ 'admin.liveQueue.unassigned' | t }}</h2>
+        <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'admin.liveQueue.oldestFirst' | t }}</p>
+      </div>
+      <span class="rounded-full bg-primary-container px-3 py-1 text-label-sm font-bold text-on-primary-container">{{ 'admin.liveQueue.waitingCount' | t : unassigned().length }}</span>
+    </div>
+    @if (hasUnassigned()) {
+      <div class="overflow-x-auto pt-3">
+      <table class="cs-data-table min-w-[700px]">
+        <thead class="text-label-sm uppercase text-on-surface-variant">
+          <tr>
+            <th class="py-2 pe-4">{{ 'admin.liveQueue.reference' | t }}</th>
+            <th class="py-2 pe-4">{{ 'admin.liveQueue.subject' | t }}</th>
+            <th class="py-2 pe-4">{{ 'admin.liveQueue.customer' | t }}</th>
+            <th class="py-2 pe-4">{{ 'admin.liveQueue.priority' | t }}</th>
+            <th class="py-2 pe-4">{{ 'admin.liveQueue.waiting' | t }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-subtle">
+          @for (row of unassigned(); track row.id) {
+            <tr [class.bg-error-container]="row.urgent" class="transition-colors">
+              <td class="py-2 pe-4 font-mono text-label-md">{{ row.reference }}</td>
+              <td class="py-2 pe-4">
+                <a class="text-primary hover:underline" [routerLink]="['/tickets', row.id]">{{ row.subject }}</a>
+              </td>
+              <td class="py-2 pe-4 text-on-surface-variant">{{ row.customerName }}</td>
+              <td class="py-2 pe-4">
+                <span
+                  class="rounded-full px-2 py-0.5 text-label-sm"
+                  [class.bg-error-container]="row.urgent"
+                  [class.text-on-error-container]="row.urgent"
+                >{{ row.priority }}</span>
+              </td>
+              <td class="py-2 pe-4" [class.text-error]="row.urgent">
+                {{ 'admin.liveQueue.minutes' | t : row.waitMinutes }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      </div>
+    } @else {
+      <cs-empty-state [message]="'admin.liveQueue.noUnassigned' | t" />
+    }
+  </cs-card>
+
+  <!-- Per-agent load -->
+  <cs-card class="overflow-hidden rounded-xl border border-outline-variant shadow-card">
+    <div class="flex items-center justify-between gap-4 border-b border-outline-variant pb-4">
+      <div>
+        <h2 class="text-headline-md font-bold text-on-surface">{{ 'admin.liveQueue.agentLoad' | t }}</h2>
+        <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'admin.liveQueue.currentByAgent' | t }}</p>
+      </div>
+      <span class="rounded-full bg-success-container px-3 py-1 text-label-sm font-bold text-on-success-container">{{ 'admin.liveQueue.activeCount' | t : activeAgents() }}</span>
+    </div>
+    @if (hasAgentLoad()) {
+      <div class="overflow-x-auto pt-3">
+      <table class="cs-data-table min-w-[420px]">
+        <thead class="text-label-sm uppercase text-on-surface-variant">
+          <tr>
+            <th class="py-2 pe-4">{{ 'admin.liveQueue.agent' | t }}</th>
+            <th class="py-2 pe-4">{{ 'admin.liveQueue.openTickets' | t }}</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-border-subtle">
+          @for (row of agentLoad(); track row.agentId) {
+            <tr>
+              <td class="py-2 pe-4 text-on-surface">{{ row.name }}</td>
+              <td class="py-2 pe-4 font-mono text-label-md">{{ row.openCount }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+      </div>
+    } @else {
+      <cs-empty-state [message]="'admin.liveQueue.noAgents' | t" />
+    }
+  </cs-card>
+</section>

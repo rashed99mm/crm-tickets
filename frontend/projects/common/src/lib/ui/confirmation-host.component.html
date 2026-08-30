@@ -1,0 +1,56 @@
+@if (confirmations.current(); as request) {
+  <div
+    class="fixed inset-0 z-[60] grid place-items-center bg-on-surface/40 p-4"
+    (click)="confirmations.resolve(false)"
+  >
+    <section
+      role="alertdialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="'confirm-title-' + request.id"
+      [attr.aria-describedby]="'confirm-message-' + request.id"
+      class="w-full max-w-md rounded-lg border border-border-subtle bg-surface-lowest shadow-popover"
+      (click)="$event.stopPropagation()"
+    >
+      <div class="flex items-start gap-3 border-b border-border-subtle px-5 py-4">
+        <span
+          class="grid size-9 shrink-0 place-items-center rounded-lg"
+          [class.bg-error-container]="request.danger"
+          [class.text-on-error-container]="request.danger"
+          [class.bg-primary-container]="!request.danger"
+          [class.text-on-primary-container]="!request.danger"
+        >
+          <cs-icon [name]="request.danger ? 'warning' : 'help'" [size]="20" />
+        </span>
+        <div class="min-w-0">
+          <h2 [id]="'confirm-title-' + request.id" class="text-headline-md text-on-surface">
+            {{ request.title }}
+          </h2>
+          <p [id]="'confirm-message-' + request.id" class="mt-1 text-body-md text-on-surface-variant">
+            {{ request.message }}
+          </p>
+        </div>
+      </div>
+
+      <div class="flex justify-end gap-2 px-5 py-4">
+        <button
+          type="button"
+          class="rounded-lg border border-outline-variant bg-surface-lowest px-4 py-2 text-label-lg font-semibold text-on-surface transition-colors hover:bg-surface-high"
+          (click)="confirmations.resolve(false)"
+        >
+          {{ request.cancelText ?? ('action.cancel' | t) }}
+        </button>
+        <button
+          type="button"
+          class="rounded-lg px-4 py-2 text-label-lg font-semibold transition-colors"
+          [class.bg-error]="request.danger"
+          [class.text-on-error]="request.danger"
+          [class.bg-primary]="!request.danger"
+          [class.text-on-primary]="!request.danger"
+          (click)="confirmations.resolve(true)"
+        >
+          {{ request.confirmText ?? ('action.confirm' | t) }}
+        </button>
+      </div>
+    </section>
+  </div>
+}

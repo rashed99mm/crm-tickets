@@ -1,0 +1,364 @@
+<section class="flex flex-col gap-6">
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-headline-lg text-on-surface">{{ 'slaPolicies.title' | t }}</h1>
+      <p class="mt-1 text-body-md text-on-surface-variant">{{ 'slaPolicies.subtitle' | t }}</p>
+    </div>
+    <cs-button (pressed)="openActiveCreate()">
+      <cs-icon name="add" />
+      {{ 'slaPolicies.add' | t }}
+    </cs-button>
+  </header>
+
+  <div class="flex flex-wrap gap-2 rounded-lg border border-outline-variant bg-surface-low p-1">
+    <button
+      type="button"
+      class="rounded-md px-4 py-2 text-label-md font-semibold transition-colors"
+      [class.bg-surface-lowest]="activeTab() === 'policies'"
+      [class.text-primary]="activeTab() === 'policies'"
+      [class.text-on-surface-variant]="activeTab() !== 'policies'"
+      (click)="selectTab('policies')"
+    >
+      {{ 'slaPolicies.tabs.policies' | t }}
+    </button>
+    <button
+      type="button"
+      class="rounded-md px-4 py-2 text-label-md font-semibold transition-colors"
+      [class.bg-surface-lowest]="activeTab() === 'businessHours'"
+      [class.text-primary]="activeTab() === 'businessHours'"
+      [class.text-on-surface-variant]="activeTab() !== 'businessHours'"
+      (click)="selectTab('businessHours')"
+    >
+      {{ 'slaPolicies.tabs.businessHours' | t }}
+    </button>
+    <button
+      type="button"
+      class="rounded-md px-4 py-2 text-label-md font-semibold transition-colors"
+      [class.bg-surface-lowest]="activeTab() === 'holidays'"
+      [class.text-primary]="activeTab() === 'holidays'"
+      [class.text-on-surface-variant]="activeTab() !== 'holidays'"
+      (click)="selectTab('holidays')"
+    >
+      {{ 'slaPolicies.tabs.holidays' | t }}
+    </button>
+  </div>
+
+  <div class="grid gap-3 md:grid-cols-4">
+    <div class="rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-card">
+      <p class="text-label-md uppercase tracking-wider text-on-surface-variant">
+        {{ 'slaPolicies.automation.targets' | t }}
+      </p>
+      <p class="mt-2 text-headline-lg text-on-surface">{{ activePolicyCount() }}</p>
+    </div>
+    <div class="rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-card">
+      <p class="text-label-md uppercase tracking-wider text-on-surface-variant">
+        {{ 'slaPolicies.automation.assignment' | t }}
+      </p>
+      <p class="mt-2 text-body-sm font-semibold text-on-surface">{{ 'slaPolicies.automation.assignmentMode' | t }}</p>
+    </div>
+    <div class="rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-card">
+      <p class="text-label-md uppercase tracking-wider text-on-surface-variant">
+        {{ 'slaPolicies.automation.escalations' | t }}
+      </p>
+      <p class="mt-2 text-headline-lg text-status-escalated">{{ escalationRuleCount() }}</p>
+    </div>
+    <div class="rounded-lg border border-outline-variant bg-surface-lowest p-4 shadow-card">
+      <p class="text-label-md uppercase tracking-wider text-on-surface-variant">
+        {{ 'slaPolicies.automation.alerts' | t }}
+      </p>
+      <p class="mt-2 text-body-sm font-semibold text-on-surface">{{ 'slaPolicies.automation.alertMode' | t }}</p>
+    </div>
+  </div>
+
+  <cs-dialog
+    [open]="showCreate()"
+    [heading]="'slaPolicies.create.title' | t"
+    (closed)="showCreate.set(false)"
+  >
+    <form [formGroup]="form" (ngSubmit)="create()" class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="sla-priority" class="text-label-md text-on-surface-variant">
+          {{ 'field.priority' | t }}
+        </label>
+        <select
+          id="sla-priority"
+          [formControl]="form.controls.priority"
+          class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+        >
+          @for (option of priorities; track option) {
+            <option [value]="option">{{ option }}</option>
+          }
+        </select>
+      </div>
+
+      <cs-input-field
+        [label]="'slaPolicies.responseTarget' | t"
+        type="number"
+        [control]="form.controls.responseTargetHours"
+        [serverError]="fieldError('responseTargetHours')"
+      />
+      <cs-input-field
+        [label]="'slaPolicies.resolutionTarget' | t"
+        type="number"
+        [control]="form.controls.resolutionTargetHours"
+        [serverError]="fieldError('resolutionTargetHours')"
+      />
+
+      @if (createError(); as failure) {
+        @if (!failure.hasFieldErrors) {
+          <p class="text-body-md text-error" role="alert">{{ failure.message_ }}</p>
+        }
+      }
+
+      <div class="flex items-center justify-end gap-2 border-t border-border-subtle pt-4">
+        <cs-button type="submit" [busy]="saving()" [disabled]="form.invalid">
+          {{ 'slaPolicies.create.submit' | t }}
+        </cs-button>
+      </div>
+    </form>
+  </cs-dialog>
+
+  <cs-dialog
+    [open]="editingId() !== null"
+    [heading]="'slaPolicies.edit.title' | t"
+    (closed)="cancelEdit()"
+  >
+    <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="flex flex-col gap-4">
+      <div class="flex flex-col gap-1.5">
+        <label for="sla-edit-priority" class="text-label-md text-on-surface-variant">
+          {{ 'field.priority' | t }}
+        </label>
+        <select
+          id="sla-edit-priority"
+          [formControl]="editForm.controls.priority"
+          class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+        >
+          @for (option of priorities; track option) {
+            <option [value]="option">{{ option }}</option>
+          }
+        </select>
+      </div>
+
+      <cs-input-field
+        [label]="'slaPolicies.responseTarget' | t"
+        type="number"
+        [control]="editForm.controls.responseTargetHours"
+        [serverError]="editFieldError('responseTargetHours')"
+      />
+      <cs-input-field
+        [label]="'slaPolicies.resolutionTarget' | t"
+        type="number"
+        [control]="editForm.controls.resolutionTargetHours"
+        [serverError]="editFieldError('resolutionTargetHours')"
+      />
+
+      @if (editError(); as failure) {
+        @if (!failure.hasFieldErrors) {
+          <p class="text-body-md text-error" role="alert">{{ failure.message_ }}</p>
+        }
+      }
+
+      <div class="flex items-center justify-end gap-2 border-t border-border-subtle pt-4">
+        <cs-button type="submit" [busy]="editSaving()" [disabled]="editForm.invalid">
+          {{ 'slaPolicies.edit.submit' | t }}
+        </cs-button>
+        <cs-button variant="secondary" type="button" (pressed)="cancelEdit()">
+          {{ 'slaPolicies.edit.cancel' | t }}
+        </cs-button>
+      </div>
+    </form>
+  </cs-dialog>
+
+  <cs-dialog
+    [open]="showCalendarCreate()"
+    [heading]="'slaPolicies.businessHours.create' | t"
+    (closed)="showCalendarCreate.set(false)"
+  >
+    <form [formGroup]="calendarForm" (ngSubmit)="createBusinessHours()" class="flex flex-col gap-4">
+      <cs-input-field [label]="'slaPolicies.branchId' | t" [control]="calendarForm.controls.branchId" />
+      <div class="flex flex-col gap-1.5">
+        <label for="business-hours-day" class="text-label-md text-on-surface-variant">
+          {{ 'slaPolicies.dayOfWeek' | t }}
+        </label>
+        <select
+          id="business-hours-day"
+          [formControl]="calendarForm.controls.dayOfWeek"
+          class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+        >
+          @for (day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; track day) {
+            <option [value]="day">{{ day }}</option>
+          }
+        </select>
+      </div>
+      <cs-input-field [label]="'slaPolicies.openTime' | t" type="time" [control]="calendarForm.controls.openTime" />
+      <cs-input-field [label]="'slaPolicies.closeTime' | t" type="time" [control]="calendarForm.controls.closeTime" />
+
+      @if (calendarError(); as failure) {
+        <p class="text-body-md text-error" role="alert">{{ failure.message_ }}</p>
+      }
+
+      <div class="flex items-center justify-end gap-2 border-t border-border-subtle pt-4">
+        <cs-button type="submit" [busy]="calendarSaving()" [disabled]="calendarForm.invalid">
+          {{ 'slaPolicies.businessHours.save' | t }}
+        </cs-button>
+      </div>
+    </form>
+  </cs-dialog>
+
+  <cs-dialog
+    [open]="showHolidayCreate()"
+    [heading]="'slaPolicies.holidays.create' | t"
+    (closed)="showHolidayCreate.set(false)"
+  >
+    <form [formGroup]="holidayForm" (ngSubmit)="createHoliday()" class="flex flex-col gap-4">
+      <cs-input-field [label]="'slaPolicies.branchId' | t" [control]="holidayForm.controls.branchId" />
+      <cs-input-field [label]="'slaPolicies.holidayDate' | t" type="date" [control]="holidayForm.controls.holidayDate" />
+      <cs-input-field [label]="'slaPolicies.holidayName' | t" [control]="holidayForm.controls.name" />
+
+      @if (holidayError(); as failure) {
+        <p class="text-body-md text-error" role="alert">{{ failure.message_ }}</p>
+      }
+
+      <div class="flex items-center justify-end gap-2 border-t border-border-subtle pt-4">
+        <cs-button type="submit" [busy]="holidaySaving()" [disabled]="holidayForm.invalid">
+          {{ 'slaPolicies.holidays.save' | t }}
+        </cs-button>
+      </div>
+    </form>
+  </cs-dialog>
+
+  @if (activeTab() === 'policies') {
+  <cs-card [heading]="'slaPolicies.list.title' | t">
+    @if (state().status === 'loading') {
+      <cs-loading-state />
+    } @else if (listError(); as failure) {
+      <cs-error-state [error]="failure" />
+    } @else if (state().status === 'empty') {
+      <cs-empty-state [message]="'slaPolicies.empty' | t" />
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="cs-data-table min-w-2xl">
+          <thead>
+            <tr
+              class="border-b border-border-subtle bg-surface-low text-label-md tracking-wider text-on-surface-variant uppercase"
+            >
+              <th scope="col" class="px-4 py-2 text-start">{{ 'field.priority' | t }}</th>
+              <th scope="col" class="px-4 py-2 text-start">{{ 'slaPolicies.responseTarget' | t }}</th>
+              <th scope="col" class="px-4 py-2 text-start">{{ 'slaPolicies.resolutionTarget' | t }}</th>
+              <th scope="col" class="px-4 py-2 text-start">{{ 'departments.state' | t }}</th>
+              <th scope="col" class="px-4 py-2 text-end">{{ 'departments.actions' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (policy of items(); track policy.id) {
+              <tr
+                class="border-b border-border-subtle transition-colors even:bg-surface-low last:border-transparent hover:bg-surface-high"
+              >
+                <td class="px-4 py-3 text-label-lg text-on-surface">{{ policy.priority }}</td>
+                <td class="px-4 py-3 text-on-surface-variant">
+                  {{ 'slaPolicies.hours' | t: policy.responseTargetHours }}
+                </td>
+                <td class="px-4 py-3 text-on-surface-variant">
+                  {{ 'slaPolicies.hours' | t: policy.resolutionTargetHours }}
+                </td>
+                <td class="px-4 py-3">
+                  <span
+                    class="inline-flex items-center gap-1 rounded px-2 py-0.5 text-label-md font-semibold"
+                    [class]="policy.isActive ? 'bg-success/12 text-success' : 'bg-error/12 text-error'"
+                  >
+                    <span
+                      class="size-1.5 shrink-0 rounded-full"
+                      [class]="policy.isActive ? 'bg-success' : 'bg-error'"
+                    ></span>
+                    {{ (policy.isActive ? 'departments.active' : 'departments.deactivated') | t }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex justify-end gap-2">
+                    <cs-button variant="secondary" (pressed)="startEdit(policy)">
+                      {{ 'slaPolicies.edit' | t }}
+                    </cs-button>
+                    <cs-button
+                      variant="secondary"
+                      [disabled]="!policy.isActive"
+                      (pressed)="deactivate(policy)"
+                    >
+                      {{ 'departments.deactivate' | t }}
+                    </cs-button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </cs-card>
+  }
+
+  @if (activeTab() === 'businessHours') {
+    <cs-card [heading]="'slaPolicies.businessHours.title' | t">
+      @if (businessHoursState().status === 'loading') {
+        <cs-loading-state />
+      } @else if (businessHoursError(); as failure) {
+        <cs-error-state [error]="failure" (retry)="loadBusinessHours()" />
+      } @else if (businessHoursState().status === 'empty') {
+        <cs-empty-state [message]="'slaPolicies.businessHours.empty' | t" />
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="cs-data-table min-w-xl">
+            <thead>
+              <tr class="border-b border-border-subtle bg-surface-low text-label-md text-on-surface-variant uppercase">
+                <th scope="col" class="px-4 py-2 text-start">{{ 'slaPolicies.dayOfWeek' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'slaPolicies.hoursWindow' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'slaPolicies.branchId' | t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of businessHours(); track row.id) {
+                <tr class="border-b border-border-subtle last:border-transparent">
+                  <td class="px-4 py-3 font-medium text-on-surface">{{ row.dayOfWeek }}</td>
+                  <td class="px-4 py-3 text-on-surface-variant">{{ row.openTime }} - {{ row.closeTime }}</td>
+                  <td class="px-4 py-3 font-mono text-data-mono text-on-surface-variant">{{ row.branchId }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </cs-card>
+  }
+
+  @if (activeTab() === 'holidays') {
+    <cs-card [heading]="'slaPolicies.holidays.title' | t">
+      @if (holidayState().status === 'loading') {
+        <cs-loading-state />
+      } @else if (holidayListError(); as failure) {
+        <cs-error-state [error]="failure" (retry)="loadHolidays()" />
+      } @else if (holidayState().status === 'empty') {
+        <cs-empty-state [message]="'slaPolicies.holidays.empty' | t" />
+      } @else {
+        <div class="overflow-x-auto">
+          <table class="cs-data-table min-w-xl">
+            <thead>
+              <tr class="border-b border-border-subtle bg-surface-low text-label-md text-on-surface-variant uppercase">
+                <th scope="col" class="px-4 py-2 text-start">{{ 'slaPolicies.holidayDate' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'slaPolicies.holidayName' | t }}</th>
+                <th scope="col" class="px-4 py-2 text-start">{{ 'slaPolicies.branchId' | t }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (holiday of holidays(); track holiday.id) {
+                <tr class="border-b border-border-subtle last:border-transparent">
+                  <td class="px-4 py-3 text-on-surface">{{ holiday.holidayDate }}</td>
+                  <td class="px-4 py-3 font-medium text-on-surface">{{ holiday.name }}</td>
+                  <td class="px-4 py-3 font-mono text-data-mono text-on-surface-variant">{{ holiday.branchId }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </cs-card>
+  }
+</section>

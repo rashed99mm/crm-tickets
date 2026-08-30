@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Knowledge Base Article - CommandCenter CRM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&family=Inter:wght@400;600&family=JetBrains+Mono:wght@400&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#173bab",
+                        "surface-bright": "#f8f9ff",
+                        "tertiary-container": "#00563a",
+                        "status-pending": "#F59E0B",
+                        "secondary-fixed": "#e2dfff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c4c5d5",
+                        "surface-variant": "#d3e4fe",
+                        "on-surface": "#0b1c30",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#3755c3",
+                        "on-secondary-container": "#fffbff",
+                        "on-surface-variant": "#444653",
+                        "priority-critical": "#B91C1C",
+                        "background": "#f8f9ff",
+                        "secondary-container": "#645efb",
+                        "primary-container": "#1e40af",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-fixed": "#002114",
+                        "tertiary-fixed": "#85f8c4",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "surface-container-high": "#dce9ff",
+                        "on-tertiary": "#ffffff",
+                        "status-resolved": "#059669",
+                        "primary": "#00288e",
+                        "surface-container": "#e5eeff",
+                        "inverse-surface": "#213145",
+                        "border-subtle": "#E2E8F0",
+                        "on-secondary-fixed": "#0f0069",
+                        "priority-high": "#EF4444",
+                        "surface": "#F8FAFC",
+                        "on-background": "#0b1c30",
+                        "tertiary-fixed-dim": "#68dba9",
+                        "on-primary-container": "#a8b8ff",
+                        "secondary": "#4b41e1",
+                        "tertiary": "#003d28",
+                        "on-secondary-fixed-variant": "#3323cc",
+                        "inverse-primary": "#b8c4ff",
+                        "on-tertiary-fixed-variant": "#005137",
+                        "priority-low": "#10B981",
+                        "primary-fixed": "#dde1ff",
+                        "inverse-on-surface": "#eaf1ff",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "on-primary-fixed": "#001453",
+                        "on-error-container": "#93000a",
+                        "surface-container-highest": "#d3e4fe",
+                        "status-escalated": "#DC2626",
+                        "outline": "#757684",
+                        "secondary-fixed-dim": "#c3c0ff",
+                        "status-open": "#4F46E5",
+                        "priority-medium": "#F59E0B",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#cbdbf5",
+                        "on-tertiary-container": "#5bcf9e",
+                        "error": "#ba1a1a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "container-sm": "8px",
+                        "margin-desktop": "24px",
+                        "container-lg": "24px",
+                        "gutter": "16px",
+                        "margin-mobile": "16px",
+                        "container-md": "16px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "data-mono": ["JetBrains Mono"],
+                        "label-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "data-mono": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-lg": ["13px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-surface dark:bg-inverse-surface border-b border-border-subtle dark:border-outline-variant shadow-sm docked full-width top-0 z-50 flex justify-between items-center h-[64px] px-margin-desktop w-full sticky">
+<div class="flex items-center gap-gutter">
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">CommandCenter CRM</span>
+</div>
+<div class="flex-1 flex justify-start pl-margin-desktop">
+<div class="relative w-96">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-surface-container-low border border-border-subtle rounded-DEFAULT pl-10 pr-4 py-2 font-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Search Knowledge Base..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-container-md">
+<button class="bg-primary text-on-primary font-label-md text-label-md px-4 py-2 rounded-DEFAULT hover:bg-primary-fixed-variant transition-colors active:scale-95">New Ticket</button>
+<div class="flex gap-2 text-on-surface-variant dark:text-outline-variant">
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-on-surface-variant/10 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-on-surface-variant/10 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low dark:hover:bg-on-surface-variant/10 rounded-full transition-colors active:scale-95">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<img alt="Agent Profile" class="w-8 h-8 rounded-full object-cover ml-2" data-alt="A professional headshot of a customer support agent in a well-lit office environment, smiling warmly. The lighting is soft and corporate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfRooy6luH9DmPw5rnbG0PfrKB1wmZDwRYZhrqWB0Dw2oCwI3wiC4Uwwn4JSQM3HeNje9sZi6leszhOznKzTUprukSwmLryWcX_-6jeaiqgaNGWFB3j7vG_8whK5HqDJmkwTwCEw1zV5OYMFsOLhAalOxT3CPHWHsv4wNfyesD21fYsNTHHdszYWQJ-CnDmCvG4mYdovzmsRQhqw6FV042mpprLSZu5vLglb0DzO6KkXJ105I6Ky64Qg"/>
+</div>
+</nav>
+<div class="flex flex-1">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low dark:bg-inverse-surface border-r border-border-subtle dark:border-outline-variant docked left-0 h-screen w-[280px] flex flex-col h-full py-container-lg px-container-md sticky top-[64px] hidden md:flex shrink-0">
+<div class="mb-8 px-4 flex items-center gap-3">
+<img alt="CRM Logo" class="w-10 h-10 rounded-lg object-cover" data-alt="A clean, minimalist 3D rendering of a stylized gear or shield icon, representing an enterprise CRM system. The colors are predominantly blue and white." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDubKgE6_ipt6_AIpzXuipEba-mpGli8Rwz6-zMkZy0gYotzFKW5FOplDPxp7ucn2M39wRgQwRX7ITHMHQI7-_muz1JRKTkZV37egEQxGOGcrhNDi9AeVPGqp8Z01LYiwJOrK56mRd67Nt1jNV2bezXhVEA0_csRn-bIq7i4Qt-TgS37VUEC13REZTO6Lwj-LhOtnhLuwH4pBFerSkbXBGkJbUKt_8lROSTqP-6zeuCsq32fV49VjN7ZQ"/>
+<div>
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-inverse-primary">Support Engine</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Enterprise Tier</div>
+</div>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-on-surface-variant/20 transition-all cursor-pointer rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-on-surface-variant/20 transition-all cursor-pointer rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-label-lg text-label-lg">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-on-surface-variant/20 transition-all cursor-pointer rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-lg text-label-lg">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 bg-secondary-container text-on-secondary-container dark:bg-primary-container dark:text-on-primary-container rounded-lg cursor-pointer transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-label-lg text-label-lg font-bold">Knowledge Base</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-on-surface-variant/20 transition-all cursor-pointer rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-lg text-label-lg">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-highest dark:hover:bg-on-surface-variant/20 transition-all cursor-pointer rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-lg text-label-lg">System Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-8 space-y-4">
+<button class="w-full bg-surface-container-highest text-on-surface font-label-md text-label-md py-2 rounded-DEFAULT flex items-center justify-center gap-2 border border-border-subtle hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[18px]">smart_toy</span>
+                    Pulse AI Assistant
+                </button>
+<div class="space-y-1">
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="contact_support">contact_support</span>
+<span class="font-label-lg text-label-lg">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-DEFAULT" href="#">
+<span class="material-symbols-outlined text-[18px]" data-icon="logout">logout</span>
+<span class="font-label-lg text-label-lg">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 p-margin-desktop md:p-margin-desktop lg:p-8 flex gap-8 relative max-w-7xl mx-auto w-full">
+<!-- Article Content Canvas -->
+<div class="flex-1 min-w-0 max-w-3xl">
+<!-- Breadcrumbs -->
+<nav aria-label="Breadcrumb" class="flex text-on-surface-variant font-label-md text-label-md mb-6">
+<ol class="inline-flex items-center space-x-1 md:space-x-3">
+<li class="inline-flex items-center hover:text-primary transition-colors cursor-pointer">
+<span class="material-symbols-outlined text-[16px] mr-1">home</span>
+                            Home
+                        </li>
+<li>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-[16px] mx-1">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Technical Support</a>
+</div>
+</li>
+<li aria-current="page">
+<div class="flex items-center text-on-surface">
+<span class="material-symbols-outlined text-[16px] mx-1">chevron_right</span>
+<span>API Integration</span>
+</div>
+</li>
+</ol>
+</nav>
+<article class="bg-surface-container-lowest border border-border-subtle rounded-lg shadow-sm p-8">
+<header class="mb-8 border-b border-border-subtle pb-6">
+<div class="flex items-center gap-2 mb-3">
+<span class="bg-secondary-container text-on-secondary-container px-2 py-1 rounded font-label-md text-label-md">Developer Guide</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> Last updated 2 days ago
+                            </span>
+</div>
+<h1 class="font-display-lg text-display-lg text-on-surface mb-4">REST API Authentication & Token Management</h1>
+<div class="flex items-center gap-4 text-on-surface-variant font-body-sm text-body-sm">
+<div class="flex items-center gap-2">
+<img class="w-6 h-6 rounded-full object-cover" data-alt="A small avatar of a technical writer, featuring a neat workspace in the background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCGHFXdeNhmSRa8CumT0G-sKpWPW3d37VfuJG1jQg24dniE8RGQJTMjdB1e8alPC_l_zuovOV58z9FKAS8tj8hYwgLN8DU1Il27jGlAM2oJ93HkPUzCfLje6l3Kwt5IjB7FYGH2htS5UkMUhJC00taoNKq49CRxdV8VxycigGFz3bK4k1qcPyj0SeFyRK3Z2NzK2oTWQYELIjGZmFRjWhCf2bfXSl_95JPyP1lIX7bHukoCITdOXCaHGA"/>
+<span>By Sarah Jenkins</span>
+</div>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span>12 min read</span>
+</div>
+</header>
+<div class="prose prose-slate max-w-none space-y-6 text-on-surface font-body-lg text-body-lg">
+<p>This guide explains how to authenticate your application with the CommandCenter CRM REST API using OAuth 2.0 and API keys. Proper authentication is critical for securing customer data and maintaining system integrity.</p>
+<div class="bg-surface-container-low border-l-4 border-primary p-4 rounded-r-DEFAULT my-6">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">info</span>
+<div>
+<h4 class="font-headline-md text-headline-md text-primary mb-1">Important Note</h4>
+<p class="font-body-md text-body-md m-0">API Version 1 (v1) is officially deprecated as of October 2023. All new integrations must use v2. Existing v1 tokens will expire on March 31, 2024.</p>
+</div>
+</div>
+</div>
+<h2 class="font-headline-lg text-headline-lg mt-10 mb-4 text-on-surface" id="oauth2">1. OAuth 2.0 Authorization Code Flow</h2>
+<p>For applications acting on behalf of a user, we recommend the standard Authorization Code grant type. This ensures that the user's credentials are never exposed to the client application.</p>
+<ul class="list-disc pl-6 space-y-2 marker:text-primary">
+<li><strong>Client ID:</strong> Unique identifier for your registered application.</li>
+<li><strong>Client Secret:</strong> Confidential string used to authenticate the client (do not share).</li>
+<li><strong>Redirect URI:</strong> The endpoint where the user is sent after authorization.</li>
+</ul>
+<h3 class="font-headline-md text-headline-md mt-8 mb-3" id="generating-tokens">Generating Bearer Tokens</h3>
+<p>Once you have the authorization code, exchange it for an access token by making a POST request to the token endpoint.</p>
+<div class="bg-[#1e1e2e] text-[#a6accd] p-4 rounded-DEFAULT font-data-mono text-data-mono overflow-x-auto my-4">
+<code>POST /oauth/token HTTP/1.1<br/>
+                            Host: api.commandcenter.io<br/>
+                            Content-Type: application/x-www-form-urlencoded<br/>
+<br/>
+                            grant_type=authorization_code&<br/>
+                            code=AUTH_CODE_HERE&<br/>
+                            redirect_uri=YOUR_REDIRECT_URI&<br/>
+                            client_id=YOUR_CLIENT_ID&<br/>
+                            client_secret=YOUR_CLIENT_SECRET</code>
+</div>
+<h2 class="font-headline-lg text-headline-lg mt-10 mb-4" id="api-keys">2. Personal API Keys</h2>
+<p>For internal scripts or single-user applications, you can generate a Personal Access Token (PAT) directly from your Account Settings.</p>
+<ol class="list-decimal pl-6 space-y-2 marker:text-on-surface-variant font-body-md text-body-md">
+<li>Navigate to <strong>System Settings > API & Integrations</strong>.</li>
+<li>Click <strong>Generate New Token</strong>.</li>
+<li>Select the required scopes (e.g., <code class="bg-surface-container px-1 py-0.5 rounded text-primary text-sm">tickets:read</code>).</li>
+<li>Copy the generated token immediately. It will not be shown again.</li>
+</ol>
+</div>
+<!-- Feedback Widget -->
+<div class="mt-12 pt-8 border-t border-border-subtle flex flex-col items-center justify-center text-center">
+<h4 class="font-headline-md text-headline-md mb-4 text-on-surface">Was this article helpful?</h4>
+<div class="flex gap-4">
+<button class="flex items-center gap-2 px-6 py-2 border border-border-subtle rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-status-resolved font-label-md text-label-md group">
+<span class="material-symbols-outlined text-[20px] group-hover:text-status-resolved">thumb_up</span>
+                                Yes
+                            </button>
+<button class="flex items-center gap-2 px-6 py-2 border border-border-subtle rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant hover:text-priority-critical font-label-md text-label-md group">
+<span class="material-symbols-outlined text-[20px] group-hover:text-priority-critical">thumb_down</span>
+                                No
+                            </button>
+</div>
+<p class="mt-4 font-body-sm text-body-sm text-on-surface-variant">24 out of 30 found this helpful</p>
+</div>
+</article>
+</div>
+<!-- Right Sidebar (TOC & Related) -->
+<aside class="w-[280px] shrink-0 hidden lg:block space-y-6">
+<!-- Table of Contents -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-5 sticky top-[88px]">
+<h3 class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface-variant mb-4">On this page</h3>
+<nav class="space-y-2 border-l-2 border-surface-container pl-3 font-body-sm text-body-sm">
+<a class="block text-primary font-medium hover:underline" href="#oauth2">1. OAuth 2.0 Authorization Code Flow</a>
+<a class="block text-on-surface-variant hover:text-on-surface pl-3" href="#generating-tokens">Generating Bearer Tokens</a>
+<a class="block text-on-surface-variant hover:text-on-surface" href="#api-keys">2. Personal API Keys</a>
+</nav>
+</div>
+<!-- Related Articles -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-5">
+<h3 class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface-variant mb-4">Related Articles</h3>
+<ul class="space-y-3 font-body-sm text-body-sm">
+<li>
+<a class="flex items-start gap-2 group" href="#">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant mt-0.5 group-hover:text-primary transition-colors">article</span>
+<span class="text-on-surface group-hover:text-primary transition-colors line-clamp-2">Rate Limits and Pagination Guidelines</span>
+</a>
+</li>
+<li>
+<a class="flex items-start gap-2 group" href="#">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant mt-0.5 group-hover:text-primary transition-colors">article</span>
+<span class="text-on-surface group-hover:text-primary transition-colors line-clamp-2">Webhook Configuration and Retry Logic</span>
+</a>
+</li>
+<li>
+<a class="flex items-start gap-2 group" href="#">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant mt-0.5 group-hover:text-primary transition-colors">article</span>
+<span class="text-on-surface group-hover:text-primary transition-colors line-clamp-2">Error Codes and Troubleshooting</span>
+</a>
+</li>
+</ul>
+</div>
+<!-- Common Solutions -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg p-5">
+<h3 class="font-label-lg text-label-lg uppercase tracking-wider text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-status-pending">lightbulb</span> Quick Solutions
+                    </h3>
+<div class="space-y-3 font-body-sm text-body-sm text-on-surface">
+<div class="p-3 bg-surface rounded hover:bg-surface-container transition-colors cursor-pointer">
+<span class="font-medium block mb-1">Getting 401 Unauthorized?</span>
+<span class="text-on-surface-variant">Ensure your bearer token is passed in the Authorization header.</span>
+</div>
+</div>
+</div>
+</aside>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-dim dark:bg-on-background border-t border-border-subtle dark:border-outline-variant full-width bottom-0 flex justify-between items-center py-container-sm px-margin-desktop w-full mt-auto">
+<div class="font-label-lg text-label-lg font-bold text-on-surface dark:text-inverse-on-surface">
+            © 2024 Command Center Inc. All rights reserved.
+        </div>
+<div class="flex gap-6 font-label-md text-label-md text-on-surface-variant">
+<a class="hover:text-primary dark:hover:text-primary-fixed transition-opacity hover:opacity-80" href="#">Privacy Policy</a>
+<a class="hover:text-primary dark:hover:text-primary-fixed transition-opacity hover:opacity-80" href="#">Terms of Service</a>
+<a class="hover:text-primary dark:hover:text-primary-fixed transition-opacity hover:opacity-80" href="#">Security Status</a>
+</div>
+</footer>
+</body></html>

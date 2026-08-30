@@ -1,0 +1,406 @@
+<section data-design-system="command-center" class="min-h-full bg-surface">
+@switch (state().status) {
+  @case ('idle') {
+    <cs-loading-state [label]="'customers.detail.loading' | t" />
+  }
+  @case ('loading') {
+    <cs-loading-state [label]="'customers.detail.loading' | t" />
+  }
+  @case ('error') {
+    <!--
+      A 404 is a real answer — this record does not exist — so it gets its own state and a way
+      back, rather than a retry that would fail identically or a blank form to type into (AC-71).
+      Everything else is a fault and keeps the retry.
+    -->
+    @if (notFound()) {
+      <cs-card>
+        <div
+          role="alert"
+          class="flex flex-col items-center gap-3 p-12 text-center"
+          data-testid="customer-not-found"
+        >
+          <span class="text-on-surface-variant">
+            <cs-icon name="person_off" [size]="32" />
+          </span>
+          <p class="text-body-md text-on-surface">{{ 'customers.detail.notFound' | t }}</p>
+          <a
+            routerLink="/customers"
+            class="inline-flex items-center gap-1 text-label-lg font-semibold text-primary hover:underline"
+          >
+            {{ 'customers.detail.back' | t }}
+          </a>
+        </div>
+      </cs-card>
+    } @else if (loadError(); as failure) {
+      <cs-error-state [error]="failure" (retry)="load()" />
+    }
+  }
+  @default {
+    @if (customer(); as c) {
+      <!--
+        `customer_profile_history`'s identity band (AC-93). Full-bleed: the shell's main gives every
+        screen a 6-unit inset, and the mockup's band runs edge to edge under the topbar, so the
+        inset is cancelled here and re-applied inside. The inline-axis utilities are symmetric, so
+        this mirrors correctly under `dir="rtl"` with nothing further to do.
+      -->
+      <div
+        class="-mx-6 -mt-6 mb-6 border-b border-border-subtle bg-surface-bright px-6 py-6"
+        data-testid="customer-identity"
+      >
+        <div class="mx-auto flex max-w-7xl flex-col justify-between gap-4 lg:flex-row lg:items-start">
+          <div class="flex items-center gap-6">
+            <div class="relative shrink-0">
+              <!--
+                The mockup shows a photograph. Nothing in this product stores one (A25), so the
+                designed position holds the customer's initials — a real value derived from a real
+                field — rather than a stock face or a grey rectangle.
+              -->
+              <span
+                class="grid size-20 place-items-center rounded-full border-2 border-surface-highest bg-secondary-container text-headline-lg text-on-secondary-container"
+              >
+                {{ initials() }}
+              </span>
+              <!--
+                The mockup's presence dot is green with an "Online" title. Presence is not a thing
+                this product knows, and a green dot is an assertion, so it renders in the neutral
+                tone and says so on hover (AC-97).
+              -->
+              <span
+                class="absolute bottom-0 end-0 size-4 rounded-full border-2 border-surface-lowest bg-surface-highest"
+                [title]="'customers.profile.presence' | t"
+              ></span>
+            </div>
+
+            <div class="min-w-0">
+              <h1
+                class="flex items-center gap-2 text-headline-lg text-on-surface"
+              >
+                {{ c.name }}
+                <!-- Neutral, never the mockup's blue: a verification badge nobody verified is a lie. -->
+                <span
+                  class="text-on-surface-variant/60"
+                  [title]="'customers.profile.verified' | t"
+                >
+                  <cs-icon name="verified" [size]="20" />
+                </span>
+              </h1>
+
+              <!-- The mockup's "VP of Operations at TechCorp". Neither half is stored. -->
+              <p class="mt-1 flex flex-wrap items-baseline gap-2 text-body-md">
+                <span class="text-on-surface-variant">
+                  {{ 'customers.profile.identity' | t }}
+                </span>
+                <cs-placeholder field="customers.profile.identity" />
+              </p>
+
+              <!-- The mockup's `Enterprise Plan` / `VIP` chip row. Neither is backed. -->
+              <div class="mt-2 flex flex-wrap items-center gap-2">
+                <span
+                  class="inline-flex items-center gap-1.5 rounded border border-border-subtle bg-surface-high px-2 py-0.5 text-label-md font-semibold text-on-surface"
+                >
+                  {{ 'customers.profile.plan' | t }}
+                  <cs-placeholder field="customers.profile.plan" />
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!--
+            The mockup's action group. Its third control is a `more_vert` overflow menu; that
+            becomes the existing Remove button, because a menu holding one item is a menu for a
+            feature set this product does not have (AC-92).
+          -->
+          <div class="flex shrink-0 flex-wrap items-center gap-3">
+            <a
+              routerLink="/tickets/new"
+              class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-label-lg font-semibold text-on-primary transition-all hover:opacity-90"
+            >
+              <cs-icon name="add" [size]="18" />
+              {{ 'customers.profile.newTicket' | t }}
+            </a>
+
+            @if (!editing()) {
+              <cs-button variant="secondary" (pressed)="startEdit()">
+                {{ 'action.edit' | t }}
+              </cs-button>
+            }
+
+            <cs-button variant="ghost" (pressed)="askToDelete()">
+              {{ 'action.remove' | t }}
+            </cs-button>
+          </div>
+        </div>
+      </div>
+
+      <!--
+        The mockup's 3 / 6 / 3 workspace (AC-93). One column below `lg` — on a phone the context
+        rail is the first thing you want, not a sidebar pushed under two other columns. `max-w-7xl`
+        is the mockup's own container, and it is what stops three rails stretching to unreadable
+        line lengths on an ultrawide monitor.
+      -->
+      <div class="mx-auto grid max-w-7xl grid-cols-1 items-start gap-5 lg:grid-cols-12">
+        <!-- ── Start rail: the record itself (AC-94) ─────────────────────── -->
+        <!--
+          `customer-profile` marks the whole rail rather than one card. `AC-71`'s test reads email,
+          phone and the recorded date from this one region, and the mockup's composition splits them
+          across Contact Info and Account Details — so the hook belongs on what the agent would call
+          "the profile", which is both cards, not the first one.
+        -->
+        <div class="flex flex-col gap-5 lg:col-span-3" data-testid="customer-profile">
+          <cs-card [heading]="'customers.profile.contact' | t">
+            <dl class="flex flex-col gap-4 p-4">
+              <div class="flex items-start gap-2">
+                <span class="mt-0.5 text-on-surface-variant">
+                  <cs-icon name="mail" [size]="18" />
+                </span>
+                <div class="min-w-0">
+                  <dt class="text-label-md text-on-surface-variant">{{ 'field.email' | t }}</dt>
+                  <dd class="text-body-sm">
+                    <a
+                      [href]="'mailto:' + c.email"
+                      class="break-all text-on-surface hover:text-primary hover:underline"
+                    >
+                      {{ c.email }}
+                    </a>
+                  </dd>
+                  <!--
+                    The mockup carries a green "Verified" line under the address. Whether an email
+                    was ever confirmed is not recorded, and inventing a tick beside a contact
+                    address is the kind of fiction an agent would act on.
+                  -->
+                  <dd class="mt-1 flex items-baseline gap-1.5">
+                    <span class="text-label-md text-on-surface-variant">
+                      {{ 'customers.profile.emailVerified' | t }}
+                    </span>
+                    <cs-placeholder field="customers.profile.emailVerified" />
+                  </dd>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-2">
+                <span class="mt-0.5 text-on-surface-variant">
+                  <cs-icon name="call" [size]="18" />
+                </span>
+                <div class="min-w-0">
+                  <dt class="text-label-md text-on-surface-variant">{{ 'field.phone' | t }}</dt>
+                  <dd class="text-body-sm">
+                    <!--
+                      An optional field the agent simply left blank is a different fact from a field
+                      this product cannot hold, so it gets the placeholder too — same shape, and the
+                      `data-field` in the DOM tells the two apart.
+                    -->
+                    @if (c.phone) {
+                      <a
+                        [href]="'tel:' + c.phone"
+                        class="text-on-surface hover:text-primary hover:underline"
+                      >
+                        {{ c.phone }}
+                      </a>
+                    } @else {
+                      <cs-placeholder field="field.phone" />
+                    }
+                  </dd>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-2">
+                <span class="mt-0.5 text-on-surface-variant">
+                  <cs-icon name="chat" [size]="18" />
+                </span>
+                <div class="min-w-0">
+                  <dt class="text-label-md text-on-surface-variant">
+                    {{ 'customers.profile.whatsapp' | t }}
+                  </dt>
+                  <dd><cs-placeholder field="customers.profile.whatsapp" /></dd>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-2">
+                <span class="mt-0.5 text-on-surface-variant">
+                  <cs-icon name="domain" [size]="18" />
+                </span>
+                <div class="min-w-0">
+                  <dt class="text-label-md text-on-surface-variant">
+                    {{ 'customers.profile.hq' | t }}
+                  </dt>
+                  <dd><cs-placeholder field="customers.profile.hq" /></dd>
+                </div>
+              </div>
+            </dl>
+          </cs-card>
+
+          <cs-card [heading]="'customers.profile.account' | t">
+            <!-- The mockup's label/value list, hairline between rows, last row unruled. -->
+            <dl class="flex flex-col p-4 text-body-sm">
+              <div
+                class="flex items-center justify-between gap-2 border-b border-border-subtle py-1.5"
+              >
+                <dt class="text-on-surface-variant">
+                  {{ 'customers.profile.accountId' | t }}
+                </dt>
+                <dd class="truncate font-mono text-data-mono text-on-surface">{{ c.id }}</dd>
+              </div>
+
+              <div
+                class="flex items-center justify-between gap-2 border-b border-border-subtle py-1.5"
+              >
+                <dt class="text-on-surface-variant">{{ 'customers.profile.manager' | t }}</dt>
+                <dd><cs-placeholder field="customers.profile.manager" /></dd>
+              </div>
+
+              <div
+                class="flex items-center justify-between gap-2 border-b border-border-subtle py-1.5"
+              >
+                <dt class="text-on-surface-variant">{{ 'customers.profile.mrr' | t }}</dt>
+                <dd><cs-placeholder field="customers.profile.mrr" /></dd>
+              </div>
+
+              <div
+                class="flex items-center justify-between gap-2 border-b border-border-subtle py-1.5"
+              >
+                <dt class="text-on-surface-variant">{{ 'customers.profile.timezone' | t }}</dt>
+                <dd><cs-placeholder field="customers.profile.timezone" /></dd>
+              </div>
+
+              <!-- AC-71 — when the customer was recorded. Real data, and the row the mockup lacks. -->
+              <div class="flex items-center justify-between gap-2 py-1.5">
+                <dt class="text-on-surface-variant">{{ 'customers.detail.recorded' | t }}</dt>
+                <dd class="text-on-surface">
+                  <time [attr.datetime]="c.createdAt">{{ c.createdAt | csDate: 'date' }}</time>
+                </dd>
+              </div>
+            </dl>
+
+            <div class="border-t border-border-subtle p-4">
+              <p class="mb-2 text-label-md text-on-surface-variant">
+                {{ 'customers.profile.tags' | t }}
+              </p>
+              <cs-placeholder field="customers.profile.tags" />
+            </div>
+          </cs-card>
+        </div>
+
+        <!-- ── Centre: the activity feed (AC-95) ─────────────────────────── -->
+        <div class="flex flex-col gap-5 lg:col-span-6">
+          @if (editing()) {
+            <cs-card [heading]="'action.edit' | t">
+              <form
+                [formGroup]="form"
+                (ngSubmit)="save()"
+                class="flex flex-col gap-4 p-4"
+                data-testid="customer-edit-form"
+              >
+                <cs-input-field
+                  [label]="'field.name' | t"
+                  [control]="form.controls.name"
+                  [serverError]="fieldError('name')"
+                  (input)="clearServerError('name')"
+                />
+
+                <cs-input-field
+                  [label]="'field.email' | t"
+                  type="email"
+                  [control]="form.controls.email"
+                  [serverError]="fieldError('email')"
+                  (input)="clearServerError('email')"
+                />
+
+                <cs-input-field
+                  [label]="'field.phoneOptional' | t"
+                  type="tel"
+                  [control]="form.controls.phone"
+                  [serverError]="fieldError('phone')"
+                  (input)="clearServerError('phone')"
+                />
+
+                <!--
+                  A duplicate email is a 409 naming no field — the address is well formed and it
+                  is the state of the world that refuses it, so marking the control invalid would
+                  be a lie.
+                -->
+                @if (formLevelError(); as failure) {
+                  <p role="alert" class="text-body-md text-error" data-testid="save-error">
+                    {{ failure.message_ }}
+                  </p>
+                }
+
+                <div class="flex items-center gap-2">
+                  <cs-button type="submit" [busy]="saving()" [disabled]="form.invalid">
+                    {{ 'action.saveChanges' | t }}
+                  </cs-button>
+                  <cs-button variant="secondary" (pressed)="cancelEdit()">
+                    {{ 'action.cancel' | t }}
+                  </cs-button>
+                </div>
+              </form>
+            </cs-card>
+          }
+
+          <!--
+            The mockup's centre timeline, and its end-rail "Quick Notes" composer, are one card here
+            rather than two in two columns. A note is this product's only unit of customer activity,
+            so the composer and the feed it writes into are the same feature; splitting them would
+            need either a second component re-fetching notes — two sources of truth for one list,
+            and a new note that does not appear in the feed beside it — or a split of
+            `CustomerNotesComponent`, which `AC-100` freezes. Recorded in the spec.
+          -->
+          <admin-customer-notes [customerId]="c.id" />
+
+          <!--
+            The mockup's feed also carries a ticket lane. The queue endpoint filters by status,
+            assignee and unassigned — there is no `customerId` filter — so this customer's tickets
+            cannot be read here. Stated in the lane's designed position rather than omitted, which
+            would read as a customer who has never raised one (spec gap `G-9`).
+          -->
+          <div
+            class="flex items-center gap-2 rounded-xl border border-dashed border-border-subtle px-4 py-3 text-body-sm text-on-surface-variant"
+            data-testid="ticket-lane-unavailable"
+          >
+            <cs-icon name="confirmation_number" [size]="18" />
+            {{ 'customers.activity.ticketsUnavailable' | t }}
+          </div>
+        </div>
+
+        <!-- ── End rail: files, and the guarded removal (AC-96) ──────────── -->
+        <div class="flex flex-col gap-5 lg:col-span-3">
+          <!-- AC-83 — attachments, as the mockup's file rail. -->
+          <admin-customer-attachments [customerId]="c.id" />
+
+          <!--
+            Two steps, not a native confirm: window.confirm cannot be styled or translated, and
+            some embedded browsers suppress it entirely, which would turn a guarded action into
+            an unguarded one.
+          -->
+          @if (confirmingDelete()) {
+            <cs-card>
+              <div class="flex flex-col gap-3 p-4" data-testid="delete-confirm">
+                <p class="text-body-md text-on-surface">
+                  {{ 'customers.detail.confirmRemove' | t: c.name }}
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                  <cs-button [busy]="deleting()" (pressed)="confirmDelete()">
+                    {{ 'action.confirmRemoval' | t }}
+                  </cs-button>
+                  <cs-button variant="secondary" (pressed)="cancelDelete()">
+                    {{ 'action.cancel' | t }}
+                  </cs-button>
+                </div>
+              </div>
+            </cs-card>
+          }
+
+          <!--
+            AC-73 — the server's refusal, with the customer still on screen above it. Navigating
+            away would suggest the removal happened.
+          -->
+          @if (deleteError(); as failure) {
+            <p role="alert" class="text-body-md text-error" data-testid="delete-error">
+              {{ failure.message_ }}
+            </p>
+          }
+        </div>
+      </div>
+    }
+  }
+}
+</section>

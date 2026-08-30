@@ -1,0 +1,86 @@
+<main class="relative flex min-h-screen items-center justify-center overflow-hidden bg-gradient-to-br from-surface via-surface-low to-primary-container/30 px-4 py-8" data-design-system="command-center">
+  <div class="pointer-events-none absolute -start-24 -top-24 size-80 rounded-full bg-primary/10 blur-3xl"></div>
+  <div class="pointer-events-none absolute -end-24 -bottom-24 size-96 rounded-full bg-secondary-container/10 blur-3xl"></div>
+  <div class="grid w-full max-w-5xl overflow-hidden rounded-3xl border border-border-subtle bg-surface-lowest/95 shadow-[0_24px_80px_rgb(15,23,42,0.12)] lg:grid-cols-[1.1fr_0.9fr]">
+    <div class="relative hidden flex-col justify-between overflow-hidden bg-surface-bright p-10 lg:flex">
+      <div class="pointer-events-none absolute -end-20 -top-20 size-64 rounded-full border-[32px] border-primary/10"></div>
+      <div class="pointer-events-none absolute -bottom-28 -start-20 size-72 rounded-full border-[40px] border-secondary-container/10"></div>
+      <div class="relative z-10">
+        <div class="mb-8 flex items-center gap-3">
+          <span class="grid size-12 place-items-center rounded-2xl bg-primary text-on-primary shadow-card">
+            <cs-icon name="support_agent" [size]="28" />
+          </span>
+          <span class="text-headline-lg font-bold text-primary">{{ 'portal.name' | t }}</span>
+        </div>
+        <p class="text-label-md font-semibold uppercase tracking-[0.2em] text-primary">{{ 'portal.nav.dashboard' | t }}</p>
+        <h2 class="mt-4 max-w-sm text-display-sm font-semibold text-on-surface">{{ 'auth.signInSubtitle' | t }}</h2>
+      </div>
+      <div class="relative z-10 grid grid-cols-3 gap-3">
+        <span class="grid size-14 place-items-center rounded-2xl bg-primary-container text-on-primary-container"><cs-icon name="confirmation_number" [size]="24" /></span>
+        <span class="grid size-14 place-items-center rounded-2xl bg-secondary-container/20 text-secondary"><cs-icon name="menu_book" [size]="24" /></span>
+        <span class="grid size-14 place-items-center rounded-2xl bg-success-container text-on-success-container"><cs-icon name="verified_user" [size]="24" /></span>
+      </div>
+    </div>
+
+    <div class="w-full p-6 sm:p-10">
+    <div class="mb-6 flex items-center justify-center gap-3 text-center lg:hidden">
+      <span class="grid size-12 place-items-center rounded-2xl bg-primary text-on-primary shadow-card">
+        <cs-icon name="support_agent" [size]="32" />
+      </span>
+      <span class="text-headline-md font-bold text-primary">{{ 'portal.name' | t }}</span>
+    </div>
+
+    <cs-card class="overflow-hidden">
+      <div class="p-6 sm:p-8">
+        <h1 class="mb-1 text-headline-lg font-semibold text-on-surface">
+          {{ 'auth.signIn' | t }}
+        </h1>
+        <p class="mb-6 text-body-md text-on-surface-variant">{{ 'auth.signInSubtitle' | t }}</p>
+
+        @if (accountCreated()) {
+          <p role="status" class="mb-4 rounded-lg bg-success-container/20 px-4 py-2 text-body-sm text-on-success-container">
+            {{ 'portal.signup.accountCreated' | t }}
+          </p>
+        }
+
+        <form class="flex flex-col gap-4" (ngSubmit)="submit()" [formGroup]="form">
+          <cs-input-field [control]="form.controls.email" type="email" [label]="'auth.email' | t" />
+          <cs-input-field
+            [control]="form.controls.password"
+            type="password"
+            [label]="'auth.password' | t"
+          />
+
+          @if (error(); as failure) {
+            <p role="alert" class="text-body-sm text-error">
+              {{ failure.code === 'INVALID_CREDENTIALS' ? ('auth.invalidCredentials' | t) : failure.message_ }}
+            </p>
+          }
+
+          <cs-button type="submit" [busy]="busy()" [disabled]="busy()" class="w-full">
+            {{ 'auth.signIn' | t }}
+          </cs-button>
+
+          <a
+            href="mailto:support@example.com?subject=Password%20reset%20request"
+            class="self-center text-label-md font-semibold text-primary hover:underline"
+          >
+            {{ 'auth.forgotPassword' | t }}
+          </a>
+        </form>
+      </div>
+    </cs-card>
+
+    <div class="mt-4 flex items-center justify-center gap-1 text-body-md">
+      <span class="text-on-surface-variant">{{ 'portal.signup.noAccount' | t }}</span>
+      <a routerLink="/signup" class="font-semibold text-primary hover:underline">
+        {{ 'portal.home.createAccount' | t }}
+      </a>
+    </div>
+
+    <div class="mt-4 flex justify-center">
+      <cs-language-switcher />
+    </div>
+    </div>
+  </div>
+</main>

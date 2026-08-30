@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background antialiased" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>User Settings - Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-bright": "#f8f9ff",
+                      "status-open": "#4F46E5",
+                      "error-container": "#ffdad6",
+                      "on-primary-fixed": "#001453",
+                      "on-tertiary-fixed": "#002114",
+                      "surface-container": "#e5eeff",
+                      "tertiary": "#003d28",
+                      "secondary-container": "#645efb",
+                      "on-secondary-fixed-variant": "#3323cc",
+                      "surface-variant": "#d3e4fe",
+                      "surface-tint": "#3755c3",
+                      "secondary": "#4b41e1",
+                      "surface-container-highest": "#d3e4fe",
+                      "primary-container": "#1e40af",
+                      "outline": "#757684",
+                      "on-tertiary-container": "#5bcf9e",
+                      "on-secondary-container": "#fffbff",
+                      "status-resolved": "#059669",
+                      "on-error": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "status-pending": "#F59E0B",
+                      "surface-dim": "#cbdbf5",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#c4c5d5",
+                      "priority-low": "#10B981",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed": "#85f8c4",
+                      "on-primary-container": "#a8b8ff",
+                      "on-primary-fixed-variant": "#173bab",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed-dim": "#68dba9",
+                      "primary-fixed-dim": "#b8c4ff",
+                      "border-subtle": "#E2E8F0",
+                      "on-surface-variant": "#444653",
+                      "priority-critical": "#B91C1C",
+                      "secondary-fixed-dim": "#c3c0ff",
+                      "surface-container-high": "#dce9ff",
+                      "primary-fixed": "#dde1ff",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary": "#ffffff",
+                      "priority-high": "#EF4444",
+                      "priority-medium": "#F59E0B",
+                      "inverse-surface": "#213145",
+                      "background": "#f8f9ff",
+                      "secondary-fixed": "#e2dfff",
+                      "primary": "#00288e",
+                      "inverse-primary": "#b8c4ff",
+                      "on-background": "#0b1c30",
+                      "on-secondary-fixed": "#0f0069",
+                      "inverse-on-surface": "#eaf1ff",
+                      "status-escalated": "#DC2626",
+                      "on-tertiary-fixed-variant": "#005137",
+                      "surface": "#F8FAFC",
+                      "tertiary-container": "#00563a",
+                      "on-surface": "#0b1c30"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "container-lg": "24px",
+                      "container-sm": "8px",
+                      "container-md": "16px",
+                      "margin-desktop": "24px",
+                      "unit": "4px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "data-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "data-mono": [
+                              "13px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-lg": [
+                              "13px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+</head>
+<body class="h-full flex flex-col font-body-md text-on-surface">
+<nav class="bg-surface text-primary font-headline-md text-headline-md font-bold text-primary docked full-width top-0 z-50 border-b border-border-subtle shadow-sm flex justify-between items-center h-[64px] px-margin-desktop w-full">
+<div class="flex items-center gap-gutter">
+<span class="font-headline-md text-headline-md font-bold text-primary tracking-tight">CommandCenter CRM</span>
+</div>
+<div class="flex items-center gap-container-lg">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border border-border-subtle rounded-md text-body-sm focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none w-[240px]" placeholder="Search..." type="text"/>
+</div>
+<div class="flex items-center gap-container-sm">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-2 text-primary font-bold border-b-2 border-primary hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<div class="flex items-center gap-container-sm pl-container-sm border-l border-border-subtle">
+<img alt="Agent Profile" class="w-8 h-8 rounded-full border border-border-subtle object-cover" data-alt="A professional headshot of a customer support agent in a bright, modern office setting, smiling slightly. The lighting is soft and even, highlighting a corporate, trustworthy appearance." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEko7N4hVPQzebSFetZ55BCMr8tozIT6u3XPdAeD8jfzp7eBQ6a2-NtD3gnSaVmIorovGIc9zzOF3Q_Uv2CTuCN2CgtPEl0K-u0PY_rH7n-qYdzOyVSP-PKDtptoz38csWW9mPd707LNzJsrrWXgu0mG1WZLfWpeI8nFWbXIJELdlgpD59XJZW57WrkVOIIXrMlwp_lb_fVXsvMoxk_8g2P3kbreRMqIKmcltTza2Djvs6cvzAcAYgZw"/>
+<button class="px-4 py-2 bg-primary text-on-primary rounded-md font-label-md hover:bg-primary/90 transition-colors active:scale-95">New Ticket</button>
+</div>
+</div>
+</nav>
+<div class="flex flex-1 overflow-hidden">
+<aside class="bg-surface-container-low text-primary docked left-0 h-screen w-[280px] border-r border-border-subtle flat no shadows flex flex-col h-full py-container-lg px-container-md hidden md:flex">
+<div class="mb-container-lg flex items-center gap-container-sm px-container-sm">
+<div class="w-10 h-10 bg-primary-container text-on-primary-container rounded-lg flex items-center justify-center font-bold font-headline-md">
+                    SE
+                </div>
+<div>
+<h2 class="font-label-lg text-label-lg font-bold text-on-surface">Support Engine</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Enterprise Tier</p>
+</div>
+</div>
+<nav class="flex-1 space-y-unit">
+<a class="flex items-center gap-container-sm px-container-sm py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="dashboard">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-container-sm px-container-sm py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-label-lg text-label-lg">Tickets</span>
+</a>
+<a class="flex items-center gap-container-sm px-container-sm py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="group">group</span>
+<span class="font-label-lg text-label-lg">Customers</span>
+</a>
+<a class="flex items-center gap-container-sm px-container-sm py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="menu_book">menu_book</span>
+<span class="font-label-lg text-label-lg">Knowledge Base</span>
+</a>
+<a class="flex items-center gap-container-sm px-container-sm py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-lg text-label-lg">Reports</span>
+</a>
+<a class="flex items-center gap-container-sm px-container-sm py-2 bg-secondary-container text-on-secondary-container rounded-lg cursor-pointer transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="settings">settings</span>
+<span class="font-label-lg text-label-lg">System Settings</span>
+</a>
+</nav>
+<div class="mt-auto space-y-container-sm pt-container-lg border-t border-border-subtle">
+<button class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-surface-container-high text-primary rounded-md font-label-md hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]" data-icon="bolt">bolt</span>
+                    Pulse AI Assistant
+                </button>
+<div class="space-y-unit">
+<a class="flex items-center gap-container-sm px-container-sm py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="contact_support">contact_support</span>
+<span class="font-label-lg text-label-lg">Help Center</span>
+</a>
+<a class="flex items-center gap-container-sm px-container-sm py-2 text-on-surface-variant hover:bg-surface-container-highest transition-all rounded-lg cursor-pointer duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+<span class="font-label-lg text-label-lg">Logout</span>
+</a>
+</div>
+</div>
+</aside>
+<main class="flex-1 overflow-y-auto bg-background p-margin-mobile md:p-margin-desktop">
+<div class="max-w-5xl mx-auto flex flex-col md:flex-row gap-gutter">
+<aside class="w-full md:w-64 shrink-0">
+<nav class="flex flex-row md:flex-col gap-1 overflow-x-auto pb-4 md:pb-0">
+<a class="flex items-center gap-2 px-4 py-2.5 bg-secondary-container text-on-secondary-container rounded-lg font-label-lg text-label-lg whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+                            General
+                        </a>
+<a class="flex items-center gap-2 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg font-label-lg text-label-lg transition-colors whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="security">security</span>
+                            Security
+                        </a>
+<a class="flex items-center gap-2 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg font-label-lg text-label-lg transition-colors whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications_active">notifications_active</span>
+                            Notifications
+                        </a>
+<a class="flex items-center gap-2 px-4 py-2.5 text-on-surface-variant hover:bg-surface-container-low rounded-lg font-label-lg text-label-lg transition-colors whitespace-nowrap" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="payments">payments</span>
+                            Billing
+                        </a>
+</nav>
+</aside>
+<div class="flex-1 space-y-container-lg">
+<div class="mb-container-lg">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">General Settings</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage your basic profile information and preferences.</p>
+</div>
+<div class="bg-surface rounded-xl border border-border-subtle shadow-sm p-container-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 border-b border-border-subtle pb-4">Profile Picture</h2>
+<div class="flex items-center gap-gutter">
+<img alt="Profile Picture" class="w-24 h-24 rounded-full border border-border-subtle object-cover shadow-sm" data-alt="A close-up, high-quality professional portrait of an individual against a clean, light grey background. The lighting is bright and flattering, typical of a corporate headshot used in enterprise software profiles. The subject is looking forward with a neutral, approachable expression." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNcHjQf39FHaA-QVjoSCWHziB0Uk-HnnECE9juXxnTKskEprbm8AjHzdJYsQEl5ed8vz34VxyyJO0eJzC1_9yPl-p7XwYWg6iRS7stx5pnSkpU6bOTr_wNtaFSl1F5QFWWk0udVgdcK_aDiFIQKADYgQphWuexCGz44o1vIb0b44DNcO4o_5kvFDl8DgdsmOnJoHY1TbitGiwBrttV3VwuyfoOCGcaxms-rZt876QCN0JOQbT_lxBE-w"/>
+<div class="space-y-unit">
+<div class="flex gap-2">
+<button class="px-4 py-2 bg-surface-container border border-border-subtle text-on-surface rounded-md font-label-md hover:bg-surface-container-high transition-colors">Change Photo</button>
+<button class="px-4 py-2 text-error hover:bg-error-container rounded-md font-label-md transition-colors">Remove</button>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Recommended size: 256x256px. Max 2MB.</p>
+</div>
+</div>
+</div>
+<div class="bg-surface rounded-xl border border-border-subtle shadow-sm p-container-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 border-b border-border-subtle pb-4">Personal Information</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="space-y-1">
+<label class="block font-label-md text-label-md text-on-surface" for="firstName">First Name</label>
+<input class="w-full px-3 py-2 bg-surface border border-border-subtle rounded-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none shadow-sm" id="firstName" type="text" value="Alex"/>
+</div>
+<div class="space-y-1">
+<label class="block font-label-md text-label-md text-on-surface" for="lastName">Last Name</label>
+<input class="w-full px-3 py-2 bg-surface border border-border-subtle rounded-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none shadow-sm" id="lastName" type="text" value="Morgan"/>
+</div>
+<div class="space-y-1 md:col-span-2">
+<label class="block font-label-md text-label-md text-on-surface" for="jobTitle">Job Title</label>
+<input class="w-full px-3 py-2 bg-surface border border-border-subtle rounded-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none shadow-sm" id="jobTitle" type="text" value="Senior Support Specialist"/>
+</div>
+<div class="space-y-1 md:col-span-2">
+<label class="block font-label-md text-label-md text-on-surface" for="email">Email Address</label>
+<input class="w-full px-3 py-2 bg-surface-container-low border border-border-subtle rounded-md text-body-md text-on-surface-variant cursor-not-allowed shadow-sm" disabled="" id="email" type="email" value="alex.morgan@commandcenter.crm"/>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Contact your administrator to change your email address.</p>
+</div>
+</div>
+</div>
+<div class="bg-surface rounded-xl border border-border-subtle shadow-sm p-container-lg">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-6 border-b border-border-subtle pb-4">Preferences</h2>
+<div class="space-y-container-md">
+<div class="space-y-1">
+<label class="block font-label-md text-label-md text-on-surface" for="timezone">Time Zone</label>
+<select class="w-full md:w-1/2 px-3 py-2 bg-surface border border-border-subtle rounded-md text-body-md focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none shadow-sm appearance-none" id="timezone">
+<option value="pst">(GMT-08:00) Pacific Time</option>
+<option value="mst">(GMT-07:00) Mountain Time</option>
+<option value="cst">(GMT-06:00) Central Time</option>
+<option selected="" value="est">(GMT-05:00) Eastern Time</option>
+<option value="gmt">(GMT+00:00) Greenwich Mean Time</option>
+</select>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Used for ticket timestamps and shift scheduling.</p>
+</div>
+</div>
+</div>
+<div class="flex justify-end gap-3 pt-4 border-t border-border-subtle">
+<button class="px-6 py-2.5 bg-surface text-on-surface border border-border-subtle rounded-md font-label-md hover:bg-surface-container-low transition-colors">Cancel</button>
+<button class="px-6 py-2.5 bg-primary text-on-primary rounded-md font-label-md hover:bg-primary/90 transition-colors shadow-sm active:scale-95">Save Changes</button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

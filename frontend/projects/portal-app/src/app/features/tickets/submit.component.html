@@ -1,0 +1,147 @@
+<section data-design-system="command-center" class="flex h-full flex-col bg-surface">
+  <!-- Top App Bar -->
+  <header class="flex justify-between items-center w-full px-6 h-16 z-40 sticky top-0 bg-surface-lowest border-b border-outline-variant shrink-0">
+    <div class="flex items-center gap-3">
+      <a
+        routerLink="/app/tickets"
+        class="p-2 hover:bg-surface-high rounded-full transition-colors text-on-surface-variant"
+        [attr.aria-label]="'portal.back' | t"
+      >
+        <cs-icon name="arrow_back" />
+      </a>
+      <h1 class="font-display text-headline-lg font-bold text-on-surface">{{ 'portal.submit.newTitle' | t }}</h1>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="p-2 hover:bg-surface-high rounded-full transition-colors text-on-surface-variant" [attr.aria-label]="'action.help' | t">
+        <cs-icon name="help" />
+      </button>
+    </div>
+  </header>
+
+  <!-- Form Canvas -->
+  <div class="flex-1 overflow-y-auto p-6 md:p-8">
+    <div class="max-w-3xl mx-auto">
+      <div class="flex flex-col gap-6 rounded-xl border border-outline-variant bg-surface-lowest p-6 shadow-card md:p-8">
+        <div class="flex flex-col gap-1 border-b border-outline-variant pb-4">
+          <h2 class="font-headline-md text-headline-md text-on-surface">{{ 'portal.submit.details' | t }}</h2>
+          <p class="font-body-md text-body-md text-on-surface-variant">{{ 'portal.submit.hint' | t }}</p>
+        </div>
+
+        <form class="flex flex-col gap-6" (ngSubmit)="submit()" [formGroup]="form">
+          <!-- Subject -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-label-md text-label-md text-on-surface" for="subject">{{ 'field.subject' | t }}</label>
+            <input
+              id="subject"
+              type="text"
+              formControlName="subject"
+              (input)="clearServerError('subject')"
+              [placeholder]="'portal.submit.subjectPlaceholder' | t"
+              [attr.aria-invalid]="(fieldError('subject') || (form.controls.subject.invalid && (form.controls.subject.touched || form.controls.subject.dirty))) ? 'true' : null"
+              class="w-full bg-surface-lowest border border-outline-variant rounded-md px-4 py-2.5 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+              [class.border-error]="fieldError('subject') || (form.controls.subject.invalid && (form.controls.subject.touched || form.controls.subject.dirty))"
+              [class.border-outline-variant]="!fieldError('subject') && !(form.controls.subject.invalid && (form.controls.subject.touched || form.controls.subject.dirty))"
+            />
+            @if (fieldError('subject')) {
+              <p role="alert" class="text-body-sm text-error">{{ fieldError('subject') }}</p>
+            } @else if (form.controls.subject.invalid && (form.controls.subject.touched || form.controls.subject.dirty)) {
+              <p role="alert" class="text-body-sm text-error">{{ 'validation.required' | t }}</p>
+            }
+          </div>
+
+          <!-- Category & Priority Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Category -->
+            <div class="flex flex-col gap-1.5">
+              <label class="font-label-md text-label-md text-on-surface" for="category">{{ 'field.category' | t }}</label>
+              <select
+                id="category"
+                formControlName="categoryId"
+                (change)="clearServerError('categoryId')"
+                [attr.aria-invalid]="(fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))) ? 'true' : null"
+                class="w-full bg-surface-lowest border border-outline-variant rounded-md px-4 py-2.5 font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
+                [class.border-error]="fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))"
+                [class.border-outline-variant]="!fieldError('categoryId') && !(form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))"
+              >
+                <option value="" disabled>{{ 'portal.submit.pickCategory' | t }}</option>
+                @for (c of categories(); track c.id) {
+                  <option [value]="c.id">{{ c.name }}</option>
+                }
+              </select>
+              @if (fieldError('categoryId')) {
+                <p role="alert" class="text-body-sm text-error">{{ fieldError('categoryId') }}</p>
+              } @else if (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty)) {
+                <p role="alert" class="text-body-sm text-error">{{ 'validation.required' | t }}</p>
+              }
+            </div>
+
+            <!-- Priority -->
+            <div class="flex flex-col gap-1.5">
+              <label class="font-label-md text-label-md text-on-surface" for="priority">{{ 'field.priority' | t }}</label>
+              <select
+                id="priority"
+                formControlName="priority"
+                class="w-full bg-surface-lowest border border-outline-variant rounded-md px-4 py-2.5 font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors border-outline-variant"
+              >
+                @for (p of priorities; track p) {
+                  <option [value]="p">{{ p }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-label-md text-label-md text-on-surface" for="description">{{ 'field.description' | t }}</label>
+            <textarea
+              id="description"
+              formControlName="description"
+              (input)="clearServerError('description')"
+              rows="6"
+              [attr.aria-invalid]="(fieldError('description') || (form.controls.description.invalid && (form.controls.description.touched || form.controls.description.dirty))) ? 'true' : null"
+              [placeholder]="'portal.submit.descriptionPlaceholder' | t"
+              class="w-full bg-surface-lowest border border-outline-variant rounded-md px-4 py-2.5 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-y"
+              [class.border-error]="fieldError('description') || (form.controls.description.invalid && (form.controls.description.touched || form.controls.description.dirty))"
+              [class.border-outline-variant]="!fieldError('description') && !(form.controls.description.invalid && (form.controls.description.touched || form.controls.description.dirty))"
+            ></textarea>
+            @if (fieldError('description')) {
+              <p role="alert" class="text-body-sm text-error">{{ fieldError('description') }}</p>
+            } @else if (form.controls.description.invalid && (form.controls.description.touched || form.controls.description.dirty)) {
+              <p role="alert" class="text-body-sm text-error">{{ 'validation.required' | t }}</p>
+            }
+          </div>
+
+          <!-- Attachments -->
+          <div class="flex flex-col gap-1.5">
+            <label class="font-label-md text-label-md text-on-surface">{{ 'field.attachments' | t }}</label>
+            <cs-attachment-picker (filesChange)="onFilesChange($event)" />
+            @if (attachmentError()) {
+              <p role="alert" class="text-body-sm text-error">{{ attachmentError()!.message_ }}</p>
+            }
+            @if (uploadingAttachments()) {
+              <p class="text-body-sm text-on-surface-variant">{{ 'attachments.uploading' | t }}</p>
+            }
+          </div>
+
+          @if (apiError() && !fieldError('subject') && !fieldError('description')) {
+            <p role="alert" class="text-body-sm text-error">{{ apiError()!.message_ }}</p>
+          }
+
+          <!-- Actions -->
+          <div class="flex items-center justify-end gap-4 pt-4 mt-2 border-t border-outline-variant">
+            <a
+              routerLink="/app/tickets"
+              class="px-6 py-2.5 font-label-md text-label-md font-semibold text-primary hover:bg-surface-high rounded transition-colors bg-transparent border-0"
+            >
+              {{ 'action.cancel' | t }}
+            </a>
+            <cs-button type="submit" [busy]="busy()" [disabled]="form.invalid || busy()">
+              <cs-icon name="send" [size]="18" />
+              {{ 'portal.submit.send' | t }}
+            </cs-button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

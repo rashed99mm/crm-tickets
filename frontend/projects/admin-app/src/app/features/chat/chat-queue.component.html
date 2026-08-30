@@ -1,0 +1,111 @@
+<section class="flex flex-col gap-6">
+  <header>
+    <h1 class="text-headline-lg text-on-surface">{{ 'chat.queue.title' | t }}</h1>
+    <p class="text-body-md text-on-surface-variant">{{ 'chat.queue.subtitle' | t }}</p>
+  </header>
+
+  @if (claimError(); as failure) {
+    <p class="rounded-lg bg-error-container p-4 text-body-md text-on-error-container" role="alert">
+      {{ failure.message_ }}
+    </p>
+  }
+
+  <cs-card>
+    @if (state(); as current) {
+      @switch (current.status) {
+        @case ('loading') {
+          <cs-loading-state [label]="'state.loading' | t" />
+        }
+        @case ('error') {
+          <cs-error-state [error]="current.error" (retry)="load()" />
+        }
+        @case ('empty') {
+          <cs-empty-state
+            [message]="'chat.queue.empty' | t"
+            [hint]="'chat.queue.emptyHint' | t"
+          />
+        }
+        @case ('loaded') {
+          <cs-data-toolbar
+            [search]="search()"
+            [searchPlaceholder]="'chat.queue.searchPlaceholder' | t"
+            [status]="status()"
+            [statusLabel]="'chat.queue.filterStatus' | t"
+            [allStatusLabel]="'chat.queue.allStatuses' | t"
+            [statusOptions]="statusOptions()"
+            [sort]="sortBy()"
+            [sortLabel]="'chat.queue.sort' | t"
+            [sortOptions]="sortOptions()"
+            (searchChanged)="onSearchChanged($event)"
+            (searchSubmitted)="onSearchSubmitted()"
+            (statusChanged)="onStatusChanged($event)"
+            (sortChanged)="onSortChanged($event)"
+          />
+          <div class="overflow-x-auto">
+            <table class="cs-data-table">
+              <thead class="border-b border-border-subtle bg-surface-container-low text-label-md text-on-surface-variant">
+                <tr>
+                  <th class="p-4 text-start">{{ 'chat.queue.customer' | t }}</th>
+                  <th class="p-4 text-start">{{ 'chat.queue.type' | t }}</th>
+                  <th class="p-4 text-start">{{ 'chat.queue.status' | t }}</th>
+                  <th class="p-4 text-start">{{ 'chat.queue.priority' | t }}</th>
+                  <th class="p-4 text-start">{{ 'chat.queue.waitTime' | t }}</th>
+                  <th class="p-4 text-end">{{ 'chat.queue.actions' | t }}</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border-subtle">
+                @for (session of sessions(); track session.id) {
+                  <tr class="hover:bg-surface-bright">
+                    <td class="p-4 font-semibold">
+                      {{ session.customerName || session.customerEmail || ('field.notRecorded' | t) }}
+                    </td>
+                    <td class="p-4">
+                      <cs-status-pill [value]="session.type" />
+                    </td>
+                    <td class="p-4">
+                      <cs-status-pill [value]="session.status" />
+                    </td>
+                    <td class="p-4">
+                      <span class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-label-md font-semibold" [class]="priorityClass(session.priority)">
+                        <span class="h-1.5 w-1.5 rounded-full" [class]="session.priority === 'Urgent' ? 'bg-priority-urgent' : session.priority === 'High' ? 'bg-priority-high' : 'bg-priority-normal'"></span>
+                        {{ session.priority }}
+                      </span>
+                    </td>
+                    <td class="p-4 text-on-surface-variant">
+                      <time [attr.datetime]="session.createdAt">
+                        {{ session.createdAt | csDate: 'datetime' }}
+                      </time>
+                    </td>
+                    <td class="p-4 text-end">
+                      @if (session.status === 'Waiting') {
+                        <cs-button
+                          type="button"
+                          [busy]="claimingId() === session.id"
+                          (click)="claim(session)"
+                        >
+                          {{ 'chat.queue.claim' | t }}
+                        </cs-button>
+                      } @else if (session.status === 'Active') {
+                        <cs-button type="button" variant="secondary" (click)="openSession(session)">
+                          {{ 'chat.queue.open' | t }}
+                        </cs-button>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <cs-pagination
+            [summary]="summary()"
+            [page]="page()"
+            [hasMore]="hasMore()"
+            [totalCount]="totalCount()"
+            [pageSize]="pageSize"
+            (pageSelected)="goToPage($event)"
+          />
+        }
+      }
+    }
+  </cs-card>
+</section>

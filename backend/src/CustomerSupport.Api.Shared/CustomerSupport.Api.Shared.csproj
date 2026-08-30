@@ -1,0 +1,76 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--
+      The bilingual message catalogue, which YamlLocalizationStore loads by probing each loaded
+      assembly's directory for Localization/Resources.yaml.
+
+      Without this the file is never copied to output, the store loads nothing, and every lookup
+      silently falls back to returning the key — so responses carry `messageEn: "VALIDATION_ERROR"`
+      where the English text belongs. That is US-107 ("every code has a message") failing without
+      any error, and no test caught it because the integration tests assert `error.code`, not the
+      message text.
+    -->
+    <Content Include="Localization\Resources.yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CustomerSupport.Application\CustomerSupport.Application.csproj" />
+    <ProjectReference Include="..\CustomerSupport.Infrastructure\CustomerSupport.Infrastructure.csproj" />
+    <ProjectReference Include="..\CustomerSupport.Shared.Contracts\CustomerSupport.Shared.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+  <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="Scalar.AspNetCore" />
+    <PackageReference Include="Hangfire.Dashboard.BasicAuthorization" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  <PackageReference Include="Serilog.AspNetCore" />
+  <PackageReference Include="Serilog.Sinks.Seq" />
+  <PackageReference Include="OpenTelemetry" />
+  <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+  <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+  <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+  <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
+  <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+  <PackageReference Include="Microsoft.Extensions.ServiceDiscovery" />
+  <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
+  <PackageReference Include="AspNetCore.HealthChecks.SqlServer" />
+  <PackageReference Include="AspNetCore.HealthChecks.Redis" />
+  <PackageReference Include="AspNetCore.HealthChecks.RabbitMQ" />
+  <PackageReference Include="AspNetCore.HealthChecks.Uris" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The Web SDK contributes these implicit usings to a host project. This is a
+         library, so it declares them itself rather than switching to the Web SDK
+         for code that is not an application. -->
+    <Using Include="Microsoft.AspNetCore.Builder" />
+    <Using Include="Microsoft.AspNetCore.Hosting" />
+    <Using Include="Microsoft.AspNetCore.Http" />
+    <Using Include="Microsoft.AspNetCore.Routing" />
+    <Using Include="Microsoft.Extensions.Configuration" />
+    <Using Include="Microsoft.Extensions.DependencyInjection" />
+    <Using Include="Microsoft.Extensions.Hosting" />
+    <Using Include="Microsoft.Extensions.Logging" />
+  </ItemGroup>
+
+</Project>

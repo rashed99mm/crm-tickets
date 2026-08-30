@@ -1,0 +1,130 @@
+<div class="flex h-full gap-6">
+  <section class="mx-auto flex max-w-3xl flex-1 flex-col gap-6">
+    <header class="flex items-center gap-3 text-body-sm text-on-surface-variant">
+      <a
+        routerLink="/kb"
+        class="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-high"
+        [attr.aria-label]="'portal.back' | t"
+      >
+        <cs-icon name="arrow_back" />
+      </a>
+      <span>{{ 'portal.nav.kb' | t }}</span>
+      <cs-icon name="chevron_right" [size]="16" />
+      <span>{{ articleCategory() }}</span>
+      <cs-icon name="chevron_right" [size]="16" />
+      <span class="text-on-surface">{{ 'portal.kb.article' | t }}</span>
+    </header>
+
+    @switch (state().status) {
+      @case ('loading') {
+        <cs-loading-state [label]="'portal.kb.loading' | t" />
+      }
+      @case ('error') {
+        @if (error(); as failure) {
+          <cs-error-state [error]="failure" (retry)="retry()" />
+        }
+      }
+      @case ('loaded') {
+        @if (data(); as article) {
+          <cs-card class="overflow-hidden border-border-subtle shadow-sm">
+            <div class="p-6 sm:p-8">
+            <div class="mb-5 flex flex-wrap items-center gap-3 text-body-sm text-on-surface-variant">
+              <span class="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1.5 text-label-md font-semibold text-on-primary">
+                <cs-icon [name]="article.isFaq ? 'quiz' : article.contentType === 'Guide' ? 'auto_stories' : 'article'" [size]="15" />
+                {{ article.isFaq ? ('portal.kb.type.faq' | t) : article.contentType }}
+              </span>
+              <span>{{ 'portal.kb.lastUpdated' | t : updatedLabel(article) }}</span>
+              <span class="inline-flex items-center gap-1"><cs-icon name="schedule" [size]="16" />{{ 'portal.kb.readingTime' | t : readingTime(article) }}</span>
+            </div>
+            <h2 class="mb-6 text-display-sm font-semibold leading-tight text-on-surface sm:text-display-lg">{{ article.title }}</h2>
+            <div class="mb-6 flex items-center gap-3 border-b border-border-subtle pb-6 text-body-sm text-on-surface-variant">
+              <span class="grid size-9 place-items-center rounded-full bg-primary text-on-primary"><cs-icon name="person" [size]="18" /></span>
+              <span>{{ 'portal.kb.byAuthor' | t }}</span>
+              @if (article.categoryName || article.category) { <span class="text-outline">•</span><span>{{ article.categoryName || article.category }}</span> }
+            </div>
+            @if (article.categoryName || article.category) {
+              <p class="mb-1 text-body-sm font-medium text-primary">
+                {{ article.categoryName || article.category }}
+              </p>
+            }
+            @if (article.tags.length) {
+              <div class="mb-4 flex flex-wrap gap-2">
+                @for (tag of article.tags; track tag) {
+                  <span class="rounded-full bg-surface-high px-2.5 py-0.5 text-label-sm text-on-surface-variant">
+                    {{ tagLabel(tag) }}
+                  </span>
+                }
+              </div>
+            }
+            @if (article.summary) {
+              <p class="mb-6 max-w-3xl border-s-4 border-primary ps-4 text-body-lg leading-8 text-on-surface">{{ article.summary }}</p>
+            }
+            <article class="max-w-3xl whitespace-pre-line text-[1.05rem] leading-8 text-on-surface">{{ article.body }}</article>
+
+            <div class="mt-6 flex flex-wrap items-center gap-4 border-t border-border-subtle pt-4 text-body-sm text-on-surface-variant">
+              @if (article.viewCount > 0) {
+                <span class="inline-flex items-center gap-1">
+                  <cs-icon name="visibility" [size]="18" />
+                  {{ 'portal.kb.views' | t : article.viewCount }}
+                </span>
+              }
+              <span class="inline-flex items-center gap-1">
+                <cs-icon name="thumb_up" [size]="18" />
+                {{ article.likeCount }}
+                @if (article.dislikeCount) {
+                  <span class="text-on-surface-variant/70">/ {{ article.dislikeCount }}</span>
+                }
+              </span>
+            </div>
+            </div>
+          </cs-card>
+
+          @if (isAuthenticated()) {
+            <cs-card class="flex flex-col items-start gap-3 p-5">
+              <p class="text-label-lg text-on-surface">{{ 'portal.kb.helpfulPrompt' | t }}</p>
+              @if (voted() === null) {
+                <div class="flex gap-3">
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-label-lg font-semibold text-on-primary transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
+                    [disabled]="voting()"
+                    (click)="vote(true)"
+                  >
+                    <cs-icon name="thumb_up" [size]="18" />
+                    {{ 'portal.kb.yes' | t }}
+                  </button>
+                  <button
+                    type="button"
+                    class="inline-flex items-center gap-2 rounded-lg bg-surface-high px-4 py-2 text-label-lg font-semibold text-on-surface transition-all hover:bg-surface-highest active:scale-95 disabled:opacity-60"
+                    [disabled]="voting()"
+                    (click)="vote(false)"
+                  >
+                    <cs-icon name="thumb_down" [size]="18" />
+                    {{ 'portal.kb.no' | t }}
+                  </button>
+                </div>
+              } @else {
+                <p class="text-label-md text-on-surface-variant">
+                  {{ voted() ? ('portal.kb.thanksYes' | t) : ('portal.kb.thanksNo' | t) }}
+                </p>
+              }
+              @if (voteError(); as message) {
+                <p role="alert" class="text-body-sm text-error">{{ message }}</p>
+              }
+            </cs-card>
+          } @else {
+            <cs-card class="flex flex-col items-start gap-3 p-5">
+              <p class="text-label-lg text-on-surface">{{ 'portal.kb.helpfulPrompt' | t }}</p>
+              <p class="text-body-sm text-on-surface-variant">
+                <a routerLink="/login" [queryParams]="{returnUrl: '/kb/' + id()}" class="text-primary hover:text-primary-container underline underline-offset-2 transition-colors">{{ 'portal.kb.signInToVote' | t }}</a>
+                {{ 'portal.kb.signInToVoteHint' | t }}
+              </p>
+            </cs-card>
+          }
+        }
+      }
+    }
+  </section>
+
+  <cs-kb-ai-sidebar [article]="data()" />
+</div>

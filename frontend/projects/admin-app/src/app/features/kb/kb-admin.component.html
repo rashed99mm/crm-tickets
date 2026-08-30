@@ -1,0 +1,310 @@
+<section data-design-system="command-center" class="flex flex-col gap-6">
+
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1 class="text-headline-lg text-on-surface">{{ 'kb.title' | t }}</h1>
+      <p class="mt-1 text-body-md text-on-surface-variant">{{ 'kb.subtitle' | t }}</p>
+    </div>
+    <button
+      type="button"
+      class="bg-primary text-on-primary text-label-md py-2 px-5 rounded-lg hover:bg-surface-tint transition-colors flex items-center gap-2"
+      (click)="openCreate()"
+    >
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">edit_document</span>
+      {{ 'kb.admin.createArticle' | t }}
+    </button>
+  </div>
+
+  @if (mutationError(); as message) {
+    <p role="alert" class="rounded-lg bg-error-container px-4 py-2 text-body-sm text-on-error-container">
+      {{ message }}
+    </p>
+  }
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+    <!-- Left: form + table (fluid) -->
+    <div class="lg:col-span-2 flex flex-col gap-6">
+
+      <!-- Bento Category Grid — AC-506 -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="bg-surface-lowest border border-outline-variant rounded-xl p-4 flex flex-col gap-3 hover:border-primary transition-colors cursor-pointer group">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">school</span>
+            </div>
+            <h3 class="text-headline-md text-on-surface text-lg">{{ 'kb.admin.catOnboarding' | t }}</h3>
+          </div>
+          <p class="text-body-sm text-on-surface-variant line-clamp-2">{{ 'kb.admin.catOnboardingDesc' | t }}</p>
+          <div class="mt-auto pt-2 flex items-center justify-between text-on-surface-variant">
+            <span class="text-label-md">{{ 'kb.admin.catArticles' | t: 24 }}</span>
+            <span class="material-symbols-outlined text-sm" aria-hidden="true">school</span>
+          </div>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-xl p-4 flex flex-col gap-3 hover:border-primary transition-colors cursor-pointer group">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">handyman</span>
+            </div>
+            <h3 class="text-headline-md text-on-surface text-lg">{{ 'kb.admin.catTroubleshooting' | t }}</h3>
+          </div>
+          <p class="text-body-sm text-on-surface-variant line-clamp-2">{{ 'kb.admin.catTroubleshootingDesc' | t }}</p>
+          <div class="mt-auto pt-2 flex items-center justify-between text-on-surface-variant">
+            <span class="text-label-md">{{ 'kb.admin.catArticles' | t: 86 }}</span>
+            <span class="material-symbols-outlined text-sm" aria-hidden="true">handyman</span>
+          </div>
+        </div>
+        <div class="bg-surface-lowest border border-outline-variant rounded-xl p-4 flex flex-col gap-3 hover:border-primary transition-colors cursor-pointer group">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-colors">
+              <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24">receipt_long</span>
+            </div>
+            <h3 class="text-headline-md text-on-surface text-lg">{{ 'kb.admin.catBilling' | t }}</h3>
+          </div>
+          <p class="text-body-sm text-on-surface-variant line-clamp-2">{{ 'kb.admin.catBillingDesc' | t }}</p>
+          <div class="mt-auto pt-2 flex items-center justify-between text-on-surface-variant">
+            <span class="text-label-md">{{ 'kb.admin.catArticles' | t: 12 }}</span>
+            <span class="material-symbols-outlined text-sm" aria-hidden="true">receipt_long</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Create / edit form -->
+      <cs-dialog
+        [open]="formOpen()"
+        [heading]="editing() ? ('kb.editArticle' | t) : ('kb.newArticle' | t)"
+        (closed)="cancelForm()"
+      >
+        <div class="flex flex-col gap-4">
+          <h2 class="text-headline-md text-on-surface">
+            {{ editing() ? ('kb.editArticle' | t) : ('kb.newArticle' | t) }}
+          </h2>
+          <label class="flex flex-col gap-1 text-label-md text-on-surface-variant">
+            {{ 'kb.form.contentType' | t }}
+            <select
+              class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface"
+              [ngModel]="authoringType()"
+              (ngModelChange)="authoringType.set($event)"
+            >
+              <option value="Article">{{ 'kb.form.article' | t }}</option>
+              <option value="Guide">{{ 'kb.form.guide' | t }}</option>
+              <option value="Faq">{{ 'kb.form.faq' | t }}</option>
+            </select>
+          </label>
+          <label class="flex flex-col gap-1 text-label-md text-on-surface-variant">
+            {{ 'kb.form.title' | t }}
+            <input type="text" class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface" [ngModel]="formTitle()" (ngModelChange)="formTitle.set($event)" />
+          </label>
+          <label class="flex flex-col gap-1 text-label-md text-on-surface-variant">
+            {{ 'kb.form.summary' | t }}
+            <input type="text" class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface" [ngModel]="formSummary()" (ngModelChange)="formSummary.set($event)" />
+          </label>
+          <label class="flex flex-col gap-1 text-label-md text-on-surface-variant">
+            {{ 'field.category' | t }}
+            <select
+              class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface"
+              [ngModel]="selectedCategoryId()"
+              (ngModelChange)="selectedCategoryId.set($event)"
+            >
+              <option value="">{{ 'field.notRecorded' | t }}</option>
+              @for (category of flatCategories(); track category.id) {
+                <option [value]="category.id">{{ category.name }}</option>
+              }
+            </select>
+          </label>
+          <label class="flex flex-col gap-1 text-label-md text-on-surface-variant">
+            {{ 'kb.form.body' | t }}
+            <textarea rows="8" class="rounded-lg border border-outline-variant bg-surface-lowest px-3 py-2 text-body-md text-on-surface" [ngModel]="formBody()" (ngModelChange)="formBody.set($event)"></textarea>
+          </label>
+          <label class="flex flex-col gap-1 text-label-md text-on-surface-variant">
+            {{ 'kb.form.tags' | t }}
+            <input type="text" class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface" [ngModel]="formTags()" (ngModelChange)="formTags.set($event)" />
+          </label>
+          @if (formError(); as message) {
+            <p role="alert" class="text-body-sm text-error">{{ message }}</p>
+          }
+          @if (editing() && versions().length > 0) {
+            <section class="rounded-lg border border-outline-variant bg-surface p-4">
+              <h3 class="text-label-lg text-on-surface">{{ 'kb.versions' | t }}</h3>
+              <ul class="mt-3 flex flex-col divide-y divide-border-subtle">
+                @for (version of versions(); track version.versionNumber) {
+                  <li class="py-2 text-body-sm text-on-surface-variant">
+                    <span class="font-mono text-data-mono text-on-surface">{{ 'kb.versionLabel' | t: version.versionNumber }}</span>
+                    @if (version.changeSummary) {
+                      <span>{{ 'kb.versionChange' | t: version.changeSummary }}</span>
+                    }
+                    <time class="ms-2 font-mono text-data-mono" [attr.datetime]="version.createdAt">{{ version.createdAt }}</time>
+                  </li>
+                }
+              </ul>
+            </section>
+          }
+          <div class="flex gap-3">
+            <button type="button" class="rounded-lg bg-primary px-4 py-2 text-label-lg font-semibold text-on-primary transition-all hover:opacity-90 disabled:opacity-60" (click)="save()" [disabled]="saving()">
+              {{ editing() ? ('kb.form.save' | t) : ('kb.form.create' | t) }}
+            </button>
+            <button type="button" class="rounded-lg border border-outline-variant bg-surface-lowest px-4 py-2 text-label-lg text-on-surface" (click)="cancelForm()">
+              {{ 'kb.form.cancel' | t }}
+            </button>
+          </div>
+        </div>
+      </cs-dialog>
+
+      <!-- Recent Articles Table — AC-506 -->
+      <div class="bg-surface-lowest border border-outline-variant rounded-xl overflow-hidden flex flex-col">
+        <div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+          <h3 class="text-headline-md text-on-surface text-lg">
+            {{ activeTab() === 'faqs' ? ('kb.tabs.faqs' | t) : activeTab() === 'guides' ? ('kb.tabs.guides' | t) : activeTab() === 'articles' ? ('kb.tabs.articles' | t) : ('kb.admin.recentArticles' | t) }}
+          </h3>
+        </div>
+        <cs-data-toolbar
+          [search]="searchTerm()"
+          [searchPlaceholder]="'kb.searchPlaceholder' | t"
+          [status]="statusFilter()"
+          [statusLabel]="'field.status' | t"
+          [allStatusLabel]="'kb.allStatuses' | t"
+          [statusOptions]="statusOptions()"
+          [sort]="sortMode()"
+          [sortLabel]="'kb.sort' | t"
+          [sortOptions]="sortOptions()"
+          (searchChanged)="searchTerm.set($event)"
+          (searchSubmitted)="submitSearch()"
+          (statusChanged)="setStatusFilter($event)"
+          (sortChanged)="setSortMode($event)"
+        />
+        <div class="flex flex-wrap gap-2 border-b border-outline-variant bg-surface-low p-2">
+          @for (tab of contentTabs; track tab) {
+            <button
+              type="button"
+              class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-label-md font-semibold transition-colors"
+              [class.bg-surface-lowest]="activeTab() === tab"
+              [class.text-primary]="activeTab() === tab"
+              [class.text-on-surface-variant]="activeTab() !== tab"
+              (click)="setActiveTab(tab)"
+            >
+              <cs-icon [name]="tab === 'faqs' ? 'quiz' : tab === 'guides' ? 'menu_book' : 'article'" [size]="16" />
+              {{ tabLabel(tab) | t }}
+            </button>
+          }
+        </div>
+        @switch (state().status) {
+          @case ('loading') {
+            <cs-loading-state [label]="'kb.loading' | t" />
+          }
+          @case ('error') {
+            @if (listError(); as failure) {
+              <cs-error-state [error]="failure" (retry)="load()" />
+            }
+          }
+          @case ('empty') {
+            <cs-empty-state [message]="'kb.empty' | t" />
+          }
+          @default {
+            @if (state().status === 'loaded') {
+              <div class="overflow-x-auto">
+                <table class="cs-data-table min-w-[720px]">
+                  <thead class="text-label-sm uppercase text-on-surface-variant">
+                    <tr class="border-b border-outline-variant">
+                      <th class="w-[34%] py-2 pe-4 text-start">{{ 'kb.table.title' | t }}</th>
+                      <th class="w-[16%] py-2 pe-4 text-start">{{ 'kb.table.status' | t }}</th>
+                      <th class="w-[18%] py-2 pe-4 text-start">{{ 'kb.table.category' | t }}</th>
+                      <th class="w-[20%] py-2 pe-4 text-start">{{ 'kb.table.updated' | t }}</th>
+                      <th class="sticky end-0 z-10 w-32 bg-surface-lowest py-2 pe-4"></th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-border-subtle">
+                    @for (article of displayedArticles(); track article.id) {
+                      <tr class="hover:bg-surface-container-low transition-colors group">
+                        <td class="py-2 pe-4 text-on-surface group-hover:text-tertiary transition-colors">
+                          <a class="font-semibold hover:text-primary hover:underline" [routerLink]="['/kb-admin', article.id]">{{ article.title }}</a>
+                          <span class="mt-1 block text-body-sm text-on-surface-variant">{{ article.summary }}</span>
+                        </td>
+                        <td class="py-2 pe-4">
+                          <span
+                            class="rounded-full px-2 py-0.5 text-label-sm"
+                            [class.bg-primary-container]="article.status === 'Published'"
+                            [class.text-on-primary-container]="article.status === 'Published'"
+                            [class.bg-surface-container]="article.status !== 'Published'"
+                          >{{ statusLabel(article.status) | t }}</span>
+                        </td>
+                        <td class="py-2 pe-4 text-on-surface-variant">{{ article.categoryName || article.category || '—' }}</td>
+                        <td class="py-2 pe-4 text-on-surface-variant font-data-mono">{{ (article.publishedAt ?? '') || '—' }}</td>
+                        <td class="sticky end-0 z-10 bg-surface-lowest py-2 pe-4">
+                          <div class="flex items-center justify-end gap-1">
+                            @if (article.status === 'Draft') {
+                              <button type="button" class="grid size-9 place-items-center rounded-lg text-primary transition-colors hover:bg-primary/10 focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-40" [title]="'kb.edit' | t" [attr.aria-label]="'kb.edit' | t" (click)="openEdit(article)">
+                                <cs-icon name="edit" [size]="18" />
+                              </button>
+                              <button type="button" class="grid size-9 place-items-center rounded-lg text-success transition-colors hover:bg-success-container focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-40" [title]="'kb.publish' | t" [attr.aria-label]="'kb.publish' | t" [disabled]="mutating()" (click)="publish(article)">
+                                <cs-icon name="publish" [size]="18" />
+                              </button>
+                            }
+                            @if (article.status !== 'Archived') {
+                              <button type="button" class="grid size-9 place-items-center rounded-lg text-on-surface-variant transition-colors hover:bg-error-container hover:text-error focus-visible:outline-2 focus-visible:outline-primary disabled:opacity-40" [title]="'kb.archive' | t" [attr.aria-label]="'kb.archive' | t" [disabled]="mutating()" (click)="archive(article)">
+                                <cs-icon name="archive" [size]="18" />
+                              </button>
+                            }
+                          </div>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          }
+        }
+      </div>
+    </div>
+
+    <!-- Right Sidebar: KB Insights — AC-506 -->
+    <div class="flex flex-col gap-4">
+      <cs-card [heading]="'kb.admin.insightsTitle' | t">
+        <div class="flex flex-col gap-4 p-4">
+          <div class="flex items-center justify-between">
+            <span class="text-body-sm text-on-surface-variant">{{ 'kb.admin.totalArticles' | t }}</span>
+            <span class="text-headline-md text-on-surface">{{ articleTotal() }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-body-sm text-on-surface-variant">{{ 'kb.admin.published' | t }}</span>
+            <span class="text-headline-md text-success">{{ publishedTotal() }}</span>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-body-sm text-on-surface-variant">{{ 'kb.admin.drafts' | t }}</span>
+            <span class="text-headline-md text-on-surface-variant">{{ draftTotal() }}</span>
+          </div>
+          <div>
+            <div class="flex justify-between text-body-sm text-on-surface-variant mb-1">
+              <span>{{ 'kb.admin.publishRate' | t }}</span>
+              <span>{{ 'kb.admin.publishRateValue' | t: publishRate() }}</span>
+            </div>
+            <div class="h-1.5 rounded-full bg-surface-container overflow-hidden">
+              <div class="h-full rounded-full bg-success" [style.width.%]="publishRate()"></div>
+            </div>
+          </div>
+        </div>
+      </cs-card>
+
+      <cs-card [heading]="'kb.admin.topArticles' | t">
+        <ul class="flex flex-col divide-y divide-border-subtle">
+          @for (article of displayedArticles().slice(0, 5); track article.id) {
+            <li class="px-4 py-3 hover:bg-surface-container-low transition-colors cursor-pointer">
+              <span class="block truncate text-label-md text-on-surface">{{ article.title }}</span>
+              <span class="text-body-sm text-on-surface-variant">{{ 'kb.admin.views' | t: article.viewCount }}</span>
+            </li>
+          }
+          @if (displayedArticles().length === 0) {
+            <li class="px-4 py-6 text-center text-body-sm text-on-surface-variant">{{ 'kb.empty' | t }}</li>
+          }
+        </ul>
+      </cs-card>
+
+      <cs-card [heading]="'kb.admin.contentStrategy' | t">
+        <div class="p-4">
+          <p class="text-body-sm text-on-surface-variant">{{ 'kb.admin.contentStrategyTip' | t }}</p>
+        </div>
+      </cs-card>
+    </div>
+
+  </div>
+</section>

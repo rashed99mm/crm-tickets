@@ -1,0 +1,62 @@
+<section class="mx-auto flex max-w-2xl flex-col gap-6">
+  <header class="flex items-center gap-3">
+    <a
+      routerLink="/customers"
+      [attr.aria-label]="'customers.create.back' | t"
+      [title]="'customers.create.back' | t"
+      class="grid size-9 shrink-0 place-items-center rounded-full text-on-surface-variant transition-colors hover:bg-surface-high hover:text-on-surface rtl:rotate-180"
+    >
+      <cs-icon name="arrow_back" [size]="24" />
+    </a>
+    <h1 class="text-headline-lg text-on-surface">{{ 'customers.add' | t }}</h1>
+  </header>
+
+  <cs-card>
+    <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col gap-4 p-6">
+      <cs-input-field
+        [label]="'field.name' | t"
+        [control]="form.controls.name"
+        [serverError]="fieldError('name')"
+        (input)="clearServerError('name')"
+      />
+
+      <cs-input-field
+        [label]="'field.email' | t"
+        type="email"
+        [control]="form.controls.email"
+        [serverError]="fieldError('email')"
+        (input)="clearServerError('email')"
+      />
+
+      <cs-input-field
+        [label]="'field.phoneOptional' | t"
+        type="tel"
+        [control]="form.controls.phone"
+        [serverError]="fieldError('phone')"
+        (input)="clearServerError('phone')"
+      />
+
+      <!--
+        Only shown when the failure names no field — a duplicate email is a 409 and names none. A
+        rejection that DOES name fields is already displayed under each control, and repeating it
+        here would be the banner AC-70 forbids.
+      -->
+      @if (formLevelError(); as failure) {
+        <p role="alert" class="text-body-md text-error">{{ failure.message_ }}</p>
+      }
+
+      <cs-action-bar>
+        <a
+          routerLink="/customers"
+          class="inline-flex h-10 items-center rounded-lg px-4 text-label-lg font-semibold text-primary transition-colors hover:bg-surface-high"
+        >
+          {{ 'action.cancel' | t }}
+        </a>
+        <cs-button type="submit" [busy]="saving()" [disabled]="form.invalid">
+          <cs-icon name="person_add" [size]="18" />
+          {{ 'customers.create.submit' | t }}
+        </cs-button>
+      </cs-action-bar>
+    </form>
+  </cs-card>
+</section>

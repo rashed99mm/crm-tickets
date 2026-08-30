@@ -1,0 +1,28 @@
+<section role="alert" class="grid min-h-56 place-items-center px-4 py-8">
+  <div
+    class="mx-auto flex w-full max-w-md flex-col items-center gap-4 rounded-2xl border border-outline-variant/50 bg-surface-container-lowest px-6 py-8 text-center shadow-card"
+  >
+    <span class="grid size-16 place-items-center rounded-xl bg-error-container text-on-error-container shadow-sm">
+      <cs-icon [name]="icon()" [filled]="true" [size]="32" />
+    </span>
+
+    <div class="flex flex-col gap-1">
+      <p class="text-headline-md text-error">{{ title() }}</p>
+      <p class="text-body-md text-on-surface-variant">{{ text() }}</p>
+    </div>
+
+    @if (error().traceId) {
+      <span
+        dir="ltr"
+        class="rounded bg-surface-lowest px-2 py-1 font-mono text-data-mono text-on-surface-variant"
+      >
+        {{ error().traceId }}
+      </span>
+    }
+
+    <cs-button variant="secondary" (pressed)="retry.emit()">
+      <cs-icon name="refresh" [size]="16" />
+      {{ retryLabel() }}
+    </cs-button>
+  </div>
+</section>

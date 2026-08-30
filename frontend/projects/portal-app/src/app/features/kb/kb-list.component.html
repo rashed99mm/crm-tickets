@@ -1,0 +1,287 @@
+<section data-design-system="command-center" class="-mx-4 -mt-4 flex min-h-full flex-col gap-0 bg-surface-lowest sm:-mx-6 sm:-mt-6">
+
+  <!-- Hero Search Section — AC-500 -->
+  <div class="relative overflow-hidden bg-primary-container px-4 py-16 text-on-primary shadow-card sm:px-8">
+    <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(255,255,255,0.18),transparent_48%),radial-gradient(circle_at_80%_80%,rgba(255,255,255,0.12),transparent_45%)]"></div>
+    <div class="max-w-4xl mx-auto relative z-10 text-center">
+      <h1 class="font-display text-display-lg text-on-primary mb-4">{{ 'portal.kb.heroTitle' | t }}</h1>
+      <p class="font-body-lg text-body-lg text-primary-fixed-dim mb-8 max-w-2xl mx-auto">{{ 'portal.kb.heroSubtitle' | t }}</p>
+      <div class="relative max-w-3xl mx-auto">
+        <span class="absolute start-4 top-1/2 z-10 -translate-y-1/2 text-on-surface-variant">
+          <cs-icon name="search" [size]="22" />
+        </span>
+        <input
+          type="search"
+          [value]="search()"
+          (input)="onSearch($event)"
+          (keyup.enter)="submitSearch()"
+          [placeholder]="'portal.kb.heroSearchPlaceholder' | t"
+          class="w-full rounded-lg border-0 bg-surface-container-lowest py-4 ps-12 pe-28 font-body-lg text-body-lg text-on-surface shadow-lg transition-all placeholder:text-on-surface/40 focus:ring-4 focus:ring-primary-container sm:pe-32"
+        />
+        <button
+          type="button"
+          (click)="submitSearch()"
+          class="absolute end-2 top-1/2 -translate-y-1/2 rounded-lg bg-primary px-4 py-2 font-label-lg text-label-lg text-on-primary transition-colors hover:bg-primary-container sm:px-6"
+        >
+          {{ 'portal.kb.heroSearchButton' | t }}
+        </button>
+      </div>
+      <div class="mt-6 flex flex-wrap justify-center gap-2 font-body-sm text-body-sm text-primary-fixed-dim">
+        <span>{{ 'portal.kb.heroPopular' | t }}</span>
+        <button type="button" class="hover:text-on-primary underline underline-offset-2 cursor-pointer" (click)="applySuggestion('password')">{{ 'portal.kb.heroResetPassword' | t }}</button>
+        <button type="button" class="hover:text-on-primary underline underline-offset-2 cursor-pointer" (click)="applySuggestion('api')">{{ 'portal.kb.heroApiDocs' | t }}</button>
+        <button type="button" class="hover:text-on-primary underline underline-offset-2 cursor-pointer" (click)="applySuggestion('billing')">{{ 'portal.kb.heroBilling' | t }}</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-8 w-full space-y-16">
+
+    <!-- Category Grid — wired to real data -->
+    @if (!categoryId()) {
+      <div class="grid gap-8 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
+        <section>
+          <div class="mb-6 flex items-center justify-between">
+            <h2 class="font-headline-lg text-headline-lg text-on-surface">{{ 'portal.kb.browseCategories' | t }}</h2>
+            @if (categories().length > 4) {
+              <span class="text-on-surface-variant font-label-md text-label-md">{{ categories().length }} {{ 'portal.kb.categories' | t }}</span>
+            }
+          </div>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            @for (cat of rootCategories(); track cat.id) {
+              <button
+                type="button"
+                (click)="selectCategory(cat)"
+                class="group relative flex min-h-44 cursor-pointer flex-col overflow-hidden rounded-xl border border-border-subtle bg-surface-container-lowest p-6 text-start transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-card"
+              >
+                <span class="absolute -right-10 -top-10 size-28 rounded-full bg-primary-fixed opacity-60 transition-transform group-hover:scale-125"></span>
+                <div class="relative mb-5 flex size-12 items-center justify-center text-primary transition-transform group-hover:scale-105">
+                  <cs-icon [name]="cat.id === rootCategories()[0]?.id ? 'rocket_launch' : cat.id === rootCategories()[1]?.id ? 'manage_accounts' : cat.id === rootCategories()[2]?.id ? 'credit_card' : cat.id === rootCategories()[3]?.id ? 'terminal' : 'folder'" [filled]="true" [size]="23" />
+                </div>
+                <h3 class="relative font-headline-md text-headline-md text-on-surface">{{ cat.name }}</h3>
+                @if (cat.children.length > 0) {
+                  <p class="relative mt-2 font-body-sm text-body-sm text-on-surface-variant">{{ cat.children.length }} {{ 'portal.kb.subcategories' | t }}</p>
+                }
+                <span class="relative mt-auto flex items-center gap-1 pt-5 text-primary font-label-lg text-label-lg opacity-0 transition-all group-hover:translate-x-1 group-hover:opacity-100">
+                  {{ 'portal.kb.browseCat' | t }} <cs-icon name="arrow_forward" [size]="16" />
+                </span>
+              </button>
+            }
+          </div>
+        </section>
+
+        <aside class="space-y-5">
+          <section class="rounded-xl border border-border-subtle bg-surface-container-lowest p-5 shadow-xs">
+            <div class="mb-4 flex items-center gap-2 text-headline-md text-on-surface">
+              <cs-icon name="star" [filled]="true" class="text-warning" [size]="20" />
+              <h2>{{ 'portal.kb.promoted' | t }}</h2>
+            </div>
+            <div class="divide-y divide-border-subtle">
+              @for (article of promotedArticles(); track article.id) {
+                <a [routerLink]="['/kb', article.id]" class="block py-3 first:pt-0 last:pb-0 group">
+                  <p class="text-label-md font-semibold text-on-surface group-hover:text-primary">{{ article.title }}</p>
+                  @if (article.summary) { <p class="mt-1 line-clamp-2 text-body-sm text-on-surface-variant">{{ article.summary }}</p> }
+                </a>
+              } @empty {
+                <p class="text-body-sm text-on-surface-variant">{{ 'portal.kb.empty' | t }}</p>
+              }
+            </div>
+          </section>
+          <section class="rounded-xl bg-primary-container p-6 text-center text-on-primary-container shadow-card">
+            <span class="mx-auto mb-4 grid size-16 place-items-center text-on-primary">
+              <cs-icon name="support_agent" [filled]="true" [size]="26" />
+            </span>
+            <h2 class="text-headline-md font-semibold text-on-primary">{{ 'portal.kb.stillNeedHelp' | t }}</h2>
+            <p class="mt-2 text-body-md text-inverse-primary">{{ 'portal.kb.stillNeedHelpDesc' | t }}</p>
+            <a routerLink="/app/tickets/new" class="mt-5 block rounded-lg bg-surface-lowest px-4 py-3 text-label-lg font-semibold text-primary transition-colors hover:bg-surface-highest">
+              {{ 'portal.kb.openTicket' | t }}
+            </a>
+          </section>
+          <section class="rounded-xl border border-border-subtle bg-surface-container-lowest p-4 shadow-xs">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2">
+                <span class="relative flex size-3 rounded-full bg-success"><span class="absolute inset-0 animate-ping rounded-full bg-success opacity-75"></span></span>
+                <span class="text-label-md font-semibold text-on-surface">{{ 'portal.kb.systemStatus' | t }}</span>
+              </div>
+              <span class="text-label-sm text-success">{{ 'portal.kb.operational' | t }}</span>
+            </div>
+          </section>
+        </aside>
+      </div>
+    }
+
+    <!-- Active category breadcrumb + article list -->
+    @if (categoryId()) {
+      <!-- Category breadcrumb bar -->
+      <div class="flex items-center gap-3 rounded-lg border border-border-subtle bg-surface-container-low px-4 py-3">
+        <button
+          type="button"
+          (click)="clearCategory()"
+          class="flex items-center gap-2 text-primary hover:text-primary-container transition-colors font-label-lg text-label-lg cursor-pointer"
+        >
+          <cs-icon name="arrow_back" [size]="20" />
+          {{ 'portal.kb.allCategories' | t }}
+        </button>
+        <span class="text-on-surface-variant">/</span>
+        <span class="font-headline-md text-headline-md text-on-surface">{{ currentCategory()?.name }}</span>
+        @if (currentCategory()?.children?.length) {
+          <!-- Sub-category chips -->
+          <div class="ms-4 flex flex-wrap gap-2">
+            @for (sub of currentCategory()!.children; track sub.id) {
+              <span class="rounded-full bg-surface-high px-3 py-1 text-label-sm text-on-surface-variant">{{ sub.name }}</span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- FAQ Bento Section — hidden when a category is active or search is running -->
+    @if (faq().length > 0 && !search().trim() && !categoryId()) {
+      <section>
+        <div class="mb-6 flex items-center justify-between">
+          <h2 class="flex items-center gap-2 font-headline-lg text-headline-lg text-on-surface"><cs-icon name="forum" class="text-primary" [size]="24" />{{ 'portal.kb.faqTitle' | t }}</h2>
+          <a routerLink="/faq" class="text-primary font-label-lg text-label-lg hover:underline">{{ 'portal.kb.viewAll' | t }} <cs-icon name="arrow_forward" [size]="15" /></a>
+        </div>
+        <div class="max-w-3xl space-y-2">
+          @for (item of faq(); track item.id) {
+            <div class="overflow-hidden rounded-xl border border-border-subtle bg-surface-container-lowest transition-shadow hover:shadow-xs">
+              <button type="button" class="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-label-lg font-semibold text-on-surface" [attr.aria-expanded]="expandedFaqId() === item.id" (click)="toggleFaq(item.id)">
+                <span>{{ item.title }}</span>
+                <cs-icon [name]="expandedFaqId() === item.id ? 'remove' : 'add'" class="shrink-0 text-on-surface-variant" [size]="21" />
+              </button>
+              @if (expandedFaqId() === item.id) {
+                <div class="border-t border-border-subtle px-5 pb-5 pt-3 text-body-md leading-7 text-on-surface-variant">
+                  {{ item.summary || item.body }}
+                  <a [routerLink]="['/kb', item.id]" class="mt-3 inline-flex items-center gap-1 text-label-md font-semibold text-primary hover:underline">{{ 'portal.content.read' | t }} <cs-icon name="arrow_forward" [size]="15" /></a>
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Article List — with optional active filter banner -->
+    <cs-card>
+      @if (categoryId()) {
+        <div class="px-4 py-3 bg-surface-container-low border-b border-border-subtle flex items-center justify-between">
+          <div class="text-body-sm text-on-surface-variant">
+            {{ 'portal.kb.categoryResults' | t: currentCategory()!.name : totalCount() }}
+          </div>
+          <button
+            type="button"
+            (click)="clearCategory()"
+            class="text-primary font-label-md text-label-md hover:text-primary-container transition-colors cursor-pointer flex items-center gap-1"
+          >
+                <cs-icon name="close" [size]="16" />
+            {{ 'portal.kb.clearCategory' | t }}
+          </button>
+        </div>
+      }
+      @switch (state().status) {
+        @case ('loading') {
+          <cs-loading-state [label]="'portal.kb.loading' | t" />
+        }
+        @case ('error') {
+          @if (listError(); as failure) {
+            <cs-error-state [error]="failure" (retry)="load()" />
+          }
+        }
+        @case ('empty') {
+          @if (isFiltered()) {
+            <cs-empty-state [message]="'portal.kb.noResults' | t" />
+          } @else {
+            <cs-empty-state [message]="'portal.kb.empty' | t" />
+          }
+        }
+        @default {
+          @if (state().status === 'loaded') {
+            <ul class="grid gap-5 p-4 sm:grid-cols-2 xl:grid-cols-3">
+              @for (article of articles(); track article.id) {
+                <li class="group overflow-hidden rounded-2xl border border-border-subtle bg-surface-lowest shadow-sm transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-card">
+                  <a
+                    [routerLink]="['/kb', article.id]"
+                    class="flex h-full flex-col transition-colors hover:bg-surface-bright"
+                  >
+                    <div class="relative h-32 overflow-hidden bg-gradient-to-br from-primary-container to-secondary-container">
+                      <img [src]="coverImage(article)" [alt]="article.title" class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                      <div class="absolute inset-0 bg-gradient-to-t from-on-surface/55 to-transparent"></div>
+                      <span class="absolute bottom-3 start-3 inline-flex items-center gap-1 rounded-full bg-surface-lowest/90 px-2.5 py-1 text-label-sm font-semibold text-on-surface">
+                        <cs-icon [name]="article.isFaq ? 'quiz' : article.contentType === 'Guide' ? 'auto_stories' : 'article'" [size]="15" />
+                        {{ article.isFaq ? ('portal.kb.type.faq' | t) : article.contentType }}
+                      </span>
+                    </div>
+                    <div class="flex flex-1 flex-col p-5">
+                      <span class="text-label-sm font-semibold uppercase tracking-wider text-primary">{{ article.categoryName || article.category }}</span>
+                      <span class="mt-2 line-clamp-2 text-headline-md font-semibold text-on-surface">{{ article.title }}</span>
+                      @if (article.summary) { <span class="mt-3 line-clamp-3 text-body-sm text-on-surface-variant">{{ article.summary }}</span> }
+                      <span class="mt-auto flex items-center gap-1 pt-5 text-label-md font-semibold text-primary">{{ 'portal.content.read' | t }} <cs-icon name="arrow_forward" [size]="15" /></span>
+                    </div>
+                  </a>
+                </li>
+              }
+            </ul>
+
+            <!-- Pagination controls -->
+            @if (totalCount() > 0) {
+              <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-border-subtle">
+                <div class="text-body-sm text-on-surface-variant">
+                  {{ 'pagination.summary' | t: ((page() - 1) * pageSize() + 1) : (min(page() * pageSize(), totalCount())) : totalCount() }}
+                </div>
+                <div class="flex items-center gap-2">
+                  <label class="text-body-sm text-on-surface-variant flex items-center gap-1">
+                    {{ 'pagination.pageSize' | t }}
+                    <select
+                      class="h-8 rounded-lg border border-border-subtle bg-surface-lowest px-2 text-body-sm text-on-surface"
+                      [value]="pageSize()"
+                      (change)="changePageSize($event)"
+                    >
+                      @for (size of pageSizeOptions; track size) {
+                      <option [value]="size">{{ size }}</option>
+                    }
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    class="h-8 px-3 rounded-lg border border-border-subtle bg-surface-lowest text-body-sm text-on-surface disabled:opacity-50"
+                    [disabled]="page() === 1"
+                    (click)="goToPage(page() - 1)"
+                  >
+                    {{ 'pagination.previous' | t }}
+                  </button>
+                  <span class="text-body-sm text-on-surface px-2">
+                    {{ 'pagination.page' | t: page() : totalPages() }}
+                  </span>
+                  <button
+                    type="button"
+                    class="h-8 px-3 rounded-lg border border-border-subtle bg-surface-lowest text-body-sm text-on-surface disabled:opacity-50"
+                    [disabled]="isLastPage()"
+                    (click)="goToPage(page() + 1)"
+                  >
+                    {{ 'pagination.next' | t }}
+                  </button>
+                </div>
+              </div>
+            }
+          }
+        }
+      }
+    </cs-card>
+
+  </div>
+
+  <!-- Minimal Footer -->
+  <footer class="bg-surface border-t border-border-subtle py-8 mt-auto">
+    <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="font-body-sm text-body-sm text-on-surface-variant">
+        {{ 'portal.footer.copyright' | t: currentYear }}
+      </div>
+      <div class="flex gap-6 font-body-sm text-body-sm">
+        <a class="text-on-surface-variant hover:text-primary transition-colors" routerLink="/kb">{{ 'portal.footer.privacy' | t }}</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" routerLink="/kb">{{ 'portal.footer.terms' | t }}</a>
+        <a class="text-on-surface-variant hover:text-primary transition-colors" routerLink="/live-chat">{{ 'portal.footer.status' | t }}</a>
+      </div>
+    </div>
+  </footer>
+
+</section>

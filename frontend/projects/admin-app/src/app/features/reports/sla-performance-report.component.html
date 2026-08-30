@@ -1,0 +1,83 @@
+<section class="mx-auto flex max-w-7xl flex-col gap-6">
+  <header class="flex flex-wrap items-end justify-between gap-4">
+    <div>
+      <p class="mb-2 text-label-md font-semibold uppercase tracking-widest text-primary">{{ 'reports.overview.title' | t }}</p>
+      <h1 class="text-headline-lg text-on-surface">{{ 'reports.slaPerformance.title' | t }}</h1>
+      <p class="mt-1 text-body-md text-on-surface-variant">{{ 'reports.overview.subtitle' | t }}</p>
+    </div>
+    <a routerLink="/reports/overview" class="inline-flex items-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-3 py-2 text-body-sm font-semibold text-primary transition-colors hover:bg-surface-high">
+      <cs-icon name="arrow_back" [size]="16" />
+      {{ 'reports.overview.title' | t }}
+    </a>
+  </header>
+
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+    <div class="rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md">
+      <div class="mb-4 grid size-10 place-items-center rounded-lg bg-primary/10 text-primary"><cs-icon name="timer" [size]="20" /></div>
+      <p class="text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.slaPerformance.responseMet' | t }}</p>
+      <p class="mt-1 text-display font-bold text-on-surface">{{ responseRate() }}</p>
+      <p class="mt-1 font-mono text-data-mono text-on-surface-variant">{{ totals().responseMet }} / {{ totals().total }}</p>
+    </div>
+    <div class="rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md">
+      <div class="mb-4 grid size-10 place-items-center rounded-lg bg-tertiary-container/15 text-tertiary"><cs-icon name="task_alt" [size]="20" /></div>
+      <p class="text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.slaPerformance.resolutionMet' | t }}</p>
+      <p class="mt-1 text-display font-bold text-on-surface">{{ resolutionRate() }}</p>
+      <p class="mt-1 font-mono text-data-mono text-on-surface-variant">{{ totals().resolutionMet }} / {{ totals().total }}</p>
+    </div>
+    <div class="rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md">
+      <div class="mb-4 grid size-10 place-items-center rounded-lg bg-error-container/40 text-on-error-container"><cs-icon name="warning" [size]="20" /></div>
+      <p class="text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.slaPerformance.total' | t }}</p>
+      <p class="mt-1 text-display font-bold text-on-surface">{{ totals().total }}</p>
+      <p class="mt-1 font-mono text-data-mono text-on-surface-variant">{{ totals().responseBreached + totals().resolutionBreached }} {{ 'reports.slaPerformance.responseBreached' | t }}</p>
+    </div>
+  </div>
+
+  <cs-card>
+    <cs-report-date-range-filter [from]="from()" [to]="to()" (apply)="applyRange($event)" />
+
+    @switch (state().status) {
+      @case ('loading') {
+        <cs-loading-state />
+      }
+      @case ('error') {
+        @if (loadError(); as failure) {
+          <cs-error-state [error]="failure" (retry)="load()" />
+        }
+      }
+      @default {
+        @if (report(); as r) {
+          @if (r.byPriority.length === 0) {
+            <cs-empty-state [message]="'reports.empty' | t" />
+          } @else {
+            <div class="overflow-x-auto">
+              <table class="cs-data-table min-w-3xl">
+                <thead>
+                  <tr class="border-b border-border-subtle bg-surface-low text-start text-label-md tracking-wider text-on-surface-variant uppercase">
+                    <th scope="col" class="px-4 py-2 text-start">{{ 'field.priority' | t }}</th>
+                    <th scope="col" class="px-4 py-2 text-start">{{ 'reports.slaPerformance.total' | t }}</th>
+                    <th scope="col" class="px-4 py-2 text-start">{{ 'reports.slaPerformance.responseMet' | t }}</th>
+                    <th scope="col" class="px-4 py-2 text-start">{{ 'reports.slaPerformance.responseBreached' | t }}</th>
+                    <th scope="col" class="px-4 py-2 text-start">{{ 'reports.slaPerformance.resolutionMet' | t }}</th>
+                    <th scope="col" class="px-4 py-2 text-start">{{ 'reports.slaPerformance.resolutionBreached' | t }}</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-border-subtle">
+                  @for (row of r.byPriority; track row.priority) {
+                    <tr class="even:bg-surface-low">
+                      <td class="px-4 py-3 text-label-lg text-on-surface">{{ row.priority }}</td>
+                      <td class="px-4 py-3 font-mono text-data-mono">{{ row.total }}</td>
+                      <td class="px-4 py-3 font-mono text-data-mono text-success">{{ row.metFirstResponse }}</td>
+                      <td class="px-4 py-3 font-mono text-data-mono text-error">{{ row.breachedFirstResponse }}</td>
+                      <td class="px-4 py-3 font-mono text-data-mono text-success">{{ row.metResolution }}</td>
+                      <td class="px-4 py-3 font-mono text-data-mono text-error">{{ row.breachedResolution }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        }
+      }
+    }
+  </cs-card>
+</section>

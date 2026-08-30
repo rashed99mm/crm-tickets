@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <PackageId>CustomerSupport.Application</PackageId>
+    <Version>1.0.0</Version>
+    <Description>Application layer for CustomerSupport Platform</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CustomerSupport.Domain\CustomerSupport.Domain.csproj" />
+    <ProjectReference Include="..\CustomerSupport.Shared.Contracts\CustomerSupport.Shared.Contracts.csproj" />
+  </ItemGroup>
+
+<ItemGroup>
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="MediatR.Contracts" />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+    <PackageReference Include="Refit" />
+  </ItemGroup>
+
+</Project>

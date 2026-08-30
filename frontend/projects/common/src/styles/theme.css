@@ -1,0 +1,457 @@
+/*
+ * Design tokens for the Customer Support CRM.
+ *
+ * Extracted from the four "Command Center" mockups in
+ * stitch_smart_support_ticketing_crm/ (agent_dashboard_overview,
+ * customer_360_history, ai_ticket_management_workspace,
+ * management_analytics_sla_performance).
+ *
+ * The mockup set contains TWO competing design systems. The nine
+ * "Proton Precision" screens use a black primary and render status and
+ * priority as neutral grey, never implementing the semantic colour their own
+ * document promises. Command Center was chosen because conveying status and
+ * priority at a glance is the one job a ticket queue has. See
+ * docs/superpowers/specs/2026-08-25-frontend-foundation-design.md.
+ *
+ * Where the mockups' documents disagreed with their code, the code won.
+ */
+
+@theme {
+  /* ── Brand ──────────────────────────────────────────────────── */
+  --color-primary: #00288e;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1e40af;
+  --color-secondary: #4b41e1;
+
+  /* The active nav pill. Command Center's secondary-container, and the one
+     saturated fill in the chrome. The mockup's on- role is #fffbff; flattened
+     to white here because a 4-point off-white is a token nobody can hold in
+     their head and nobody can tell apart on screen. */
+  --color-secondary-container: #645efb;
+  --color-on-secondary-container: #ffffff;
+
+  /* ── Surfaces.
+     The mockups defined BOTH background #f8f9ff and surface #F8FAFC - two
+     indistinguishable near-whites for one role, which is a trap for anyone
+     picking between them. #F8FAFC wins because the design document's prose
+     calls Layer 0 "Slate 50". The duplicate is not carried forward. */
+  --color-surface: #f8fafc;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #eff4ff;
+  /* The mockups' `surface-50`/`surface-bright`: the tint behind a card's
+     header strip, a table header row and a row hover. Distinct from
+     --color-surface, which is the app canvas behind the cards. */
+  --color-surface-bright: #f8f9ff;
+  --color-surface-high: #dce9ff;
+  --color-surface-highest: #d3e4fe;
+
+  /* ── M3-style surface container tokens (Material Design 3, used by chat-session and dashboard). */
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f8f9ff;
+  --color-surface-container: #f1f5f9;
+  --color-surface-container-high: #e2e8f0;
+  --color-surface-container-highest: #cbd5e1;
+
+  /* ── Background (alias of surface, for M3 compatibility). ── */
+  --color-background: #f8fafc;
+  --color-on-background: #0b1c30;
+
+  /* ── Tertiary (M3 palette; reuses secondary hue for brand harmony). ── */
+  --color-tertiary: #4b41e1;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #dde0ff;
+  --color-on-tertiary-container: #141167;
+
+  /* ── Text and lines ─────────────────────────────────────────── */
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #444653;
+  --color-border-subtle: #e2e8f0;
+  --color-outline-variant: #c4c5d5;
+
+  /* ── Semantic ───────────────────────────────────────────────── */
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+  --color-success: #059669;
+  --color-on-success: #ffffff;
+  --color-success-container: #d1fae5;
+  --color-on-success-container: #065f46;
+--color-warning: #f59e0b;
+  --color-warning-container: #fef3c7;
+  --color-on-warning-container: #92400e;
+
+  --color-status-new: #64748b;
+  --color-on-status-new: #ffffff;
+  --color-status-new-container: #e2e8f0;
+  --color-on-status-new-container: #334155;
+  --color-status-open: #4f46e5;
+  --color-on-status-open: #ffffff;
+  --color-status-open-container: #e0e7ff;
+  --color-on-status-open-container: #312e81;
+  --color-status-assigned: #8b5cf6;
+  --color-on-status-assigned: #ffffff;
+  --color-status-assigned-container: #f3e8ff;
+  --color-on-status-assigned-container: #5b21b6;
+  --color-status-in-progress: #f59e0b;
+  --color-on-status-in-progress: #ffffff;
+  --color-status-in-progress-container: #fef3c7;
+  --color-on-status-in-progress-container: #92400e;
+  --color-status-waiting-for-customer: #ef4444;
+  --color-on-status-waiting-for-customer: #ffffff;
+  --color-status-waiting-for-customer-container: #fee2e2;
+  --color-on-status-waiting-for-customer-container: #991b1b;
+  --color-status-waiting-for-internal-team: #f97316;
+  --color-on-status-waiting-for-internal-team: #ffffff;
+  --color-status-waiting-for-internal-team-container: #ffedd5;
+  --color-on-status-waiting-for-internal-team-container: #9a3412;
+  --color-status-resolved: #059669;
+  --color-on-status-resolved: #ffffff;
+  --color-status-resolved-container: #d1fae5;
+  --color-on-status-resolved-container: #065f46;
+  --color-status-closed: #94a3b8;
+  --color-on-status-closed: #ffffff;
+  --color-status-closed-container: #f1f5f9;
+  --color-on-status-closed-container: #475569;
+  --color-status-escalated: #dc2626;
+  --color-on-status-escalated: #ffffff;
+  --color-status-escalated-container: #fee2e2;
+  --color-on-status-escalated-container: #991b1b;
+
+  --color-priority-low: #10b981;
+  --color-priority-normal: #64748b;
+  --color-priority-medium: #f59e0b;
+  --color-priority-high: #f59e0b;
+  --color-priority-urgent: #b91c1c;
+
+  /* ── Type. Google Fonts, as used by every mockup. ───────────── */
+  --font-display: "Hanken Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --text-display: 2.25rem;
+  --text-display--line-height: 2.75rem;
+  --text-headline-lg: 1.75rem;
+  --text-headline-lg--line-height: 2.125rem;
+  --text-headline-md: 1.25rem;
+  --text-headline-md--line-height: 1.75rem;
+  --text-body-md: 0.875rem;
+  --text-body-md--line-height: 1.25rem;
+  --text-body-sm: 0.8125rem;
+  --text-body-sm--line-height: 1.125rem;
+  --text-label-md: 0.75rem;
+  --text-label-md--line-height: 1rem;
+  /* Nav items and table row titles: label weight at body size. */
+  --text-label-lg: 0.8125rem;
+  --text-label-lg--line-height: 1rem;
+  /* Ticket references, ids and timestamps. Pair with font-mono — the size
+     token carries the metrics, the family token carries JetBrains Mono. */
+  --text-data-mono: 0.8125rem;
+  --text-data-mono--line-height: 1.25rem;
+
+  /* ── Radius. Both design documents state a ramp one notch larger than
+     every screen actually renders; the code is taken as truth. ── */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+
+  --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.02);
+  --shadow-popover: 0 12px 24px rgba(0, 0, 0, 0.08);
+
+  --container-xs: 20rem;
+  --container-sm: 24rem;
+  --container-md: 28rem;
+  --container-lg: 32rem;
+  --container-xl: 36rem;
+
+  --spacing-sidebar: 17.5rem;
+  --spacing-sidebar-collapsed: 4.5rem;
+  --spacing-topbar: 4rem;
+
+  --spacing-xs: 0.125rem;
+  --spacing-sm: 0.375rem;
+  --spacing-md: 0.75rem;
+  --spacing-lg: 1rem;
+}
+
+/* ── Proton Precision Scoped Tokens (Task 01, AC-400..AC-404) ──────────────── */
+[data-design-system='proton'],
+.theme-proton {
+  --color-primary: #000000;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #131b2e;
+  --color-on-primary-container: #7c839b;
+  --color-secondary: #515f74;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #d5e3fd;
+  --color-on-secondary-container: #57657b;
+  --color-surface: #f8f9ff;
+  --color-surface-lowest: #ffffff;
+  --color-surface-low: #eff4ff;
+  --color-surface-bright: #ffffff;
+  --color-surface-high: #dce9ff;
+  --color-surface-highest: #d3e4fe;
+  --color-on-surface: #0b1c30;
+  --color-on-surface-variant: #45464d;
+  --color-border-subtle: #e2e8f0;
+  --color-outline-variant: #c6c6cd;
+  --radius-lg: 0.25rem;
+  --radius-xl: 0.5rem;
+}
+
+[data-design-system='command-center'],
+.theme-command-center {
+  --color-primary: #00288e;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #1e40af;
+  --color-secondary: #4b41e1;
+  --color-secondary-container: #645efb;
+  --color-on-secondary-container: #ffffff;
+  --color-tertiary: #4b41e1;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #dde0ff;
+  --color-on-tertiary-container: #141167;
+}
+
+/*
+ * Material Symbols Outlined, loaded from Google Fonts by each app's
+ * index.html (assumption A21). The variation-settings incantation lives here
+ * once rather than in every template that shows an icon; `cs-icon` is the
+ * only thing that should ever write these class names.
+ */
+.material-symbols-outlined {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 500,
+    "GRAD" 0,
+    "opsz" 24;
+}
+
+.material-symbols-outlined.is-filled {
+  font-variation-settings: "FILL" 1;
+}
+
+/*
+ * Arabic needs more vertical room at the same point size - Command Center's
+ * design document calls for +15%. Scoped to :lang(ar) so English is
+ * unaffected. This is the one piece of RTL support the mockups anticipated.
+ */
+:lang(ar) {
+  line-height: 1.15;
+}
+
+@layer base {
+  html {
+    color: var(--color-on-surface);
+    background: var(--color-surface);
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
+@layer utilities {
+  .max-w-xs { max-width: 20rem; }
+  .max-w-sm { max-width: 24rem; }
+  .max-w-md { max-width: 28rem; }
+  .max-w-lg { max-width: 32rem; }
+  .max-w-xl { max-width: 36rem; }
+}
+
+@layer components {
+  .cs-dashboard-card {
+    border: 1px solid color-mix(in srgb, var(--color-outline-variant) 70%, transparent);
+    border-radius: 1rem;
+    background: var(--color-surface-lowest);
+    box-shadow: 0 2px 8px rgba(11, 28, 48, 0.06);
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+
+  .cs-dashboard-card:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 24%, var(--color-outline-variant));
+    box-shadow: 0 14px 35px rgba(11, 28, 48, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .cs-page-heading,
+  [data-design-system='command-center'] header:has(> h1),
+  [data-design-system='command-center'] header:has(> div > h1) {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--color-primary) 14%, var(--color-outline-variant));
+    border-radius: 1rem;
+    background: linear-gradient(110deg, var(--color-surface-lowest), color-mix(in srgb, var(--color-primary) 7%, white));
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 8px 24px rgba(11, 28, 48, 0.04);
+  }
+
+  @media (max-width: 640px) {
+    .cs-page-heading,
+    [data-design-system='command-center'] header:has(> h1),
+    [data-design-system='command-center'] header:has(> div > h1) {
+      padding: 1rem;
+    }
+
+  }
+
+  .cs-data-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--color-border-subtle);
+    background: var(--color-surface-bright);
+    padding: 0.75rem 1rem;
+  }
+
+  .cs-data-search {
+    position: relative;
+    min-width: min(22rem, 100%);
+    flex: 1 1 18rem;
+  }
+
+  .cs-data-search input {
+    height: 2.5rem;
+    width: 100%;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-outline-variant);
+    background: var(--color-surface-lowest);
+    color: var(--color-on-surface);
+    padding-inline: 2.5rem 0.75rem;
+    font-size: var(--text-body-md);
+    line-height: var(--text-body-md--line-height);
+    outline: none;
+    transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+  }
+
+  .cs-data-search input:focus,
+  .cs-data-select select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+  }
+
+  .cs-data-select {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-outline-variant);
+    background: var(--color-surface-lowest);
+    padding-inline-start: 0.75rem;
+    box-shadow: var(--shadow-card);
+  }
+
+  .cs-data-select > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--color-on-surface-variant);
+    font-size: var(--text-label-md);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .cs-data-select select {
+    height: 2.375rem;
+    min-width: 10rem;
+    border: 0;
+    border-inline-start: 1px solid var(--color-border-subtle);
+    background: transparent;
+    color: var(--color-on-surface);
+    padding-inline: 0.75rem 2rem;
+    font-weight: 600;
+    outline: none;
+  }
+
+  .cs-data-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: var(--color-on-surface);
+    font-size: var(--text-body-md);
+    line-height: var(--text-body-md--line-height);
+  }
+
+  .cs-data-table thead tr {
+    background: var(--color-surface-low);
+  }
+
+  .cs-data-table th {
+    border-bottom: 1px solid var(--color-border-subtle);
+    color: var(--color-on-surface-variant);
+    font-size: var(--text-label-md);
+    font-weight: 700;
+    letter-spacing: 0;
+    padding: 0.75rem 1rem;
+    text-align: start;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .cs-data-table td {
+    border-bottom: 1px solid var(--color-border-subtle);
+    padding: 0.8rem 1rem;
+    vertical-align: middle;
+  }
+
+  .cs-data-table tbody tr {
+    background: var(--color-surface-lowest);
+    transition: background 150ms ease, box-shadow 150ms ease;
+  }
+
+  .cs-data-table tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--color-surface-low) 52%, white);
+  }
+
+  .cs-data-table tbody tr:hover {
+    background: var(--color-surface-high);
+  }
+
+  /* Custom spacing scale used by chat-session, dashboard, agent-workspace */
+  .mt-xs { margin-top: var(--spacing-xs); }
+  .mb-xs { margin-bottom: var(--spacing-xs); }
+  .me-xs { margin-inline-end: var(--spacing-xs); }
+  .ms-xs { margin-inline-start: var(--spacing-xs); }
+  .mt-sm { margin-top: var(--spacing-sm); }
+  .mb-sm { margin-bottom: var(--spacing-sm); }
+  .me-sm { margin-inline-end: var(--spacing-sm); }
+  .ms-sm { margin-inline-start: var(--spacing-sm); }
+  .mt-md { margin-top: var(--spacing-md); }
+  .mb-md { margin-bottom: var(--spacing-md); }
+  .me-md { margin-inline-end: var(--spacing-md); }
+  .ms-md { margin-inline-start: var(--spacing-md); }
+  .gap-xs { gap: var(--spacing-xs); }
+  .gap-sm { gap: var(--spacing-sm); }
+  .gap-md { gap: var(--spacing-md); }
+  .gap-lg { gap: var(--spacing-lg); }
+  .space-x-xs > * + * { margin-inline-start: var(--spacing-xs); }
+  .space-x-sm > * + * { margin-inline-start: var(--spacing-sm); }
+  .space-x-md > * + * { margin-inline-start: var(--spacing-md); }
+
+  /* Text color utilities (used in chat-session, dashboard) */
+  .text-secondary { color: var(--color-secondary); }
+  .text-on-surface-container { color: var(--color-on-surface); }
+}

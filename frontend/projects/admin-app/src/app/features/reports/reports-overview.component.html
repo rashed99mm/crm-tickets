@@ -1,0 +1,193 @@
+<section class="mx-auto flex max-w-7xl flex-col gap-6">
+  <header>
+    <h1 class="text-headline-lg text-on-surface">{{ 'reports.overview.title' | t }}</h1>
+    <p class="mt-1 text-body-md text-on-surface-variant">{{ 'reports.overview.subtitle' | t }}</p>
+  </header>
+
+  <cs-report-date-range-filter [from]="from()" [to]="to()" (apply)="applyRange($event)" />
+
+  <!-- KPI bento: every number is a derived read of a real report endpoint, nothing is fabricated. -->
+  <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="flex flex-col justify-between rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md" data-testid="kpi-volume">
+      <div class="mb-4 flex items-start justify-between">
+        <div class="rounded-lg bg-primary/10 p-2 text-primary">
+          <cs-icon name="confirmation_number" [size]="20" />
+        </div>
+      </div>
+      <div>
+        <p class="mb-1 text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.overview.totalVolume' | t }}</p>
+        @switch (volume().status) {
+          @case ('loading') {
+            <div class="h-8 w-16 animate-pulse rounded bg-surface-container-low" role="status"></div>
+          }
+          @default {
+            @if (totalVolume(); as value) {
+              <p class="text-display font-bold text-on-surface">{{ value }}</p>
+            } @else {
+              <p class="text-display font-bold text-on-surface-variant">—</p>
+            }
+          }
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col justify-between rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md" data-testid="kpi-sla">
+      <div class="mb-4 flex items-start justify-between">
+        <div class="rounded-lg bg-error-container/30 p-2 text-on-error-container">
+          <cs-icon name="timer_off" [size]="20" />
+        </div>
+      </div>
+      <div>
+        <p class="mb-1 text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.overview.slaBreachRate' | t }}</p>
+        @switch (sla().status) {
+          @case ('loading') {
+            <div class="h-8 w-16 animate-pulse rounded bg-surface-container-low" role="status"></div>
+          }
+          @default {
+            @if (breachRateText(); as value) {
+              <p class="text-display font-bold text-on-surface">{{ value }}</p>
+            } @else {
+              <p class="text-display font-bold text-on-surface-variant">—</p>
+            }
+          }
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col justify-between rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md" data-testid="kpi-resolution">
+      <div class="mb-4 flex items-start justify-between">
+        <div class="rounded-lg bg-tertiary-fixed p-2 text-on-tertiary-fixed">
+          <cs-icon name="schedule" [size]="20" />
+        </div>
+      </div>
+      <div>
+        <p class="mb-1 text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.overview.avgResolution' | t }}</p>
+        @switch (agents().status) {
+          @case ('loading') {
+            <div class="h-8 w-16 animate-pulse rounded bg-surface-container-low" role="status"></div>
+          }
+          @default {
+            @if (avgResolutionText(); as value) {
+              <p class="text-display font-bold text-on-surface">{{ value }}</p>
+            } @else {
+              <p class="text-display font-bold text-on-surface-variant">—</p>
+            }
+          }
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col justify-between rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md" data-testid="kpi-csat">
+      <div class="mb-4 flex items-start justify-between">
+        <div class="rounded-lg bg-surface-container-high p-2 text-primary">
+          <cs-icon name="sentiment_satisfied" [size]="20" />
+        </div>
+      </div>
+      <div>
+        <p class="mb-1 text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.overview.globalCsat' | t }}</p>
+        @switch (csat().status) {
+          @case ('loading') {
+            <div class="h-8 w-16 animate-pulse rounded bg-surface-container-low" role="status"></div>
+          }
+          @default {
+            @if (csatAverageText(); as value) {
+              <p class="text-display font-bold text-on-surface">
+                {{ 'reports.csat.scoreOutOf' | t: value }}
+              </p>
+            } @else {
+              <p class="text-display font-bold text-on-surface-variant">—</p>
+            }
+          }
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Every report screen behind the hub, one hop away. -->
+  <nav aria-label="{{ 'reports.overview.open' | t }}" class="flex flex-wrap gap-2">
+    @for (link of reportLinks; track link.path) {
+      <a
+        [routerLink]="link.path"
+        class="inline-flex items-center gap-1.5 rounded-full border border-outline-variant bg-surface-container-lowest px-3 py-1.5 text-label-md font-semibold text-primary transition-colors hover:bg-surface-high"
+      >
+        {{ link.label | t }}
+      </a>
+    }
+  </nav>
+
+  <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+    <cs-card data-testid="trend">
+      <div class="mb-3 flex items-center justify-between gap-4">
+        <h2 class="text-headline-md text-on-surface">{{ 'reports.overview.volumeTrend' | t }}</h2>
+        <a routerLink="/reports/ticket-volume" class="text-label-md font-semibold text-primary hover:underline">
+          {{ 'reports.overview.view' | t }}
+        </a>
+      </div>
+      @switch (volume().status) {
+        @case ('loading') {
+          <cs-loading-state [label]="'state.loading' | t" />
+        }
+        @case ('error') {
+          @if (volumeError(); as failure) {
+            <cs-error-state [error]="failure" (retry)="load()" />
+          }
+        }
+        @default {
+          @if (bars().length > 0) {
+            <div class="flex h-40 items-end gap-1 overflow-x-auto pb-1">
+              @for (bar of bars(); track bar.key) {
+                <div class="flex min-w-10 flex-1 flex-col">
+                  <div class="flex flex-1 items-end justify-center">
+                    <div
+                      class="w-full max-w-8 rounded-t-sm bg-primary/80 transition-colors hover:bg-primary"
+                      [style.height.%]="bar.height"
+                      [title]="bar.key + ': ' + bar.count"
+                    ></div>
+                  </div>
+                  <div class="mt-1 text-center font-mono text-label-sm text-on-surface-variant">{{ bar.count }}</div>
+                  <div class="text-center text-label-sm text-on-surface-variant">{{ bar.shortKey }}</div>
+                </div>
+              }
+            </div>
+          } @else {
+            <cs-empty-state [message]="'reports.empty' | t" />
+          }
+        }
+      }
+    </cs-card>
+
+    <cs-card data-testid="leaderboard">
+      <h2 class="mb-3 text-headline-md text-on-surface">{{ 'reports.overview.leaderboard' | t }}</h2>
+      @switch (agents().status) {
+        @case ('loading') {
+          <cs-loading-state [label]="'state.loading' | t" />
+        }
+        @case ('error') {
+          @if (agentsError(); as failure) {
+            <cs-error-state [error]="failure" (retry)="load()" />
+          }
+        }
+        @default {
+          @if (leaderboard().length > 0) {
+            <ul class="flex flex-col gap-2">
+              @for (row of leaderboard(); track row.agentId) {
+                <li class="flex items-center gap-3 rounded-lg border border-outline-variant/40 bg-surface-lowest px-3 py-2.5">
+                  <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-container-high text-label-md font-semibold text-primary">
+                    {{ row.agentName.charAt(0) }}
+                  </span>
+                  <span class="min-w-0 flex-1">
+                    <span class="block truncate text-label-lg text-on-surface">{{ row.agentName }}</span>
+                    <span class="block text-body-sm text-on-surface-variant">{{ 'reports.agentPerformance.resolved' | t }}</span>
+                  </span>
+                  <span class="font-mono text-data-mono font-semibold text-on-surface">{{ row.ticketsResolved }}</span>
+                </li>
+              }
+            </ul>
+          } @else {
+            <cs-empty-state [message]="'reports.empty' | t" />
+          }
+        }
+      }
+    </cs-card>
+  </div>
+</section>

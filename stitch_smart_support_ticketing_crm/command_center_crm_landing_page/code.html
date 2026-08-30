@@ -1,0 +1,209 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Command Center CRM - Support at the Speed of AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#f8f9ff",
+                        "status-open": "#4F46E5",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed": "#001453",
+                        "on-tertiary-fixed": "#002114",
+                        "surface-container": "#e5eeff",
+                        "tertiary": "#003d28",
+                        "secondary-container": "#645efb",
+                        "on-secondary-fixed-variant": "#3323cc",
+                        "surface-variant": "#d3e4fe",
+                        "surface-tint": "#3755c3",
+                        "secondary": "#4b41e1",
+                        "surface-container-highest": "#d3e4fe",
+                        "primary-container": "#1e40af",
+                        "outline": "#757684",
+                        "on-tertiary-container": "#5bcf9e",
+                        "on-secondary-container": "#fffbff",
+                        "status-resolved": "#059669",
+                        "on-error": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "status-pending": "#F59E0B",
+                        "surface-dim": "#cbdbf5",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c4c5d5",
+                        "priority-low": "#10B981",
+                        "surface-container-lowest": "#ffffff",
+                        "tertiary-fixed": "#85f8c4",
+                        "on-primary-container": "#a8b8ff",
+                        "on-primary-fixed-variant": "#173bab",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#68dba9",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "border-subtle": "#E2E8F0",
+                        "on-surface-variant": "#444653",
+                        "priority-critical": "#B91C1C",
+                        "secondary-fixed-dim": "#c3c0ff",
+                        "surface-container-high": "#dce9ff",
+                        "primary-fixed": "#dde1ff",
+                        "surface-container-low": "#eff4ff",
+                        "on-secondary": "#ffffff",
+                        "priority-high": "#EF4444",
+                        "priority-medium": "#F59E0B",
+                        "inverse-surface": "#213145",
+                        "background": "#f8f9ff",
+                        "secondary-fixed": "#e2dfff",
+                        "primary": "#00288e",
+                        "inverse-primary": "#b8c4ff",
+                        "on-background": "#0b1c30",
+                        "on-secondary-fixed": "#0f0069",
+                        "inverse-on-surface": "#eaf1ff",
+                        "status-escalated": "#DC2626",
+                        "on-tertiary-fixed-variant": "#005137",
+                        "surface": "#F8FAFC",
+                        "tertiary-container": "#00563a",
+                        "on-surface": "#0b1c30"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "container-lg": "24px",
+                        "container-sm": "8px",
+                        "container-md": "16px",
+                        "margin-desktop": "24px",
+                        "unit": "4px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "label-lg": ["Inter"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "data-mono": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-lg": ["13px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .filled-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-lg min-h-screen flex flex-col">
+<!-- TopNavBar (Shared Component) -->
+<header class="bg-surface text-primary font-headline-md text-headline-md docked full-width top-0 z-50 border-b border-border-subtle shadow-sm flex justify-between items-center h-[64px] px-margin-desktop w-full transition-all sticky">
+<div class="flex items-center gap-container-md">
+<span class="font-headline-md text-headline-md font-bold text-primary">CommandCenter CRM</span>
+</div>
+<nav class="hidden md:flex gap-container-lg font-label-lg text-label-lg h-full">
+<a class="flex items-center text-primary font-bold border-b-2 border-primary h-full px-container-sm hover:bg-surface-container-low transition-colors active:scale-95 transition-transform duration-150" href="#">Product</a>
+<a class="flex items-center text-on-surface-variant h-full px-container-sm hover:bg-surface-container-low transition-colors active:scale-95 transition-transform duration-150" href="#">Solutions</a>
+<a class="flex items-center text-on-surface-variant h-full px-container-sm hover:bg-surface-container-low transition-colors active:scale-95 transition-transform duration-150" href="#">Pricing</a>
+<a class="flex items-center text-on-surface-variant h-full px-container-sm hover:bg-surface-container-low transition-colors active:scale-95 transition-transform duration-150" href="#">Resources</a>
+</nav>
+<div class="flex items-center gap-container-sm">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors hidden md:block">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="bg-primary text-on-primary font-label-lg text-label-lg px-container-lg py-2 rounded-lg hover:bg-surface-tint transition-colors shadow-sm active:scale-95 transition-transform duration-150">
+                New Ticket
+            </button>
+<div class="flex gap-1 ml-container-sm border-l border-border-subtle pl-container-sm">
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">help</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-low p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+</div>
+<img alt="Agent Profile" class="w-8 h-8 rounded-full ml-container-sm object-cover border border-border-subtle" data-alt="A professional headshot of a female customer support agent wearing a headset, smiling warmly. Bright, modern office lighting, corporate style, high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5NwsJ7Ei7E70SKw_RoRwsrrFMeVaclVds0J7rKbKck-3V81-JyBqZRi-ueHy5D0JDmf2ShfxtiTQNDZYEaxE1_ebzpP6MXfkER--_9bUJGYRFFbDP8xg7SCJ9ebxDfSxYbP4kgDX4KKvvoV3UDGZT5y9Stg0P73gUxLYUIT9xfgp_v9W1X2ixi96Qq3NWuRotksnHKKbflNF3Y_9KrquBoqTpOU5SO_vmkTGq3x0BUguG3IjuvyQzfw">
+</div>
+</header>
+<main class="flex-grow flex flex-col">
+<!-- Hero Section -->
+<section class="relative pt-24 pb-32 px-margin-desktop flex flex-col items-center text-center overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-b from-surface-bright to-surface-container-low -z-10"></div>
+<span class="inline-block bg-secondary-container text-on-secondary-container font-label-lg text-label-lg px-4 py-1.5 rounded-full mb-6 font-bold shadow-sm">
+                Introducing Pulse AI v2.0
+            </span>
+<h1 class="font-display-lg text-display-lg text-on-background max-w-4xl mb-6">Master Your Customer Experience with <span class="text-primary">Command Center AI</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mb-10">The all-in-one platform for enterprise support. Leverage Pulse AI v2.0 to automate complex workflows, route tickets with precision, and deliver world-class service at scale.</p>
+<div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+<button class="bg-secondary text-on-secondary font-label-lg text-label-lg px-8 py-4 rounded-lg shadow-md hover:opacity-80 transition-all active:scale-95 font-bold flex items-center justify-center gap-2">
+                    Start Free Trial
+                    <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<button class="bg-surface text-primary border border-border-subtle font-label-lg text-label-lg px-8 py-4 rounded-lg shadow-sm hover:bg-surface-container-low transition-all active:scale-95 font-bold flex items-center justify-center gap-2">
+                    Book Demo
+                    <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+</button>
+</div>
+</section><section class="py-12 bg-surface border-t border-b border-border-subtle">
+    <div class="max-w-6xl mx-auto px-margin-desktop">
+        <p class="text-center font-label-md text-on-surface-variant mb-8 uppercase tracking-widest">Trusted by industry leaders</p>
+        <div class="flex flex-wrap justify-center items-center gap-container-lg opacity-60 grayscale hover:grayscale-0 transition-all duration-300">
+            <div class="h-8 w-32 bg-on-surface-variant/20 rounded flex items-center justify-center font-bold text-on-surface-variant">TECHCORP</div>
+            <div class="h-8 w-32 bg-on-surface-variant/20 rounded flex items-center justify-center font-bold text-on-surface-variant">GLOBAL-X</div>
+            <div class="h-8 w-32 bg-on-surface-variant/20 rounded flex items-center justify-center font-bold text-on-surface-variant">NEXUS</div>
+            <div class="h-8 w-32 bg-on-surface-variant/20 rounded flex items-center justify-center font-bold text-on-surface-variant">QUANTUM</div>
+            <div class="h-8 w-32 bg-on-surface-variant/20 rounded flex items-center justify-center font-bold text-on-surface-variant">VELOCITY</div>
+        </div>
+    </div>
+</section>
+<!-- Product Preview -->
+<section class="px-margin-desktop -mt-16 z-10">
+<div class="max-w-6xl mx-auto bg-surface border border-border-subtle rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+<img alt="Product Dashboard Preview" class="w-full h-auto object-cover" data-alt="A high-fidelity mockup of a complex Customer Relationship Management (CRM) dashboard interface. It features a dark sidebar, a data-rich main area with ticket lists, status badges (indigo, amber, emerald, red), and analytical charts. Modern, crisp, enterprise SaaS aesthetic, high contrast." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfsVfgHAoNHlBjg6SX8ZqN1yPT5JNySAC00na9vFKSHcgGji--3dy6gj0kz1SBJ9nK0SznbofusRSZ_9NyWXFeX8vyzPVps1d2e4bQJ3oDmSQMu179fXqt3TSkLSgsy6X7zAd9x2Jl3cZCzg0ynrjbbN6hhImrfl-SX4gK6SjKaYNksrMI0gxSMHo3Q4AbJ-rZFGuQ3TgJwSI-6DbTuaGsUHSCoVvDUFr7VMAvDTPPyTXjsTgyQuvNKg">
+</div>
+</section>
+</main>
+<!-- Footer (Shared Component) -->
+<footer class="bg-surface-dim text-on-surface font-label-md text-label-md full-width mt-auto border-t border-border-subtle flex justify-between items-center py-container-sm px-margin-desktop w-full transition-opacity hover:opacity-80">
+<div class="font-label-lg text-label-lg font-bold">
+            Command Center Inc.
+        </div>
+<div class="flex gap-container-lg">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Security Status</a>
+</div>
+<div class="text-on-surface-variant">
+            © 2024 Command Center Inc. All rights reserved.
+        </div>
+</footer>
+
+
+</body></html>

@@ -1,0 +1,124 @@
+<section class="mx-auto flex max-w-7xl flex-col gap-6">
+  <header class="overflow-hidden rounded-lg border border-border-subtle bg-surface-lowest shadow-xs">
+    <div class="grid gap-6 p-6 lg:grid-cols-[1fr_20rem] lg:items-center">
+      <div>
+        <span class="inline-flex items-center gap-2 rounded-full bg-primary-container px-3 py-1 text-label-md font-semibold text-on-primary-container">
+          <cs-icon name="verified" [size]="16" />
+          {{ 'portal.dashboard.badge' | t }}
+        </span>
+        <h1 class="mt-4 font-display text-headline-lg text-on-surface">
+          {{ 'portal.dashboard.welcome' | t }}
+          @if (session.displayName(); as name) {
+            <span class="text-primary">{{ name }}</span>
+          }
+        </h1>
+        <p class="mt-2 max-w-2xl text-body-md text-on-surface-variant">{{ 'portal.dashboard.subtitle' | t }}</p>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <a
+          routerLink="/app/tickets/new"
+          class="flex flex-col gap-3 rounded-lg bg-primary p-4 text-on-primary shadow-card transition-transform hover:-translate-y-0.5"
+        >
+          <cs-icon name="add_circle" [size]="24" />
+          <span class="text-label-lg font-semibold">{{ 'portal.nav.submit' | t }}</span>
+        </a>
+        <a
+          routerLink="/app/kb"
+          class="flex flex-col gap-3 rounded-lg border border-border-subtle bg-surface p-4 text-primary shadow-xs transition-transform hover:-translate-y-0.5"
+        >
+          <cs-icon name="travel_explore" [size]="24" />
+          <span class="text-label-lg font-semibold">{{ 'portal.nav.kb' | t }}</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <a routerLink="/app/tickets" class="group rounded-lg border border-border-subtle bg-surface-lowest p-5 shadow-xs transition-all hover:border-primary/40 hover:shadow-card">
+      <span class="grid size-10 place-items-center rounded-lg bg-primary-container text-on-primary-container">
+        <cs-icon name="pending_actions" [size]="22" />
+      </span>
+      <p class="mt-4 text-display font-display text-on-surface">{{ openCount() }}</p>
+      <p class="text-label-md uppercase text-on-surface-variant">{{ 'portal.dashboard.openRequests' | t }}</p>
+    </a>
+
+    <a routerLink="/app/feedback" class="group rounded-lg border border-border-subtle bg-surface-lowest p-5 shadow-xs transition-all hover:border-primary/40 hover:shadow-card">
+      <span class="grid size-10 place-items-center rounded-lg bg-success-container/30 text-success">
+        <cs-icon name="task_alt" [size]="22" />
+      </span>
+      <p class="mt-4 text-display font-display text-on-surface">{{ resolvedCount() }}</p>
+      <p class="text-label-md uppercase text-on-surface-variant">{{ 'portal.dashboard.readyFeedback' | t }}</p>
+    </a>
+
+    <a routerLink="/app/kb" class="group rounded-lg border border-border-subtle bg-surface-lowest p-5 shadow-xs transition-all hover:border-primary/40 hover:shadow-card">
+      <span class="grid size-10 place-items-center rounded-lg bg-secondary-container/30 text-secondary">
+        <cs-icon name="psychology_alt" [size]="22" />
+      </span>
+      <p class="mt-4 text-display font-display text-on-surface">{{ 'portal.dashboard.kbValue' | t }}</p>
+      <p class="text-label-md uppercase text-on-surface-variant">{{ 'portal.dashboard.kbMetric' | t }}</p>
+    </a>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-[1fr_22rem]">
+    <section class="rounded-lg border border-border-subtle bg-surface-lowest shadow-xs">
+      <div class="flex items-center justify-between gap-4 border-b border-border-subtle px-5 py-4">
+        <div>
+          <h2 class="font-display text-headline-md text-on-surface">{{ 'portal.dashboard.recentTitle' | t }}</h2>
+          <p class="text-body-sm text-on-surface-variant">{{ 'portal.dashboard.recentSubtitle' | t }}</p>
+        </div>
+        <a routerLink="/app/tickets" class="text-label-md font-semibold text-primary hover:text-primary-container">
+          {{ 'portal.dashboard.viewAll' | t }}
+        </a>
+      </div>
+
+      @switch (state().status) {
+        @case ('loading') {
+          <cs-loading-state [label]="'tickets.loading' | t" />
+        }
+        @case ('error') {
+          @if (listError(); as failure) {
+            <cs-error-state [error]="failure" (retry)="load()" />
+          }
+        }
+        @case ('empty') {
+          <cs-empty-state [message]="'portal.dashboard.noTickets' | t" />
+        }
+        @default {
+          <div class="divide-y divide-border-subtle">
+            @for (ticket of recentTickets(); track ticket.id) {
+              <a
+                [routerLink]="['/app/tickets', ticket.id]"
+                class="grid gap-2 px-5 py-4 transition-colors hover:bg-surface-high sm:grid-cols-[1fr_auto] sm:items-center"
+              >
+                <span class="min-w-0">
+                  <span class="font-mono text-data-mono text-on-surface-variant">{{ ticket.reference }}</span>
+                  <span class="mt-1 block truncate text-label-lg text-on-surface">{{ ticket.subject }}</span>
+                  <span class="mt-1 block text-body-sm text-on-surface-variant">{{ ticket.createdAt }}</span>
+                </span>
+                <cs-status-pill [value]="ticket.status" />
+              </a>
+            }
+          </div>
+        }
+      }
+    </section>
+
+    <aside class="flex flex-col gap-4">
+      <a routerLink="/app/tickets/new" class="rounded-lg border border-border-subtle bg-surface-lowest p-5 shadow-xs transition-all hover:border-primary/40 hover:shadow-card">
+        <span class="grid size-10 place-items-center rounded-lg bg-primary text-on-primary">
+          <cs-icon name="edit_note" [size]="22" />
+        </span>
+        <h2 class="mt-4 font-display text-headline-md text-on-surface">{{ 'portal.dashboard.submitTitle' | t }}</h2>
+        <p class="mt-2 text-body-sm text-on-surface-variant">{{ 'portal.dashboard.submitHint' | t }}</p>
+      </a>
+
+      <a routerLink="/app/feedback" class="rounded-lg border border-border-subtle bg-surface-lowest p-5 shadow-xs transition-all hover:border-primary/40 hover:shadow-card">
+        <span class="grid size-10 place-items-center rounded-lg bg-surface-high text-primary">
+          <cs-icon name="reviews" [size]="22" />
+        </span>
+        <h2 class="mt-4 font-display text-headline-md text-on-surface">{{ 'portal.dashboard.feedbackTitle' | t }}</h2>
+        <p class="mt-2 text-body-sm text-on-surface-variant">{{ 'portal.dashboard.feedbackHint' | t }}</p>
+      </a>
+    </aside>
+  </div>
+</section>

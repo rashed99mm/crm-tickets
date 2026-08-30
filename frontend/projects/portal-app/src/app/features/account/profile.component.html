@@ -1,0 +1,130 @@
+<main class="mx-auto w-full max-w-4xl space-y-6">
+  <header>
+    <p class="text-label-md font-semibold uppercase tracking-wider text-primary">{{ 'portal.profile.eyebrow' | t }}</p>
+    <h1 class="mt-2 text-headline-lg text-on-surface">{{ 'portal.profile.title' | t }}</h1>
+    <p class="mt-1 text-body-md text-on-surface-variant">{{ 'portal.profile.subtitle' | t }}</p>
+  </header>
+
+  <div class="flex gap-1 overflow-x-auto border-b border-border-subtle" role="tablist" [attr.aria-label]="'portal.profile.tabs' | t">
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="activeTab() === 'info'"
+      (click)="setTab('info')"
+      class="border-b-2 px-4 py-3 text-label-lg font-semibold transition-colors"
+      [class.border-primary]="activeTab() === 'info'"
+      [class.text-primary]="activeTab() === 'info'"
+      [class.border-transparent]="activeTab() !== 'info'"
+      [class.text-on-surface-variant]="activeTab() !== 'info'"
+    >
+      <cs-icon name="person" [size]="18" />
+      {{ 'portal.profile.infoTab' | t }}
+    </button>
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="activeTab() === 'history'"
+      (click)="setTab('history')"
+      class="border-b-2 px-4 py-3 text-label-lg font-semibold transition-colors"
+      [class.border-primary]="activeTab() === 'history'"
+      [class.text-primary]="activeTab() === 'history'"
+      [class.border-transparent]="activeTab() !== 'history'"
+      [class.text-on-surface-variant]="activeTab() !== 'history'"
+    >
+      <cs-icon name="history" [size]="18" />
+      {{ 'portal.profile.historyTab' | t }}
+    </button>
+  </div>
+
+  @if (activeTab() === 'info') {
+    @if (profileLoading()) {
+      <cs-card [heading]="'portal.profile.account' | t">
+        <div class="p-8"><cs-loading-state [label]="'state.loading' | t" /></div>
+      </cs-card>
+    } @else {
+      <cs-card [heading]="'portal.profile.account' | t">
+        <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="space-y-6 p-6">
+          <div class="flex flex-col gap-5 border-b border-border-subtle pb-6 sm:flex-row sm:items-center">
+            <div class="grid size-24 shrink-0 place-items-center overflow-hidden rounded-2xl bg-surface-highest text-on-surface shadow-sm">
+              @if (imageUrl(); as image) {
+                <img [src]="image" [alt]="'profile.picture' | t" class="size-full object-cover" />
+              } @else {
+                <cs-icon name="person" [size]="42" />
+              }
+            </div>
+            <div class="space-y-2">
+              <p class="text-headline-md text-on-surface">{{ profile()?.firstName }} {{ profile()?.lastName }}</p>
+              <p class="text-body-sm text-on-surface-variant">{{ 'profile.photoHint' | t }}</p>
+              <div class="flex flex-wrap items-center gap-2">
+                <input id="portal-profile-photo" type="file" accept="image/*" class="sr-only" (change)="onImageSelected($event)" />
+                <label for="portal-profile-photo" class="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-4 py-2 text-label-md font-semibold text-on-surface transition-colors hover:bg-surface-bright">
+                  <cs-icon name="photo_camera" [size]="18" />
+                  {{ 'profile.changePhoto' | t }}
+                </label>
+                <button type="button" (click)="removeImage()" [disabled]="!imageUrl()" class="px-3 py-2 text-label-md font-semibold text-error hover:underline disabled:opacity-50">
+                  {{ 'profile.removePhoto' | t }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <cs-input-field [label]="'profile.firstName' | t" [control]="profileForm.controls.firstName" />
+            <cs-input-field [label]="'profile.lastName' | t" [control]="profileForm.controls.lastName" />
+            <cs-input-field [label]="'profile.phone' | t" [control]="profileForm.controls.phoneNumber" />
+            <div class="flex flex-col gap-1">
+              <label for="portal-profile-email" class="text-label-md text-on-surface">{{ 'profile.email' | t }}</label>
+              <input id="portal-profile-email" type="email" [value]="profile()?.email ?? ''" readonly class="w-full cursor-not-allowed rounded-md border border-border-subtle bg-surface-container-low px-3 py-2 text-body-md text-on-surface-variant" />
+              <p class="text-body-sm text-on-surface-variant">{{ 'profile.emailReadOnly' | t }}</p>
+            </div>
+          </div>
+
+          @if (profileError(); as failure) {
+            <p class="text-body-md text-error" role="alert">{{ failure.message_ }}</p>
+          }
+          @if (profileSaved()) {
+            <p class="flex items-center gap-2 text-body-md text-success" role="status">
+              <cs-icon name="check_circle" [size]="18" />
+              {{ 'profile.saved' | t }}
+            </p>
+          }
+
+          <div class="flex justify-end gap-3 border-t border-border-subtle pt-4">
+            <cs-button type="button" variant="secondary" (click)="cancelEdit()">{{ 'profile.cancel' | t }}</cs-button>
+            <cs-button type="submit" [busy]="profileBusy()" [disabled]="profileForm.invalid">{{ 'profile.saveChanges' | t }}</cs-button>
+          </div>
+        </form>
+      </cs-card>
+    }
+  } @else {
+    <cs-card [heading]="'customers.activity.title' | t">
+      @switch (history().status) {
+        @case ('loading') {
+          <div class="p-8"><cs-loading-state [label]="'portal.profile.historyLoading' | t" /></div>
+        }
+        @case ('empty') {
+          <cs-empty-state [message]="'portal.profile.historyEmpty' | t" />
+        }
+        @case ('error') {
+          <div class="p-6 text-center text-body-md text-error" role="alert">{{ 'portal.profile.historyError' | t }}</div>
+        }
+        @default {
+          <div class="divide-y divide-border-subtle">
+            @for (ticket of historyItems(); track ticket.id) {
+              <a [routerLink]="['/app/tickets', ticket.id]" class="flex items-center gap-4 px-6 py-4 transition-colors hover:bg-surface-container-low">
+                <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary-container text-on-secondary-container">
+                  <cs-icon name="confirmation_number" [size]="20" />
+                </span>
+                <span class="min-w-0 flex-1">
+                  <span class="block truncate font-semibold text-on-surface">{{ ticket.subject }}</span>
+                  <span class="block text-body-sm text-on-surface-variant">{{ ticket.reference }}</span>
+                </span>
+                <cs-status-pill [value]="ticket.status" />
+              </a>
+            }
+          </div>
+        }
+      }
+    </cs-card>
+  }
+</main>

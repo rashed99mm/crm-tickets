@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CustomerSupport.Domain/CustomerSupport.Domain.csproj" />
+    <Project Path="src/CustomerSupport.Application/CustomerSupport.Application.csproj" />
+    <Project Path="src/CustomerSupport.Infrastructure/CustomerSupport.Infrastructure.csproj" />
+    <Project Path="src/CustomerSupport.Shared.Contracts/CustomerSupport.Shared.Contracts.csproj" />
+    <Project Path="src/CustomerSupport.Api.Shared/CustomerSupport.Api.Shared.csproj" />
+    <Project Path="src/CustomerSupport.InternalApi/CustomerSupport.InternalApi.csproj" />
+    <Project Path="src/CustomerSupport.ExternalApi/CustomerSupport.ExternalApi.csproj" />
+    <Project Path="src/CustomerSupport.Migrator/CustomerSupport.Migrator.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CustomerSupport.Tests/CustomerSupport.Tests.csproj" />
+  </Folder>
+</Solution>

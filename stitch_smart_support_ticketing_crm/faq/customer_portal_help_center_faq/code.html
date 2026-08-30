@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Help Center - CommandCenter CRM</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&amp;family=Hanken+Grotesk:wght@600;700&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#173bab",
+                      "surface-bright": "#f8f9ff",
+                      "tertiary-container": "#00563a",
+                      "status-pending": "#F59E0B",
+                      "secondary-fixed": "#e2dfff",
+                      "surface-container-lowest": "#ffffff",
+                      "outline-variant": "#c4c5d5",
+                      "surface-variant": "#d3e4fe",
+                      "on-surface": "#0b1c30",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#3755c3",
+                      "on-secondary-container": "#fffbff",
+                      "on-surface-variant": "#444653",
+                      "priority-critical": "#B91C1C",
+                      "background": "#f8f9ff",
+                      "secondary-container": "#645efb",
+                      "primary-container": "#1e40af",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed": "#002114",
+                      "tertiary-fixed": "#85f8c4",
+                      "on-primary": "#ffffff",
+                      "surface-container-low": "#eff4ff",
+                      "surface-container-high": "#dce9ff",
+                      "on-tertiary": "#ffffff",
+                      "status-resolved": "#059669",
+                      "primary": "#00288e",
+                      "surface-container": "#e5eeff",
+                      "inverse-surface": "#213145",
+                      "border-subtle": "#E2E8F0",
+                      "on-secondary-fixed": "#0f0069",
+                      "priority-high": "#EF4444",
+                      "surface": "#F8FAFC",
+                      "on-background": "#0b1c30",
+                      "tertiary-fixed-dim": "#68dba9",
+                      "on-primary-container": "#a8b8ff",
+                      "secondary": "#4b41e1",
+                      "tertiary": "#003d28",
+                      "on-secondary-fixed-variant": "#3323cc",
+                      "inverse-primary": "#b8c4ff",
+                      "on-tertiary-fixed-variant": "#005137",
+                      "priority-low": "#10B981",
+                      "primary-fixed": "#dde1ff",
+                      "inverse-on-surface": "#eaf1ff",
+                      "primary-fixed-dim": "#b8c4ff",
+                      "on-primary-fixed": "#001453",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#d3e4fe",
+                      "status-escalated": "#DC2626",
+                      "outline": "#757684",
+                      "secondary-fixed-dim": "#c3c0ff",
+                      "status-open": "#4F46E5",
+                      "priority-medium": "#F59E0B",
+                      "error-container": "#ffdad6",
+                      "surface-dim": "#cbdbf5",
+                      "on-tertiary-container": "#5bcf9e",
+                      "error": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "container-sm": "8px",
+                      "margin-desktop": "24px",
+                      "container-lg": "24px",
+                      "gutter": "16px",
+                      "margin-mobile": "16px",
+                      "container-md": "16px"
+              },
+              "fontFamily": {
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "data-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "data-mono": [
+                              "13px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-lg": [
+                              "13px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<header class="bg-surface text-primary font-headline-md text-headline-md font-label-lg text-label-lg font-headline-md text-headline-md font-bold text-primary docked full-width top-0 z-50 border-b border-border-subtle shadow-sm flex justify-between items-center h-[64px] px-margin-desktop w-full transition-transform duration-150 sticky">
+<div class="flex items-center gap-container-lg">
+<div class="font-headline-md text-headline-md font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+                CommandCenter CRM
+            </div>
+<div class="hidden md:flex items-center gap-container-md">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest border border-border-subtle rounded text-body-md font-body-md focus:border-primary focus:ring-1 focus:ring-primary outline-none w-64" placeholder="Search..." type="text"/>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-container-md">
+<button class="bg-primary text-on-primary font-label-lg text-label-lg px-4 py-2 rounded hover:bg-primary/90 transition-colors">
+                New Ticket
+            </button>
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-primary font-bold border-b-2 border-primary hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-container-low transition-colors rounded-full active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<img alt="Agent Profile" class="w-8 h-8 rounded-full border border-border-subtle object-cover" data-alt="A professional headshot of a customer service agent smiling warmly, well-lit studio environment, trust-inspiring blue background, crisp modern photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDZRucsOMGVhfOOxDo8P5ojOSCq4CKmug_f0GS2gM_XCqIoQkR7ICVm-4fdgp9KeHQuxVjiYHtnOOIXN-WQ91NgLJ6xPW7jxx802GD6MKfuZkXVfRuomMSpWaTLbs7fOfcv6-4q-FSUEhNyfgiSYRIPSLUvR7N3zKUHsjB10xzGIhFnI-Rorx6WN77Ptojf7JCk1nSoAdS_MQfe2WhPyIxwY-A68Y433wDca0SN0kbU7uPTOqih_bvdwg"/>
+</div>
+</header>
+<div class="flex flex-1">
+<!-- SideNavBar -->
+<aside class="bg-surface-container-low text-primary font-label-lg text-label-lg font-body-md text-body-md font-headline-md text-headline-md font-bold text-primary docked left-0 h-screen w-[280px] border-r border-border-subtle flat no shadows flex flex-col h-full py-container-lg px-container-md hidden md:flex sticky top-[64px]" style="height: calc(100vh - 64px);">
+<div class="mb-container-lg flex items-center gap-3">
+<img alt="CRM Logo" class="w-10 h-10 rounded bg-surface-container-lowest object-cover" data-alt="Abstract geometric logo design for a CRM system, utilizing sleek modern lines, dark slate and vibrant Trust Blue colors, professional and high-tech feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2RlwC83gnLIOc_-a_zT2WGAtODjLDBXlNDGaeM1YhCsU3KwRTWCkTi8ZDlJOTyaei-q0MEt-tDEOSY6zXgWhFzZ43nlgCBe3l0lGmHxduW2kVp1sHWSDK6X5VYmLmzq_iLFrp-tZuaTDPwnhBLbDl_AGiWD6_UtjpC3F3M4o_psMEtVwEQpsVY_Sd10BI6C3fynTja9zv-ysUulR5OtK_kGPWJQF4re8tuAW3iLbg-XYCocGa-y4msw"/>
+<div>
+<div class="font-label-lg text-label-lg font-bold text-on-surface">Support Engine</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Enterprise Tier</div>
+</div>
+</div>
+<nav class="flex-1 flex flex-col gap-1 overflow-y-auto">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 cursor-pointer group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="dashboard">dashboard</span>
+<span class="font-label-lg text-label-lg">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 cursor-pointer group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="confirmation_number">confirmation_number</span>
+<span class="font-label-lg text-label-lg">Tickets</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 cursor-pointer group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="group">group</span>
+<span class="font-label-lg text-label-lg">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container transition-all duration-200 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+<span class="font-label-lg text-label-lg">Knowledge Base</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 cursor-pointer group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-lg text-label-lg">Reports</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 cursor-pointer group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="settings">settings</span>
+<span class="font-label-lg text-label-lg">System Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-container-lg flex flex-col gap-2 border-t border-border-subtle">
+<button class="w-full flex items-center justify-center gap-2 bg-surface-variant text-primary font-label-lg text-label-lg py-2 rounded hover:bg-surface-dim transition-colors mb-4">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+                    Pulse AI Assistant
+                </button>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 cursor-pointer group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="contact_support">contact_support</span>
+<span class="font-label-lg text-label-lg">Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-all duration-200 cursor-pointer group" href="#">
+<span class="material-symbols-outlined text-outline group-hover:text-primary transition-colors" data-icon="logout">logout</span>
+<span class="font-label-lg text-label-lg">Logout</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 w-full bg-surface-container-lowest">
+<!-- Hero Search Section -->
+<section class="bg-primary-container text-on-primary-container py-16 px-margin-desktop md:px-12 flex flex-col items-center justify-center text-center relative overflow-hidden">
+<!-- Background decorative elements -->
+<div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.8) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.5) 0%, transparent 50%);"></div>
+<h1 class="font-display-lg text-display-lg text-on-primary mb-4 relative z-10">How can we help?</h1>
+<p class="font-body-lg text-body-lg text-inverse-primary mb-8 max-w-2xl relative z-10">Search our knowledge base or browse categories below to find answers to your questions.</p>
+<div class="w-full max-w-3xl relative z-10">
+<div class="relative flex items-center w-full h-14 rounded-full bg-surface-container-lowest shadow-sm overflow-hidden focus-within:ring-2 focus-within:ring-primary focus-within:border-primary border border-transparent transition-all">
+<div class="grid place-items-center h-full w-14 text-outline">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+</div>
+<input class="peer h-full w-full outline-none text-body-lg font-body-lg text-on-surface bg-transparent pr-4" id="search" placeholder="Search articles, guides, and FAQs..." type="text"/>
+<button class="bg-primary text-on-primary h-full px-6 font-label-lg text-label-lg hover:bg-primary/90 transition-colors flex-shrink-0">
+                            Search
+                        </button>
+</div>
+<!-- Quick Links below search -->
+<div class="flex flex-wrap justify-center gap-3 mt-4">
+<span class="font-body-sm text-body-sm text-inverse-primary">Popular:</span>
+<a class="font-body-sm text-body-sm text-on-primary hover:underline" href="#">Reset Password</a>
+<a class="font-body-sm text-body-sm text-on-primary hover:underline" href="#">Billing Issues</a>
+<a class="font-body-sm text-body-sm text-on-primary hover:underline" href="#">API Documentation</a>
+</div>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="max-w-7xl mx-auto px-margin-desktop md:px-8 py-12">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<!-- Left/Main Column: Categories & FAQs -->
+<div class="lg:col-span-8 flex flex-col gap-12">
+<!-- Categories Grid (Bento Style) -->
+<section>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-6">Browse by Category</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Category 1 -->
+<a class="group bg-surface-container-lowest border border-border-subtle rounded-xl p-6 hover:shadow-sm hover:border-primary transition-all flex flex-col gap-4 relative overflow-hidden" href="#">
+<div class="absolute top-0 right-0 w-24 h-24 bg-surface-variant rounded-bl-full -mr-12 -mt-12 group-hover:scale-110 transition-transform"></div>
+<div class="w-12 h-12 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center relative z-10">
+<span class="material-symbols-outlined" data-icon="rocket_launch">rocket_launch</span>
+</div>
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 group-hover:text-primary transition-colors">Getting Started</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Learn the basics of setting up your workspace, inviting team members, and configuring your first workflows.</p>
+</div>
+</a>
+<!-- Category 2 -->
+<a class="group bg-surface-container-lowest border border-border-subtle rounded-xl p-6 hover:shadow-sm hover:border-primary transition-all flex flex-col gap-4 relative overflow-hidden" href="#">
+<div class="absolute top-0 right-0 w-24 h-24 bg-surface-variant rounded-bl-full -mr-12 -mt-12 group-hover:scale-110 transition-transform"></div>
+<div class="w-12 h-12 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center relative z-10">
+<span class="material-symbols-outlined" data-icon="credit_card">credit_card</span>
+</div>
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 group-hover:text-primary transition-colors">Account &amp; Billing</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Manage your subscription plans, update payment methods, and access past invoices securely.</p>
+</div>
+</a>
+<!-- Category 3 -->
+<a class="group bg-surface-container-lowest border border-border-subtle rounded-xl p-6 hover:shadow-sm hover:border-primary transition-all flex flex-col gap-4 relative overflow-hidden" href="#">
+<div class="absolute top-0 right-0 w-24 h-24 bg-surface-variant rounded-bl-full -mr-12 -mt-12 group-hover:scale-110 transition-transform"></div>
+<div class="w-12 h-12 rounded-full bg-status-open text-white flex items-center justify-center relative z-10">
+<span class="material-symbols-outlined" data-icon="build">build</span>
+</div>
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 group-hover:text-primary transition-colors">Technical Support</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Troubleshoot common errors, check system status, and resolve connectivity issues quickly.</p>
+</div>
+</a>
+<!-- Category 4 -->
+<a class="group bg-surface-container-lowest border border-border-subtle rounded-xl p-6 hover:shadow-sm hover:border-primary transition-all flex flex-col gap-4 relative overflow-hidden" href="#">
+<div class="absolute top-0 right-0 w-24 h-24 bg-surface-variant rounded-bl-full -mr-12 -mt-12 group-hover:scale-110 transition-transform"></div>
+<div class="w-12 h-12 rounded-full bg-surface-tint text-white flex items-center justify-center relative z-10">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span>
+</div>
+<div class="relative z-10">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2 group-hover:text-primary transition-colors">Product Guides</h3>
+<p class="font-body-md text-body-md text-on-surface-variant line-clamp-2">Deep dives into advanced features, API documentation, and best practices for power users.</p>
+</div>
+</a>
+</div>
+</section>
+<!-- FAQs Section -->
+<section>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="question_answer">question_answer</span>
+                                Frequently Asked Questions
+                            </h2>
+<div class="flex flex-col gap-2">
+<!-- FAQ Item 1 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg overflow-hidden">
+<button class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-surface-bright transition-colors focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'add' : 'remove';">
+<span class="font-label-lg text-label-lg text-on-surface">How do I reset my API key?</span>
+<span class="material-symbols-outlined text-outline icon" data-icon="add">add</span>
+</button>
+<div class="px-6 pb-4 pt-0 hidden text-on-surface-variant font-body-md text-body-md border-t border-border-subtle/50 mt-2">
+                                        To reset your API key, navigate to System Settings &gt; Developer Tools &gt; API Keys. Click the 'Revoke &amp; Generate New' button next to your active key. Please ensure you update any active integrations immediately to prevent service disruption.
+                                    </div>
+</div>
+<!-- FAQ Item 2 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg overflow-hidden">
+<button class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-surface-bright transition-colors focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'add' : 'remove';">
+<span class="font-label-lg text-label-lg text-on-surface">What happens when I exceed my user limit?</span>
+<span class="material-symbols-outlined text-outline icon" data-icon="add">add</span>
+</button>
+<div class="px-6 pb-4 pt-0 hidden text-on-surface-variant font-body-md text-body-md border-t border-border-subtle/50 mt-2">
+                                        If you exceed your user limit, new users will be unable to log in until you upgrade your subscription tier or remove inactive users. You will receive an automated email notification when you reach 90% capacity.
+                                    </div>
+</div>
+<!-- FAQ Item 3 -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-lg overflow-hidden">
+<button class="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-surface-bright transition-colors focus:outline-none" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.icon').textContent = this.nextElementSibling.classList.contains('hidden') ? 'add' : 'remove';">
+<span class="font-label-lg text-label-lg text-on-surface">Can I export my ticket data?</span>
+<span class="material-symbols-outlined text-outline icon" data-icon="add">add</span>
+</button>
+<div class="px-6 pb-4 pt-0 hidden text-on-surface-variant font-body-md text-body-md border-t border-border-subtle/50 mt-2">
+                                        Yes. Organization administrators can export ticket data in CSV or JSON format from the Reports dashboard. Exports can be filtered by date range, status, and assignee.
+                                    </div>
+</div>
+<div class="mt-4 text-center">
+<button class="text-primary font-label-lg text-label-lg hover:underline flex items-center justify-center gap-1 mx-auto">
+                                        View all FAQs
+                                        <span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+<!-- Right Sidebar: Promoted & Contact -->
+<div class="lg:col-span-4 flex flex-col gap-6">
+<!-- Promoted Articles -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-6 shadow-sm">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-status-pending" data-icon="star">star</span>
+                                Promoted Articles
+                            </h3>
+<ul class="flex flex-col gap-4">
+<li>
+<a class="group flex items-start gap-3" href="#">
+<span class="material-symbols-outlined text-outline mt-0.5 group-hover:text-primary transition-colors text-[18px]" data-icon="article">article</span>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface group-hover:text-primary transition-colors">Setting up Two-Factor Authentication (2FA)</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Secure your account with an extra layer of protection.</p>
+</div>
+</a>
+</li>
+<li class="border-t border-border-subtle pt-4">
+<a class="group flex items-start gap-3" href="#">
+<span class="material-symbols-outlined text-outline mt-0.5 group-hover:text-primary transition-colors text-[18px]" data-icon="article">article</span>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface group-hover:text-primary transition-colors">Integrating with Slack</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Receive ticket notifications directly in your channels.</p>
+</div>
+</a>
+</li>
+<li class="border-t border-border-subtle pt-4">
+<a class="group flex items-start gap-3" href="#">
+<span class="material-symbols-outlined text-outline mt-0.5 group-hover:text-primary transition-colors text-[18px]" data-icon="article">article</span>
+<div>
+<h4 class="font-label-lg text-label-lg text-on-surface group-hover:text-primary transition-colors">Understanding Service Level Agreements (SLAs)</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">How SLAs are calculated and enforced in your workspace.</p>
+</div>
+</a>
+</li>
+</ul>
+</div>
+<!-- Still need help card -->
+<div class="bg-primary-container text-on-primary-container rounded-xl p-6 shadow-sm text-center">
+<div class="w-16 h-16 mx-auto bg-surface/20 rounded-full flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-on-primary text-[32px]" data-icon="support_agent">support_agent</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-2">Still need help?</h3>
+<p class="font-body-md text-body-md text-inverse-primary mb-6">Our support team is available 24/7 to assist you with any complex issues.</p>
+<button class="w-full bg-surface-container-lowest text-primary font-label-lg text-label-lg py-2.5 rounded hover:bg-surface-bright transition-colors shadow-sm">
+                                Submit a Support Request
+                            </button>
+</div>
+<!-- System Status Mini Card -->
+<div class="bg-surface-container-lowest border border-border-subtle rounded-xl p-4 shadow-sm flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative flex h-3 w-3">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-resolved opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-status-resolved"></span>
+</div>
+<div>
+<div class="font-label-md text-label-md text-on-surface">System Status</div>
+<div class="font-body-sm text-body-sm text-status-resolved">All systems operational</div>
+</div>
+</div>
+<a class="text-primary font-label-md text-label-md hover:underline" href="#">View Status</a>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-surface-dim text-on-surface font-label-md text-label-md font-label-lg text-label-lg font-bold full-width bottom-0 border-t border-border-subtle flat flex justify-between items-center py-container-sm px-margin-desktop w-full transition-opacity hover:opacity-80 mt-auto">
+<div class="text-on-surface-variant">© 2024 Command Center Inc. All rights reserved.</div>
+<div class="flex items-center gap-4">
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors" href="#">Security Status</a>
+</div>
+</footer>
+</body></html>

@@ -1,0 +1,94 @@
+<section class="flex flex-col gap-6">
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-headline-lg text-on-surface">{{ 'departments.title' | t }}</h1>
+      <p class="mt-1 text-body-md text-on-surface-variant">{{ 'departments.subtitle' | t }}</p>
+    </div>
+    <cs-button (pressed)="showCreate.set(true)">
+      <cs-icon name="add" />
+      {{ 'departments.add' | t }}
+    </cs-button>
+  </header>
+
+  <cs-dialog
+    [open]="showCreate()"
+    [heading]="'departments.create.title' | t"
+    (closed)="showCreate.set(false)"
+  >
+    <form [formGroup]="form" (ngSubmit)="create()" class="flex flex-col gap-4">
+      <cs-input-field
+        [label]="'field.name' | t"
+        [control]="form.controls.name"
+        [serverError]="fieldError('name')"
+      />
+
+      @if (createError(); as failure) {
+        @if (!failure.hasFieldErrors) {
+          <p class="text-body-md text-error" role="alert">{{ failure.message_ }}</p>
+        }
+      }
+
+      <div class="flex items-center justify-end gap-2 border-t border-border-subtle pt-4">
+        <cs-button type="submit" [busy]="saving()" [disabled]="form.invalid">
+          {{ 'departments.create.submit' | t }}
+        </cs-button>
+      </div>
+    </form>
+  </cs-dialog>
+
+  <cs-card [heading]="'departments.list.title' | t">
+    @if (state().status === 'loading') {
+      <cs-loading-state />
+    } @else if (listError(); as failure) {
+      <cs-error-state [error]="failure" />
+    } @else if (state().status === 'empty') {
+      <cs-empty-state [message]="'departments.empty' | t" />
+    } @else {
+      <div class="overflow-x-auto">
+        <table class="cs-data-table min-w-2xl">
+          <thead>
+            <tr
+              class="border-b border-border-subtle bg-surface-low text-label-md tracking-wider text-on-surface-variant uppercase"
+            >
+              <th scope="col" class="px-4 py-2 text-start">{{ 'field.name' | t }}</th>
+              <th scope="col" class="px-4 py-2 text-start">{{ 'departments.state' | t }}</th>
+              <th scope="col" class="px-4 py-2 text-end">{{ 'departments.actions' | t }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (department of items(); track department.id) {
+              <tr
+                class="border-b border-border-subtle transition-colors even:bg-surface-low last:border-transparent hover:bg-surface-high"
+              >
+                <td class="px-4 py-3 text-label-lg text-on-surface">{{ department.name }}</td>
+                <td class="px-4 py-3">
+                  <span
+                    class="inline-flex items-center gap-1 rounded px-2 py-0.5 text-label-md font-semibold"
+                    [class]="department.isActive ? 'bg-success/12 text-success' : 'bg-error/12 text-error'"
+                  >
+                    <span
+                      class="size-1.5 shrink-0 rounded-full"
+                      [class]="department.isActive ? 'bg-success' : 'bg-error'"
+                    ></span>
+                    {{ (department.isActive ? 'departments.active' : 'departments.deactivated') | t }}
+                  </span>
+                </td>
+                <td class="px-4 py-3">
+                  <div class="flex justify-end">
+                    <cs-button
+                      variant="secondary"
+                      [disabled]="!department.isActive"
+                      (pressed)="deactivate(department)"
+                    >
+                      {{ 'departments.deactivate' | t }}
+                    </cs-button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </cs-card>
+</section>

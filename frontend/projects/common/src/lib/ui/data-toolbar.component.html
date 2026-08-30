@@ -1,0 +1,46 @@
+<div class="cs-data-toolbar">
+  <label class="cs-data-search">
+    <span class="sr-only">{{ searchPlaceholder() }}</span>
+    <cs-icon
+      name="search"
+      [size]="20"
+      class="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-on-surface-variant"
+    />
+    <input
+      type="search"
+      [value]="search()"
+      [placeholder]="searchPlaceholder()"
+      (input)="searchChanged.emit($any($event.target).value)"
+      (keyup.enter)="searchSubmitted.emit()"
+    />
+  </label>
+
+  @if (statusOptions().length > 0) {
+    <label class="cs-data-select">
+      <span>
+        <cs-icon name="filter_list" [size]="16" />
+        {{ statusLabel() }}
+      </span>
+      <select [value]="status()" (change)="statusChanged.emit($any($event.target).value)">
+        <option value="">{{ allStatusLabel() }}</option>
+        @for (option of statusOptions(); track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </label>
+  }
+
+  @if (sortOptions().length > 0) {
+    <label class="cs-data-select">
+      <span>
+        <cs-icon name="sort" [size]="16" />
+        {{ sortLabel() }}
+      </span>
+      <select [value]="sort()" (change)="sortChanged.emit($any($event.target).value)">
+        @for (option of sortOptions(); track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </label>
+  }
+</div>

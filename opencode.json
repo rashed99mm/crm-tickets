@@ -1,0 +1,61 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "instructions": ["CLAUDE.md"],
+  "skills": {
+    "paths": [".claude/skills"]
+  },
+  "references": {
+    "docs": {
+      "path": "docs",
+      "description": "Project specs, ADRs, architecture docs, delivery plan, and rubric traceability"
+    },
+    "reference-platform": {
+      "path": "refrence/support-platform",
+      "description": "The support platform reference adopted as the CRM baseline (ADR-0009). Source of inherited Auth, Users, Contents, Notifications, PlatformSettings, ExternalApiConfigurations"
+    },
+    "mockups": {
+      "path": "stitch_smart_support_ticketing_crm",
+      "description": "UI mockup screens (HTML + PNG) for 15 views: admin dashboard, agent workspace, ticket queue, customer profile, command center, knowledge base"
+    }
+  },
+  "permission": {
+    "bash": {
+      "dotnet build*": "allow",
+      "dotnet test*": "allow",
+      "dotnet run*": "allow",
+      "dotnet format*": "allow",
+      "dotnet restore*": "allow",
+      "dotnet new*": "allow",
+      "dotnet sln*": "allow",
+      "dotnet add*": "allow",
+      "dotnet ef migrations*": "allow",
+      "dotnet ef database update*": "allow",
+      "dotnet --list-sdks": "allow",
+      "dotnet --version": "allow",
+      "ng build*": "allow",
+      "ng test*": "allow",
+      "ng serve*": "allow",
+      "ng generate*": "allow",
+      "ng version": "allow",
+      "npm ci": "allow",
+      "npm install*": "allow",
+      "npm run*": "allow",
+      "npx playwright test*": "allow",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git branch*": "allow",
+      "git show*": "allow",
+      "git add*": "allow",
+      "git commit*": "allow",
+      "git checkout*": "allow",
+      "dotnet ef database drop*": "deny",
+      "git push --force*": "deny",
+      "*": "ask"
+    },
+    "external_directory": {
+      "~/secrets/**": "deny",
+      "*": "allow"
+    }
+  }
+}

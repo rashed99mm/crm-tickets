@@ -1,0 +1,12 @@
+@if (heading()) {
+  <div
+    class="relative flex items-center justify-between gap-4 border-b border-outline-variant/60 bg-gradient-to-r from-surface-bright via-surface-lowest to-surface-bright px-5 py-4 before:absolute before:inset-y-0 before:start-0 before:w-1 before:bg-primary"
+  >
+    <h2 class="flex items-center gap-2 text-headline-md text-on-surface">
+      {{ heading() }}
+    </h2>
+    <ng-content select="[action], action" />
+  </div>
+}
+
+<ng-content />

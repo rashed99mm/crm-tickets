@@ -1,0 +1,11 @@
+@if (dueAt(); as due) {
+  <div class="flex flex-col gap-1">
+    <span class="text-label-md tracking-wider text-on-surface-variant uppercase">{{ label() }}</span>
+    <div class="flex items-center gap-1.5" [attr.data-urgency]="urgency()">
+      <span class="size-1.5 shrink-0 rounded-full" [class]="dotClass()"></span>
+      <time [attr.datetime]="due" class="font-mono text-data-mono" [class]="textClass()">
+        {{ remainingLabel() }}
+      </time>
+    </div>
+  </div>
+}

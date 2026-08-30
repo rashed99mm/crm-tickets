@@ -1,0 +1,65 @@
+<section class="flex flex-col gap-6">
+  <header>
+    <h1 class="text-headline-lg text-on-surface">{{ 'permissions.title' | t }}</h1>
+    <p class="mt-1 text-body-md text-on-surface-variant">{{ 'permissions.subtitle' | t }}</p>
+    @if (summary(); as counts) {
+      <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'permissions.count' | t: counts.roles : counts.permissions }}</p>
+    }
+  </header>
+
+  @if (mutationSuccess(); as success) {
+    <p class="rounded-lg bg-success/12 p-3 text-body-md text-success" role="status">
+      {{ (success === 'assigned' ? 'permissions.assigned' : 'permissions.revoked') | t }}
+    </p>
+  }
+  @if (mutationError()) {
+    <p class="rounded-lg bg-error/12 p-3 text-body-md text-error" role="alert">
+      {{ (lastPermissionError() ? 'permissions.lastRequired' : 'permissions.mutationError') | t }}
+    </p>
+  }
+
+  <cs-card [heading]="'permissions.list.title' | t">
+    @switch (state().status) {
+      @case ('loading') { <cs-loading-state /> }
+      @case ('error') { @if (loadError(); as failure) { <cs-error-state [error]="failure" (retry)="load()" /> } }
+      @case ('empty') { <cs-empty-state [message]="'permissions.empty' | t" /> }
+      @default {
+        @if (data(); as model) {
+          <div class="overflow-x-auto">
+            <table class="cs-data-table min-w-3xl">
+              <thead>
+                <tr class="border-b border-border-subtle bg-surface-low text-label-md text-on-surface-variant">
+                  <th scope="col" class="px-4 py-3 text-start">{{ 'permissions.role' | t }}</th>
+                  @for (permission of model.permissions; track permission.id) {
+                    <th scope="col" class="px-4 py-3 text-start" [title]="permission.description ?? undefined">{{ permission.name }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (role of model.roles; track role.id) {
+                  <tr class="border-b border-border-subtle last:border-transparent">
+                    <th scope="row" class="px-4 py-3 text-start text-label-lg text-on-surface">{{ role.name }}</th>
+                    @for (permission of model.permissions; track permission.id) {
+                      <td class="px-4 py-3">
+                        <label class="inline-flex min-h-10 items-center gap-2">
+                          <input
+                            type="checkbox"
+                            [checked]="isAssigned(role, permission.id)"
+                            [disabled]="mutating() !== null"
+                            [attr.aria-label]="role.name + ': ' + permission.name"
+                            (change)="toggle(role, permission, $any($event.target).checked)"
+                            class="size-4 accent-primary"
+                          />
+                        </label>
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      }
+    }
+  </cs-card>
+</section>

@@ -1,0 +1,275 @@
+<section class="flex flex-col gap-6">
+  <div class="-mx-6 -mt-6 border-b border-border-subtle bg-surface-lowest px-6 py-6">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="min-w-0">
+        <div class="mb-2 flex flex-wrap items-center gap-2">
+          <span
+            class="rounded-full bg-secondary-container/15 px-3 py-1 text-label-md uppercase tracking-wider text-primary"
+          >
+            {{ 'agentWorkspace.eyebrow' | t }}
+          </span>
+          <span
+            class="rounded-full border border-border-subtle bg-surface px-3 py-1 font-mono text-data-mono text-on-surface-variant"
+          >
+            {{ 'agentWorkspace.realtime' | t }}: {{ connectionLabel() }}
+          </span>
+        </div>
+        <h1 class="text-headline-lg text-on-surface">{{ 'agentWorkspace.title' | t }}</h1>
+        <p class="mt-1 max-w-3xl text-body-md text-on-surface-variant">
+          {{ 'agentWorkspace.subtitle' | t }}
+        </p>
+      </div>
+
+      <div class="flex flex-wrap gap-2">
+        <a
+          routerLink="/tickets"
+          class="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-body-sm text-on-primary shadow-card transition-transform hover:-translate-y-0.5"
+        >
+          <cs-icon name="confirmation_number" [size]="18" />
+          {{ 'nav.tickets' | t }}
+        </a>
+        <a
+          routerLink="/chat"
+          class="inline-flex items-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-4 py-2 text-body-sm text-on-surface shadow-sm transition-transform hover:-translate-y-0.5"
+        >
+          <cs-icon name="chat" [size]="18" />
+          {{ 'nav.chat' | t }}
+        </a>
+      </div>
+    </div>
+
+    <dl class="mt-4 grid gap-3 border-t border-border-subtle pt-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div class="rounded-xl border border-border-subtle bg-surface p-4">
+        <dt class="text-label-md uppercase tracking-wider text-on-surface-variant">
+          {{ 'agentWorkspace.metrics.assigned' | t }}
+        </dt>
+        <dd class="mt-2 text-display text-on-surface">{{ tickets().length }}</dd>
+      </div>
+      <div class="rounded-xl border border-border-subtle bg-surface p-4">
+        <dt class="text-label-md uppercase tracking-wider text-on-surface-variant">
+          {{ 'agentWorkspace.metrics.open' | t }}
+        </dt>
+        <dd class="mt-2 text-display text-on-surface">{{ openTicketCount() }}</dd>
+      </div>
+      <div class="rounded-xl border border-border-subtle bg-surface p-4">
+        <dt class="text-label-md uppercase tracking-wider text-on-surface-variant">
+          {{ 'agentWorkspace.metrics.escalated' | t }}
+        </dt>
+        <dd class="mt-2 text-display text-on-surface">{{ escalatedCount() }}</dd>
+      </div>
+      <div class="rounded-xl border border-border-subtle bg-surface p-4">
+        <dt class="text-label-md uppercase tracking-wider text-on-surface-variant">
+          {{ 'agentWorkspace.metrics.unread' | t }}
+        </dt>
+        <dd class="mt-2 text-display text-on-surface">{{ unreadCount() }}</dd>
+      </div>
+    </dl>
+  </div>
+
+  <div class="grid grid-cols-1 gap-6 xl:grid-cols-[18rem_minmax(0,1fr)_20rem]">
+    <aside class="flex flex-col gap-6">
+      <cs-card [heading]="'agentWorkspace.notifications' | t">
+        <div class="flex flex-col divide-y divide-border-subtle">
+          @if (notificationItems().length === 0) {
+            <div class="px-4 py-4 text-body-sm text-on-surface-variant">
+              {{ 'notifications.empty' | t }}
+            </div>
+          } @else {
+            @for (notification of notificationItems(); track notification.id) {
+              <div class="px-4 py-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="min-w-0">
+                    <p class="truncate text-label-lg text-on-surface">{{ notification.title }}</p>
+                    <p class="mt-1 line-clamp-2 text-body-sm text-on-surface-variant">
+                      {{ notification.message }}
+                    </p>
+                  </div>
+                  @if (!notification.isRead) {
+                    <span class="mt-1 size-2 shrink-0 rounded-full bg-error" aria-hidden="true"></span>
+                  }
+                </div>
+                <time
+                  class="mt-2 block font-mono text-data-mono text-on-surface-variant"
+                  [attr.datetime]="notification.createdAt"
+                >
+                  {{ notification.createdAt | csDate : 'datetime' }}
+                </time>
+              </div>
+            }
+          }
+        </div>
+      </cs-card>
+
+      <cs-card [heading]="'agentWorkspace.quickReplies' | t">
+        <div class="flex flex-col gap-2 p-4">
+          @for (reply of quickReplies; track reply.key) {
+            <button
+              type="button"
+              class="flex items-start gap-3 rounded-lg border border-outline-variant bg-surface-lowest px-3 py-3 text-start transition-colors hover:bg-surface-high"
+              (click)="copyQuickReply(reply.key)"
+            >
+              <span
+                class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full bg-secondary-container/15 text-primary"
+              >
+                <cs-icon [name]="reply.icon" [size]="16" />
+              </span>
+              <span class="text-body-sm text-on-surface">{{ reply.key | t }}</span>
+            </button>
+          }
+        </div>
+      </cs-card>
+    </aside>
+
+    <main class="flex min-w-0 flex-col gap-6">
+      <cs-card [heading]="'agentWorkspace.assignedTickets' | t">
+        @switch (ticketsState().status) {
+          @case ('loading') {
+            <div class="p-4">
+              <cs-loading-state [label]="'agentWorkspace.loadingTickets' | t" />
+            </div>
+          }
+          @case ('error') {
+            @if (ticketError(); as failure) {
+              <cs-error-state [error]="failure" (retry)="loadTickets()" />
+            }
+          }
+          @case ('empty') {
+            <cs-empty-state
+              [message]="'agentWorkspace.emptyTickets' | t"
+              [hint]="'agentWorkspace.emptyTicketsHint' | t"
+            />
+          }
+          @default {
+            <div class="overflow-x-auto">
+              <table class="cs-data-table">
+                <thead>
+                  <tr class="bg-surface-bright">
+                    <th class="px-4 py-3 text-start text-label-md uppercase tracking-wider text-on-surface-variant">
+                      {{ 'field.reference' | t }}
+                    </th>
+                    <th class="px-4 py-3 text-start text-label-md uppercase tracking-wider text-on-surface-variant">
+                      {{ 'field.subject' | t }}
+                    </th>
+                    <th class="px-4 py-3 text-start text-label-md uppercase tracking-wider text-on-surface-variant">
+                      {{ 'field.customer' | t }}
+                    </th>
+                    <th class="px-4 py-3 text-start text-label-md uppercase tracking-wider text-on-surface-variant">
+                      {{ 'field.status' | t }}
+                    </th>
+                    <th class="px-4 py-3 text-start text-label-md uppercase tracking-wider text-on-surface-variant">
+                      {{ 'tickets.detail.lifecycle' | t }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-border-subtle">
+                  @for (ticket of tickets(); track ticket.id) {
+                    <tr class="hover:bg-surface-bright/70">
+                      <td class="px-4 py-3 font-mono text-data-mono text-primary">
+                        <a [routerLink]="['/tickets', ticket.id]" class="hover:underline">
+                          {{ ticket.reference }}
+                        </a>
+                      </td>
+                      <td class="px-4 py-3 text-body-sm text-on-surface">{{ ticket.subject }}</td>
+                      <td class="px-4 py-3 text-body-sm text-on-surface-variant">
+                        {{ ticket.customerName }}
+                      </td>
+                      <td class="px-4 py-3"><cs-status-pill [value]="ticket.status" /></td>
+                      <td class="px-4 py-3">
+                        <div class="flex flex-wrap gap-2">
+                          <cs-badge kind="priority" [value]="ticket.priority" />
+                          @if (ticket.escalationState !== 'None') {
+                            <span
+                              class="rounded-full bg-error-container px-2 py-1 text-label-md text-on-error-container"
+                            >
+                              {{ ticket.escalationState }}
+                            </span>
+                          }
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+        }
+      </cs-card>
+    </main>
+
+    <aside class="flex flex-col gap-6">
+      <cs-card [heading]="'agentWorkspace.liveChat' | t">
+        @switch (chatState().status) {
+          @case ('loading') {
+            <div class="p-4">
+              <cs-loading-state [label]="'agentWorkspace.loadingChats' | t" />
+            </div>
+          }
+          @case ('error') {
+            @if (chatError(); as failure) {
+              <cs-error-state [error]="failure" (retry)="loadChats()" />
+            }
+          }
+          @case ('empty') {
+            <cs-empty-state
+              [message]="'agentWorkspace.emptyChats' | t"
+              [hint]="'agentWorkspace.emptyChatsHint' | t"
+            />
+          }
+          @default {
+            <div class="flex flex-col divide-y divide-border-subtle">
+              @for (session of chats(); track session.id) {
+                <div class="px-4 py-4">
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="min-w-0">
+                      <p class="truncate text-label-lg text-on-surface">
+                        {{ session.customerName || session.customerEmail || ('field.notRecorded' | t) }}
+                      </p>
+                      <p class="mt-1 text-body-sm text-on-surface-variant">
+                        {{ 'chat.queue.status' | t }}: {{ session.status }}
+                      </p>
+                    </div>
+                    <a routerLink="/chat" class="text-label-md text-primary hover:underline">
+                      {{ 'agentWorkspace.openQueue' | t }}
+                    </a>
+                  </div>
+                  <time
+                    class="mt-2 block font-mono text-data-mono text-on-surface-variant"
+                    [attr.datetime]="session.createdAt"
+                  >
+                    {{ session.createdAt | csDate : 'datetime' }}
+                  </time>
+                </div>
+              }
+            </div>
+          }
+        }
+      </cs-card>
+
+      <cs-card [heading]="'agentWorkspace.actions' | t">
+        <div class="flex flex-col gap-2 p-4">
+          <a
+            routerLink="/dashboard"
+            class="inline-flex items-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-3 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-high"
+          >
+            <cs-icon name="dashboard" [size]="18" />
+            {{ 'nav.dashboard' | t }}
+          </a>
+          <a
+            routerLink="/tickets"
+            class="inline-flex items-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-3 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-high"
+          >
+            <cs-icon name="confirmation_number" [size]="18" />
+            {{ 'agentWorkspace.reviewLifecycle' | t }}
+          </a>
+          <a
+            routerLink="/chat"
+            class="inline-flex items-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-3 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-high"
+          >
+            <cs-icon name="forum" [size]="18" />
+            {{ 'agentWorkspace.openLiveChat' | t }}
+          </a>
+        </div>
+      </cs-card>
+    </aside>
+  </div>
+</section>

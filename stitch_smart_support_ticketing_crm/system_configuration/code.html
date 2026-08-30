@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>System Settings - Command Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "priority-high": "#EF4444",
+                        "surface-container-high": "#dce9ff",
+                        "surface-tint": "#3755c3",
+                        "priority-medium": "#F59E0B",
+                        "surface": "#F8FAFC",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#003d28",
+                        "secondary": "#4b41e1",
+                        "on-primary-container": "#a8b8ff",
+                        "secondary-fixed": "#e2dfff",
+                        "primary-fixed-dim": "#b8c4ff",
+                        "tertiary-fixed-dim": "#68dba9",
+                        "on-tertiary-container": "#5bcf9e",
+                        "on-tertiary-fixed": "#002114",
+                        "background": "#f8f9ff",
+                        "surface-container-highest": "#d3e4fe",
+                        "status-pending": "#F59E0B",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-secondary-fixed-variant": "#3323cc",
+                        "on-primary": "#ffffff",
+                        "primary-fixed": "#dde1ff",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#b8c4ff",
+                        "on-primary-fixed": "#001453",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#85f8c4",
+                        "on-primary-fixed-variant": "#173bab",
+                        "border-subtle": "#E2E8F0",
+                        "on-surface": "#0b1c30",
+                        "on-tertiary-fixed-variant": "#005137",
+                        "surface-variant": "#d3e4fe",
+                        "surface-container-low": "#eff4ff",
+                        "surface-dim": "#cbdbf5",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "priority-critical": "#B91C1C",
+                        "on-tertiary": "#ffffff",
+                        "status-resolved": "#059669",
+                        "outline-variant": "#c4c5d5",
+                        "secondary-container": "#645efb",
+                        "status-escalated": "#DC2626",
+                        "tertiary-container": "#00563a",
+                        "on-error": "#ffffff",
+                        "priority-low": "#10B981",
+                        "primary-container": "#1e40af",
+                        "status-open": "#4F46E5",
+                        "on-surface-variant": "#444653",
+                        "outline": "#757684",
+                        "primary": "#00288e",
+                        "inverse-surface": "#213145",
+                        "on-background": "#0b1c30",
+                        "on-secondary-fixed": "#0f0069",
+                        "secondary-fixed-dim": "#c3c0ff",
+                        "surface-container": "#e5eeff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "24px",
+                        "container-sm": "8px",
+                        "container-lg": "24px",
+                        "container-md": "16px",
+                        "unit": "4px",
+                        "margin-mobile": "16px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Hanken Grotesk"],
+                        "body-sm": ["Inter"],
+                        "label-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "data-mono": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "headline-md": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "label-lg": ["13px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "data-mono": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: theme('colors.surface'); color: theme('colors.on-surface'); }
+    </style>
+</head>
+<body class="font-body-md text-body-md flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-full w-72 bg-surface dark:bg-inverse-surface border-r border-border-subtle flex flex-col p-container-md space-y-unit z-40 hidden md:flex">
+<div class="mb-container-lg">
+<h1 class="font-headline-md text-headline-md text-on-surface dark:text-on-surface font-bold">Admin Console</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">System Management</p>
+</div>
+<button class="bg-primary text-on-primary font-label-lg text-label-lg py-container-sm px-container-md rounded-lg mb-container-md w-full flex items-center justify-center space-x-2 shadow-sm hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>New Configuration</span>
+</button>
+<div class="flex-grow space-y-unit">
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant rounded-lg transition-all scale-98 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-lg text-label-lg">Users</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant rounded-lg transition-all scale-98 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="shield_person">shield_person</span>
+<span class="font-label-lg text-label-lg">Roles</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary rounded-lg transition-all scale-98 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-lg text-label-lg">System Settings</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant rounded-lg transition-all scale-98 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-lg text-label-lg">Audit Logs</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant rounded-lg transition-all scale-98 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="lock">lock</span>
+<span class="font-label-lg text-label-lg">Security</span>
+</a>
+</div>
+<div class="mt-auto space-y-unit border-t border-border-subtle pt-container-sm">
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant rounded-lg transition-all scale-98 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-lg text-label-lg">Settings</span>
+</a>
+<a class="flex items-center space-x-3 px-3 py-2 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-on-surface-variant rounded-lg transition-all scale-98 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span class="font-label-lg text-label-lg">Support</span>
+</a>
+<div class="flex items-center space-x-3 px-3 py-2 mt-container-sm">
+<img alt="Admin Avatar" class="w-8 h-8 rounded-full object-cover" data-alt="A professional headshot of a female administrative user with a clean, well-lit background, wearing business casual attire, exuding confidence and reliability, suitable for a corporate CRM interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSu4xYrC8ZmzgVg5Xu_117tZCc4wmbNDpRCYPGYu3U9nRC5BsJ6g7Qcr3HlVXNUfCNxBwIHM4IbybGIaBY7f36L8MFI8p9NDoaw1U24aEdupcpBGqeBIUK8RpoVOvCBb2HBt0FXhpY5P2JaBQLNPOKCfvDm2V6Y_6rxPq4oA3CJDXyfxafrlWlcNdevCTypqNzEJO_cJBXSN6DWhrvmR1Uyhj8NaQoLWAgEBRrNcx45BQTxfXP9CxCTQ"/>
+<span class="font-label-lg text-label-lg text-on-surface">Admin User</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-72 flex flex-col overflow-y-auto bg-slate-50">
+<!-- TopNavBar -->
+<header class="bg-surface-container-lowest dark:bg-on-surface border-b border-border-subtle dark:border-outline-variant shadow-sm flex justify-between items-center px-margin-desktop w-full h-16 z-50 sticky top-0">
+<div class="flex items-center space-x-6">
+<div class="md:hidden">
+<span class="material-symbols-outlined font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim" data-icon="menu">menu</span>
+</div>
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim hidden md:block">Command Center</div>
+<nav class="hidden md:flex space-x-6 h-full items-end">
+<a class="text-on-surface-variant dark:text-on-surface-variant pb-4 font-body-md text-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors cursor-pointer active:opacity-80" href="#">Dashboard</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant pb-4 font-body-md text-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors cursor-pointer active:opacity-80" href="#">Knowledge Base</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant pb-4 font-body-md text-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors cursor-pointer active:opacity-80" href="#">Tickets</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant pb-4 font-body-md text-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors cursor-pointer active:opacity-80" href="#">Reports</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant pb-4 font-body-md text-body-md hover:text-primary dark:hover:text-primary-fixed transition-colors cursor-pointer active:opacity-80" href="#">Customers</a>
+<a class="text-primary dark:text-primary-fixed border-b-2 border-primary pb-4 font-body-md text-body-md font-semibold cursor-pointer active:opacity-80" href="#">Help</a>
+</nav>
+</div>
+<div class="flex items-center space-x-4 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="search">search</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="help_outline">help_outline</span>
+<img alt="Agent Profile" class="w-8 h-8 rounded-full border border-border-subtle object-cover" data-alt="A small, circular avatar image of a male customer support agent, smiling slightly, set against a neutral gray background, intended for a top navigation bar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBVH4GO8_2tn8vFmQzzgyhDzCqtAVDmVZdIAAU1CluEdsSMgqqFMF0XjBZDC_mfRlmXEJk2g4Qro6QS6BcUWyZ9DcoLij10Uf9romJ0fp_fh2bMSqoeQV8UU0eu0e3YtvM282OLKupduzz84peR2meTEOaRMWGzkRNHT6_83yhhh70fy5nSY2dRBVZ9BdYJBRToTaxB8hn55M78-_oRbXwfSmRCm2mb9PiLyZPi-bZqT6xAlclagL_MTw"/>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-margin-desktop md:p-margin-desktop w-full max-w-7xl mx-auto space-y-6">
+<div class="mb-8">
+<h2 class="font-display-lg text-display-lg text-on-surface mb-2">System Settings</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Manage global CRM configurations, integrations, and routing rules.</p>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Global Branding (Span 8) -->
+<section class="md:col-span-8 bg-surface-container-lowest border border-border-subtle rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] p-container-lg">
+<h3 class="font-headline-md text-headline-md text-on-surface border-b border-border-subtle pb-3 mb-4 flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary" data-icon="palette">palette</span>
+<span>Global Branding</span>
+</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-4">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Company Logo</label>
+<div class="flex items-center space-x-4">
+<div class="w-16 h-16 bg-surface-container rounded border border-border-subtle flex items-center justify-center overflow-hidden">
+<img alt="Company Logo" class="w-full h-full object-contain" data-alt="A sleek, modern corporate logo featuring a stylized blue hexagon and minimalist typography, representing a tech-forward enterprise software company, displayed on a clean white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa1CwQS4RD8-1AD4l2mpuftgmxlo-twJmrW2v33rDlC7KXlmtzkgWXPzqEkiEfQ-ngPAHsgudSDfPg7dKlcricrjGqUdm5wwgbzsNGo4HaDE43jAcnJR374lv6BP4jDdN9-KZLNSifXZh9zqakQW2RJbQBYl8FlZ2AJ7BiliPli06Qhmnd-MkL2JTw8fJQhsGkdsSnbgH-TU5OoOipPkfnS9idOSGyyPXa07w34Oeb52qofdoJm90yfw"/>
+</div>
+<button class="px-4 py-2 bg-surface text-on-surface border border-border-subtle rounded-lg font-label-lg text-label-lg hover:bg-surface-container-low transition-colors">Upload New</button>
+</div>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Primary Brand Color</label>
+<div class="flex items-center space-x-3">
+<input class="h-10 w-10 rounded border border-border-subtle cursor-pointer p-0" type="color" value="#00288e"/>
+<input class="font-data-mono text-data-mono flex-1 px-3 py-2 border border-border-subtle rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary" type="text" value="#00288E"/>
+</div>
+</div>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Portal Title</label>
+<input class="w-full px-3 py-2 border border-border-subtle rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md" type="text" value="Acme Corp Support Center"/>
+</div>
+<div>
+<label class="block font-label-md text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">Support Email Address</label>
+<input class="w-full px-3 py-2 border border-border-subtle rounded-lg focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-body-md text-body-md" type="email" value="support@acmecorp.com"/>
+</div>
+</div>
+</div>
+</section>
+<!-- API Keys (Span 4) -->
+<section class="md:col-span-4 bg-surface-container-lowest border border-border-subtle rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] p-container-lg flex flex-col">
+<h3 class="font-headline-md text-headline-md text-on-surface border-b border-border-subtle pb-3 mb-4 flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary" data-icon="key">key</span>
+<span>API Configuration</span>
+</h3>
+<div class="space-y-4 flex-grow">
+<div class="p-3 bg-surface-container-low rounded-lg border border-border-subtle">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-lg text-label-lg text-on-surface">Production Key</span>
+<span class="bg-status-resolved text-on-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">Active</span>
+</div>
+<div class="flex items-center space-x-2 mt-2">
+<input class="bg-transparent border-none p-0 flex-1 font-data-mono text-data-mono text-on-surface-variant focus:ring-0" readonly="" type="password" value="sk_live_1234567890abcdef"/>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined" data-icon="content_copy" style="font-size: 18px;">content_copy</span></button>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined" data-icon="visibility" style="font-size: 18px;">visibility</span></button>
+</div>
+</div>
+<div class="p-3 bg-surface rounded-lg border border-border-subtle border-dashed">
+<div class="flex justify-between items-center mb-1">
+<span class="font-label-lg text-label-lg text-on-surface-variant">Staging Key</span>
+</div>
+<button class="w-full mt-2 py-1.5 border border-primary text-primary rounded font-label-md text-label-md hover:bg-primary hover:text-on-primary transition-colors">Generate Key</button>
+</div>
+</div>
+</section>
+<!-- Integration Hub (Span 12) -->
+<section class="md:col-span-12 bg-surface-container-lowest border border-border-subtle rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] p-container-lg">
+<div class="flex justify-between items-center border-b border-border-subtle pb-3 mb-4">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary" data-icon="hub">hub</span>
+<span>Email &amp; Server Integrations</span>
+</h3>
+<button class="text-primary font-label-md text-label-md hover:underline flex items-center">
+<span class="material-symbols-outlined mr-1" data-icon="add" style="font-size: 16px;">add</span> Add Integration
+                        </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<!-- Integration Card 1 -->
+<div class="border border-border-subtle rounded-lg p-4 hover:border-primary transition-colors cursor-pointer bg-surface flex flex-col h-full relative overflow-hidden">
+<div class="absolute top-0 right-0 w-16 h-16 bg-primary opacity-5 rounded-bl-full"></div>
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 bg-white border border-border-subtle rounded shadow-sm flex items-center justify-center p-1">
+<img alt="Google Workspace" class="w-full h-full object-contain" data-alt="A clean, minimalist vector icon representing Google Workspace or Gmail, utilizing bright primary colors on a white background, suited for an integration selection card in a CRM." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCnbBOqvIlK1q01IsunQvt3Qvtu9OzlL6V28xndC837qqBa_zalCEV7t8x8BeSGW00UY9EVBiYCYomskMPo1VntQbps-Tq-9x6NPJKP_32_t7HG5-SbzG1ASn7D4L85DFO2z7GpLVOsqTyHbdTIJI5JxHjpR6h8a0eqfMDggcHFaB459ulx4zxualEofy1mmdcUTcaWsbcjoD40ACYX5y3xPTwl_4fJbYvboyiZ0Rr-TV2b-yuQo16UoQ"/>
+</div>
+<span class="bg-status-resolved text-on-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">Connected</span>
+</div>
+<h4 class="font-label-lg text-label-lg text-on-surface">Google Workspace</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 mb-4 flex-grow">IMAP/SMTP sync for support@acmecorp.com.</p>
+<div class="flex justify-between items-center pt-2 border-t border-border-subtle">
+<span class="font-data-mono text-data-mono text-xs text-on-surface-variant">Last sync: 2m ago</span>
+<button class="text-on-surface-variant hover:text-primary"><span class="material-symbols-outlined" data-icon="settings" style="font-size: 18px;">settings</span></button>
+</div>
+</div>
+<!-- Integration Card 2 -->
+<div class="border border-border-subtle rounded-lg p-4 hover:border-primary transition-colors cursor-pointer bg-surface flex flex-col h-full relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 bg-white border border-border-subtle rounded shadow-sm flex items-center justify-center p-1">
+<img alt="Microsoft Exchange" class="w-full h-full object-contain" data-alt="A sleek, modern vector icon of the Microsoft Exchange or Outlook logo in signature blue, set against a pristine white background, designed for an enterprise CRM integration panel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCsqwDsz0nf3TYG73zMy1NI9KkcudW9dqXyEXwE92__yhNCCdSMRaxDc_DV0NYLmN_lU3BQ9JM1iHmrvsuQgjmgVAuATm836FMMcQ7kx9CnDocKQMMs3OTA50SmeEQ1NaPERssWqFLdVNfRxRUfBOoZ_ckd6jd4FVxA-JxQJT_Y_OFrbzgvqp0qeClx-MGBxW3jgTCTfM5UdGYNeKC9IXzwSpzF5bIgEMLZo5LqS2H-9xPSp2HhLYYcjA"/>
+</div>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">Not Configured</span>
+</div>
+<h4 class="font-label-lg text-label-lg text-on-surface">Microsoft Exchange</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 mb-4 flex-grow">Connect Office 365 or on-premise Exchange.</p>
+<button class="w-full py-1.5 border border-border-subtle text-on-surface rounded font-label-md text-label-md hover:bg-surface-container-low transition-colors">Configure</button>
+</div>
+<!-- Integration Card 3 -->
+<div class="border border-border-subtle rounded-lg p-4 hover:border-primary transition-colors cursor-pointer bg-surface flex flex-col h-full relative overflow-hidden">
+<div class="flex justify-between items-start mb-3">
+<div class="w-10 h-10 bg-white border border-border-subtle rounded shadow-sm flex items-center justify-center p-1">
+<img alt="Custom SMTP" class="w-full h-full object-contain" data-alt="A stylized, minimalist icon representing an Amazon Web Services (AWS) SES or generic SMTP server connection, utilizing technical line-art style on a white background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBvyAmFnyZJskk1tiHkmggoJt8JoR5QUhkgk17JlS_wf_f0-v8G8YUNDexbxCCvoasbqTGAglmWPSZPvKejDCSnLfMHJtTulaWNKXSHNuEAB8fK6FKBDiu0_hH-k99pu16ZXYX0xn8YQJ89ir3Ug5npyp21_l2LlLGYjWN-LotvOeX0AQ97tl4CzyWggcHX5cQ6wkF-pjF9LGhegK3Wl13LCPkiwV0-u8Hz--qrEvcNYT9fVvn4qkgaVQ"/>
+</div>
+<span class="bg-status-pending text-on-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">Setup Incomplete</span>
+</div>
+<h4 class="font-label-lg text-label-lg text-on-surface">Custom SMTP/IMAP</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 mb-4 flex-grow">Connect any standard mail server.</p>
+<div class="flex justify-between items-center pt-2 border-t border-border-subtle">
+<span class="font-data-mono text-data-mono text-xs text-status-pending">Missing Auth</span>
+<button class="text-primary font-label-md text-label-md hover:underline">Resume</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Routing Rules (Span 12) -->
+<section class="md:col-span-12 bg-surface-container-lowest border border-border-subtle rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.02)] overflow-hidden">
+<div class="p-container-lg border-b border-border-subtle flex justify-between items-center bg-surface-container-lowest">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center space-x-2">
+<span class="material-symbols-outlined text-primary" data-icon="route">route</span>
+<span>Multi-Department Routing Rules</span>
+</h3>
+<button class="bg-primary text-on-primary px-4 py-2 rounded-lg font-label-md text-label-md shadow-sm hover:opacity-90 transition-opacity">Add Rule</button>
+</div>
+<!-- Data-heavy List -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface border-b border-border-subtle">
+<th class="px-4 py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Priority</th>
+<th class="px-4 py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Condition</th>
+<th class="px-4 py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Action / Routing</th>
+<th class="px-4 py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Status</th>
+<th class="px-4 py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-surface">
+<tr class="border-b border-border-subtle hover:bg-slate-50 transition-colors">
+<td class="px-4 py-3 font-data-mono text-data-mono text-on-surface-variant">1</td>
+<td class="px-4 py-3">If <span class="font-semibold">Subject</span> contains "urgent" or "critical"</td>
+<td class="px-4 py-3 flex items-center space-x-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="turn_right" style="font-size: 16px;">turn_right</span>
+<span>Assign to <span class="bg-error-container text-on-error-container px-2 py-0.5 rounded text-xs font-semibold">Tier 3 Escalation</span></span>
+</td>
+<td class="px-4 py-3">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-border-subtle peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</td>
+<td class="px-4 py-3 text-right text-on-surface-variant">
+<button class="hover:text-primary mx-1"><span class="material-symbols-outlined" data-icon="edit" style="font-size: 18px;">edit</span></button>
+<button class="hover:text-priority-high mx-1"><span class="material-symbols-outlined" data-icon="delete" style="font-size: 18px;">delete</span></button>
+</td>
+</tr>
+<tr class="border-b border-border-subtle hover:bg-slate-50 transition-colors bg-surface">
+<td class="px-4 py-3 font-data-mono text-data-mono text-on-surface-variant">2</td>
+<td class="px-4 py-3">If <span class="font-semibold">Sender Domain</span> is "@vipclient.com"</td>
+<td class="px-4 py-3 flex items-center space-x-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="turn_right" style="font-size: 16px;">turn_right</span>
+<span>Assign to <span class="bg-surface-container-high text-primary px-2 py-0.5 rounded text-xs font-semibold">Key Accounts Team</span></span>
+</td>
+<td class="px-4 py-3">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-border-subtle peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</td>
+<td class="px-4 py-3 text-right text-on-surface-variant">
+<button class="hover:text-primary mx-1"><span class="material-symbols-outlined" data-icon="edit" style="font-size: 18px;">edit</span></button>
+<button class="hover:text-priority-high mx-1"><span class="material-symbols-outlined" data-icon="delete" style="font-size: 18px;">delete</span></button>
+</td>
+</tr>
+<tr class="border-b border-border-subtle hover:bg-slate-50 transition-colors">
+<td class="px-4 py-3 font-data-mono text-data-mono text-on-surface-variant">3</td>
+<td class="px-4 py-3">If <span class="font-semibold">Body</span> contains "billing" or "invoice"</td>
+<td class="px-4 py-3 flex items-center space-x-2">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="turn_right" style="font-size: 16px;">turn_right</span>
+<span>Assign to <span class="bg-surface-container-high text-primary px-2 py-0.5 rounded text-xs font-semibold">Finance Dept</span></span>
+</td>
+<td class="px-4 py-3">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox" value=""/>
+<div class="w-9 h-5 bg-border-subtle peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+</label>
+</td>
+<td class="px-4 py-3 text-right text-on-surface-variant">
+<button class="hover:text-primary mx-1"><span class="material-symbols-outlined" data-icon="edit" style="font-size: 18px;">edit</span></button>
+<button class="hover:text-priority-high mx-1"><span class="material-symbols-outlined" data-icon="delete" style="font-size: 18px;">delete</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="p-3 bg-surface-container-low border-t border-border-subtle text-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Rules are evaluated from top to bottom. Drag rows to reorder.</span>
+</div>
+</section>
+<!-- Action Footer (Span 12) -->
+<div class="md:col-span-12 flex justify-end space-x-4 pt-4 border-t border-border-subtle mt-4">
+<button class="px-6 py-2 border border-border-subtle text-on-surface rounded-lg font-label-lg text-label-lg hover:bg-surface transition-colors">Discard Changes</button>
+<button class="px-6 py-2 bg-primary text-on-primary rounded-lg font-label-lg text-label-lg shadow-sm hover:opacity-90 transition-opacity flex items-center space-x-2">
+<span class="material-symbols-outlined" data-icon="save" style="font-size: 18px;">save</span>
+<span>Save Configuration</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

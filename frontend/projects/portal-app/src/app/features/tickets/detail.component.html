@@ -1,0 +1,171 @@
+<section class="mx-auto flex max-w-5xl flex-col gap-6">
+  <header class="flex items-center gap-3">
+    <a
+      routerLink="/app/tickets"
+      class="rounded-full p-2 text-on-surface-variant transition-colors hover:bg-surface-high"
+      [attr.aria-label]="'portal.back' | t"
+    >
+      <cs-icon name="arrow_back" />
+    </a>
+    <h1 class="font-display text-headline-lg text-on-surface">{{ 'portal.ticket.title' | t }}</h1>
+  </header>
+
+  @switch (state().status) {
+    @case ('loading') {
+      <cs-loading-state [label]="'tickets.loading' | t" />
+    }
+    @case ('error') {
+      @if (error(); as failure) {
+        <cs-error-state [error]="failure" (retry)="retry()" />
+      }
+    }
+    @case ('loaded') {
+      @if (data(); as ticket) {
+        <div class="grid gap-6 lg:grid-cols-3">
+          <div class="flex flex-col gap-6 lg:col-span-2">
+            <cs-card class="p-4">
+              <div class="mb-3 flex flex-wrap items-center gap-3">
+                <span class="font-mono text-data-mono text-on-surface-variant">{{ ticket.reference }}</span>
+                <cs-status-pill [value]="ticket.status" />
+                <cs-badge kind="priority" [value]="ticket.priority" />
+              </div>
+              <h2 class="mb-2 font-headline-md text-on-surface">{{ ticket.subject }}</h2>
+              <p class="whitespace-pre-line text-body-md text-on-surface-variant">{{ ticket.description }}</p>
+            </cs-card>
+
+            <!-- Attachments: TA-5/TA-6, shared list with auth-header previews and download -->
+            <cs-card class="p-4">
+              <cs-attachment-list [ticketId]="ticket.id" mode="portal" />
+            </cs-card>
+
+            <!-- Message timeline: US-413 (PJ-15), oldest first -->
+            <cs-card class="p-4">
+              <h3 class="mb-3 font-headline-md text-on-surface">{{ 'portal.ticket.history' | t }}</h3>
+              @if (ticket.messages.length === 0) {
+                <p class="text-body-sm text-on-surface-variant">{{ 'portal.ticket.noHistory' | t }}</p>
+              } @else {
+                <ol class="flex flex-col gap-3">
+                  @for (message of ticket.messages; track message.sentAt) {
+                    <li class="flex gap-3">
+                      <span
+                        class="mt-1 grid size-6 shrink-0 place-items-center rounded-full"
+                        [class.bg-primary-container]="message.direction === 'Outbound'"
+                        [class.text-on-primary-container]="message.direction === 'Outbound'"
+                        [class.bg-surface-high]="message.direction !== 'Outbound'"
+                        [class.text-on-surface]="message.direction !== 'Outbound'"
+                      >
+                        <cs-icon [name]="message.direction === 'Outbound' ? 'support_agent' : 'person'" [size]="14" />
+                      </span>
+                      <div class="min-w-0">
+                        <p class="whitespace-pre-line text-body-sm text-on-surface">{{ message.body }}</p>
+                        <p class="text-body-sm text-on-surface-variant">{{ message.sentAt }}</p>
+                      </div>
+                    </li>
+                  }
+                </ol>
+              }
+            </cs-card>
+
+            <!-- Reply form: US-407/414, hidden once the ticket is Closed -->
+            @if (canReply()) {
+              <cs-card class="flex flex-col gap-3 p-4">
+                <h3 class="font-headline-md text-on-surface">{{ 'portal.ticket.reply' | t }}</h3>
+                <form [formGroup]="replyForm" (ngSubmit)="submitReply()">
+                  <textarea
+                    rows="4"
+                    formControlName="body"
+                    class="w-full rounded-lg border border-outline-variant bg-surface-lowest px-3 py-2 text-body-md text-on-surface"
+                    [attr.aria-label]="'portal.ticket.reply' | t"
+                  ></textarea>
+                  @if (replyError(); as message) {
+                    <p role="alert" class="text-body-sm text-error">{{ message.message_ }}</p>
+                  }
+                  <button
+                    type="submit"
+                    class="mt-2 self-start rounded-lg bg-primary px-4 py-2 text-label-lg font-semibold text-on-primary transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
+                    [disabled]="replyForm.invalid || replyBusy()"
+                  >
+                    {{ 'portal.ticket.sendReply' | t }}
+                  </button>
+                </form>
+              </cs-card>
+            }
+
+            <!-- Satisfaction survey: US-408/409/415, once the ticket is resolved and not yet answered -->
+            @if (canSurvey()) {
+              <cs-card class="flex flex-col gap-3 p-4">
+                <h3 class="font-headline-md text-on-surface">{{ 'portal.survey.title' | t }}</h3>
+                <p class="text-body-sm text-on-surface-variant">{{ 'portal.survey.subtitle' | t }}</p>
+                <div class="flex gap-2" role="radiogroup" [attr.aria-label]="'portal.survey.title' | t">
+                  @for (value of surveyRatingOptions; track value) {
+                    <button
+                      type="button"
+                      role="radio"
+                      [attr.aria-checked]="isSurveyRatingCurrent(value)"
+                      class="grid size-10 place-items-center rounded-lg border text-label-lg transition-all active:scale-95"
+                      [class]="surveyRatingButtonClass(value)"
+                      (click)="pickRating(value)"
+                    >
+                      {{ value }}
+                    </button>
+                  }
+                </div>
+                <textarea
+                  rows="3"
+                  class="rounded-lg border border-outline-variant bg-surface-lowest px-3 py-2 text-body-md text-on-surface"
+                  [placeholder]="'portal.survey.commentPlaceholder' | t"
+                  [value]="surveyComment()"
+                  (input)="surveyComment.set($any($event.target).value)"
+                ></textarea>
+                @if (surveyError(); as message) {
+                  <p role="alert" class="text-body-sm text-error">{{ message.message_ }}</p>
+                }
+                <button
+                  type="button"
+                  class="self-start rounded-lg bg-primary px-4 py-2 text-label-lg font-semibold text-on-primary transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
+                  (click)="submitSurvey()"
+                  [disabled]="surveyRating() == null || surveyBusy()"
+                >
+                  {{ 'portal.survey.submit' | t }}
+                </button>
+              </cs-card>
+            } @else if (ticket.surveySubmitted) {
+              <cs-card class="p-4">
+                <p class="text-body-md text-on-surface">{{ 'portal.survey.thanks' | t }}</p>
+              </cs-card>
+            }
+          </div>
+
+          <div class="flex flex-col gap-6">
+            <cs-card class="border-primary/20 bg-primary-container/30 p-4">
+              <div class="flex items-start gap-3">
+                <span class="grid size-10 shrink-0 place-items-center rounded-xl bg-primary text-on-primary">
+                  <cs-icon name="chat" [size]="20" />
+                </span>
+                <div class="min-w-0">
+                  <h3 class="font-headline-md text-on-surface">{{ 'portal.ticket.liveChat' | t }}</h3>
+                  <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'portal.ticket.liveChatHint' | t }}</p>
+                </div>
+              </div>
+              <a
+                routerLink="/live-chat"
+                class="mt-4 flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-label-lg font-semibold text-on-primary transition-all hover:opacity-90 active:scale-95"
+              >
+                <cs-icon name="chat" [size]="18" />
+                {{ 'portal.liveChat.start' | t }}
+              </a>
+            </cs-card>
+            <cs-card class="p-4">
+              <dl class="flex flex-col gap-2">
+                <div class="flex justify-between">
+                  <dt class="text-body-sm text-on-surface-variant">{{ 'field.status' | t }}</dt>
+                  <dd><cs-status-pill [value]="ticket.status" /></dd>
+                </div>
+              </dl>
+            </cs-card>
+          </div>
+        </div>
+      }
+    }
+  }
+</section>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Submit Ticket - Support Desk</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#0b1c30",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#0b1c30",
+                        "on-secondary-fixed-variant": "#3a485c",
+                        "secondary-container": "#d5e3fd",
+                        "primary-container": "#131b2e",
+                        "surface-tint": "#565e74",
+                        "surface-container": "#e5eeff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-tertiary-fixed-variant": "#004c6e",
+                        "on-tertiary-fixed": "#001e2f",
+                        "tertiary-fixed-dim": "#89ceff",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-surface-variant": "#45464d",
+                        "surface": "#f8f9ff",
+                        "surface-container-high": "#dce9ff",
+                        "surface-container-low": "#eff4ff",
+                        "secondary-fixed-dim": "#b9c7e0",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-secondary-fixed": "#0d1c2f",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-dim": "#cbdbf5",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-container": "#008cc7",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-container": "#001e2f",
+                        "primary-fixed": "#dae2fd",
+                        "error": "#ba1a1a",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#c9e6ff",
+                        "secondary": "#515f74",
+                        "primary-fixed-dim": "#bec6e0",
+                        "primary": "#000000",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#c6c6cd",
+                        "on-secondary-container": "#57657b",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#d5e3fd",
+                        "background": "#f8f9ff",
+                        "outline": "#76777d",
+                        "surface-variant": "#d3e4fe",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#7c839b",
+                        "tertiary": "#000000",
+                        "inverse-on-surface": "#eaf1ff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin": "24px",
+                        "gutter": "20px",
+                        "sm": "8px",
+                        "2xl": "48px",
+                        "lg": "24px",
+                        "md": "16px",
+                        "xs": "4px",
+                        "base": "4px",
+                        "xl": "32px"
+                    },
+                    "fontFamily": {
+                        "display": ["Hanken Grotesk"],
+                        "data-mono": ["JetBrains Mono"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "label-md": ["Inter"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "display": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "data-mono": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["28px", { "lineHeight": "34px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-sm": ["13px", { "lineHeight": "18px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-full flex antialiased">
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full bg-surface">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full px-lg h-16 z-40 sticky top-0 bg-surface-container-lowest border-b border-outline-variant">
+<div class="flex items-center gap-md">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-display text-display font-bold text-on-surface">Submit New Ticket</h1>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-2 hover:bg-surface-container-high rounded-full transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant bg-surface-container-high">
+<img alt="Agent Profile" class="w-full h-full object-cover" data-alt="A small, professional headshot of a diverse support agent. Clean background, corporate yet approachable aesthetic. Soft, natural lighting. Designed to fit within a circular profile avatar container." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3CtkVXP84jExxSeuiG72Gb9agJAjMr4clPbyLdZsjOXR63fFf-NXanCNyieCv0xbUJr2q4xfBFQEsVaHF7Udu_LpXgnVb6okbYU-pIrGhegsplo28InUXDpadknxgmXR9IJ4RzARNckNVixczqO7-VdpoNP61xQtmrjHMupwUc3Zb1aLgV9BiWcPGJIOMcbSi72fidro_Ztq4NyHDfORq4LM8xQZKXb9KbbxdSfxwjtuJEUJV_GOwCg"/>
+</div>
+</div>
+</header>
+<!-- Form Canvas -->
+<div class="flex-1 overflow-y-auto p-lg md:p-xl">
+<div class="max-w-3xl mx-auto">
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-lg md:p-xl flex flex-col gap-xl shadow-sm">
+<div class="flex flex-col gap-xs border-b border-outline-variant pb-md">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Ticket Details</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Please provide as much information as possible to help us route your request accurately.</p>
+</div>
+<form class="flex flex-col gap-lg">
+<!-- Subject -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="subject">Subject</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] transition-colors" id="subject" name="subject" placeholder="Brief summary of the issue" type="text"/>
+</div>
+<!-- Department & Priority Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<!-- Department -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="department">Department</label>
+<div class="relative">
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-md pl-md pr-xl py-sm font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] transition-colors" id="department" name="department">
+<option disabled="" selected="" value="">Select department</option>
+<option value="technical">Technical Support</option>
+<option value="billing">Billing &amp; Invoicing</option>
+<option value="sales">Sales Inquiry</option>
+<option value="general">General Help</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Priority -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="priority">Priority</label>
+<div class="relative">
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded-md pl-md pr-xl py-sm font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] transition-colors" id="priority" name="priority">
+<option value="low">Low - General Inquiry</option>
+<option selected="" value="medium">Medium - Minor Issue</option>
+<option value="high">High - Critical Blocker</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Description -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface" for="description">Description</label>
+<textarea class="w-full bg-surface-container-lowest border border-outline-variant rounded-md px-md py-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-[#3b82f6] focus:ring-1 focus:ring-[#3b82f6] transition-colors resize-y" id="description" name="description" placeholder="Describe the issue in detail. Include steps to reproduce if applicable..." rows="6"></textarea>
+</div>
+<!-- File Attachment -->
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface">Attachments</label>
+<div class="border-2 border-dashed border-outline-variant rounded-lg p-lg flex flex-col items-center justify-center gap-md bg-surface-container hover:bg-surface-container-high transition-colors cursor-pointer group">
+<div class="w-12 h-12 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-2xl" data-icon="upload_file">upload_file</span>
+</div>
+<div class="text-center">
+<p class="font-body-md text-body-md text-on-surface font-semibold">Click to upload or drag and drop</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">SVG, PNG, JPG or PDF (max. 10MB)</p>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="flex items-center justify-end gap-md pt-lg mt-sm border-t border-outline-variant">
+<button class="px-lg py-sm font-label-md text-label-md font-semibold text-[#2563eb] hover:bg-surface-container-high rounded transition-colors bg-transparent border-0" type="button">
+                                Cancel
+                            </button>
+<button class="px-lg py-sm font-label-md text-label-md font-semibold bg-[#1e3a8a] text-white hover:bg-[#172554] rounded transition-colors shadow-sm flex items-center gap-2" type="submit">
+<span class="material-symbols-outlined text-[18px]" data-icon="send">send</span>
+                                Submit Ticket
+                            </button>
+</div>
+</form>
+</div>
+</div>
+</div>
+</main>
+</body></html>

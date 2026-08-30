@@ -1,0 +1,243 @@
+<section data-design-system="command-center" class="flex flex-col gap-6">
+
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-headline-lg text-on-surface">{{ 'users.list.title' | t }}</h1>
+      <p class="mt-1 text-body-md text-on-surface-variant">{{ 'users.subtitle' | t }}</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        class="flex items-center gap-2 rounded-lg border border-outline-variant bg-surface-lowest px-4 py-2 text-label-lg text-on-surface hover:bg-surface transition-colors"
+        (click)="exportCsv()"
+      >
+        <cs-icon name="download" [size]="18" />
+        {{ 'users.export' | t }}
+      </button>
+      <cs-button (pressed)="showCreate.set(true)">
+        <cs-icon name="add" />
+        {{ 'users.add' | t }}
+      </cs-button>
+    </div>
+  </header>
+
+  <cs-dialog [open]="showCreate()" [heading]="'users.create.title' | t" (closed)="showCreate.set(false)">
+    <form [formGroup]="form" (ngSubmit)="create()" class="flex flex-col gap-4">
+      <div class="grid gap-4 sm:grid-cols-2">
+        <cs-input-field [label]="'field.email' | t" type="email" [control]="form.controls.email" [serverError]="fieldError('email')" />
+        <cs-input-field [label]="'users.username' | t" [control]="form.controls.username" [serverError]="fieldError('username')" />
+        <cs-input-field [label]="'users.firstName' | t" [control]="form.controls.firstName" [serverError]="fieldError('firstName')" />
+        <cs-input-field [label]="'users.lastName' | t" [control]="form.controls.lastName" [serverError]="fieldError('lastName')" />
+        <cs-input-field [label]="'users.role' | t" [control]="form.controls.role" [serverError]="fieldError('role')" />
+        <cs-input-field [label]="'field.password' | t" type="password" [control]="form.controls.password" [serverError]="fieldError('password')" />
+      </div>
+      @if (createError(); as failure) {
+        @if (!failure.hasFieldErrors) {
+          <p class="text-body-md text-error" role="alert">{{ failure.message_ }}</p>
+        }
+      }
+      <div class="flex items-center justify-end gap-2 border-t border-border-subtle pt-4">
+        <cs-button type="submit" [busy]="saving()" [disabled]="form.invalid">{{ 'users.create.submit' | t }}</cs-button>
+      </div>
+    </form>
+  </cs-dialog>
+
+  <!-- Status tabs — every one is a server-side `isActive` filter on the whole result set. -->
+  <div class="border-b border-border-subtle">
+    <nav aria-label="User status tabs" class="flex gap-8">
+      @for (tab of tabs; track tab) {
+        <button
+          type="button"
+          class="flex items-center gap-2 py-4 px-1 border-b-2 text-label-lg transition-colors -mb-px"
+          [class.border-primary]="activeTab() === tab"
+          [class.text-primary]="activeTab() === tab"
+          [class.border-transparent]="activeTab() !== tab"
+          [class.text-on-surface-variant]="activeTab() !== tab"
+          (click)="setTab(tab)"
+        >
+          @switch (tab) {
+            @case ('active') {
+              <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24" aria-hidden="true">group</span>
+              {{ 'users.tabActive' | t }}
+            }
+            @case ('suspended') {
+              <span class="material-symbols-outlined text-sm" style="font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24" aria-hidden="true">block</span>
+              {{ 'users.tabSuspended' | t }}
+            }
+            @default {
+              {{ 'users.tabAll' | t }}
+            }
+          }
+        </button>
+      }
+    </nav>
+  </div>
+
+  <!--
+    Toolbar: search and role filter narrow the WHOLE result set server-side. The reset control
+    appears only while something is actually narrowing it, so a pristine list has no dead button.
+  -->
+  <div class="bg-surface-lowest rounded-xl border border-border-subtle shadow-[0_4px_12px_rgba(0,0,0,0.02)] overflow-hidden flex flex-col">
+    <div class="p-4 border-b border-border-subtle bg-surface flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
+        <div class="relative w-full sm:w-64">
+          <span class="material-symbols-outlined absolute start-3 top-2.5 text-outline-variant text-base" style="font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24" aria-hidden="true">search</span>
+          <input
+            type="search"
+            [attr.aria-label]="'users.searchPlaceholder' | t"
+            [placeholder]="'users.searchPlaceholder' | t"
+            class="w-full ps-9 pe-9 py-2 bg-surface-container-lowest border border-border-subtle rounded-lg text-body-md focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            [value]="searchTerm()"
+            (input)="onSearch($event)"
+            (keyup.enter)="submitSearch()"
+          />
+          @if (searchTerm()) {
+            <button
+              type="button"
+              [attr.aria-label]="'users.filter.clearSearch' | t"
+              class="absolute end-2.5 top-2.5 text-on-surface-variant hover:text-on-surface transition-colors"
+              (click)="clearSearch()"
+            >
+              <cs-icon name="close" [size]="16" />
+            </button>
+          }
+        </div>
+
+        <label class="flex items-center gap-2">
+          <span class="text-label-md text-on-surface-variant">{{ 'users.filter.role' | t }}</span>
+          <select
+            [attr.aria-label]="'users.filter.role' | t"
+            class="h-10 rounded-lg border border-outline-variant bg-surface-container-lowest px-3 text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-all"
+            [value]="roleFilter()"
+            (change)="setRole($any($event.target).value)"
+          >
+            <option value="">{{ 'users.filter.allRoles' | t }}</option>
+            @for (role of roleOptions; track role) {
+              <option [value]="role">{{ role }}</option>
+            }
+          </select>
+        </label>
+
+        @if (isFiltered()) {
+          <button
+            type="button"
+            class="h-10 inline-flex items-center gap-1.5 rounded-lg px-3 text-label-md text-on-surface-variant hover:text-on-surface transition-colors"
+            (click)="resetFilters()"
+          >
+            <cs-icon name="filter_alt_off" [size]="16" />
+            {{ 'users.filter.reset' | t }}
+          </button>
+        }
+      </div>
+    </div>
+
+    @if (state().status === 'loading') {
+      <cs-loading-state />
+    } @else if (listError(); as failure) {
+      <cs-error-state [error]="failure" (retry)="load()" />
+    } @else if (state().status === 'empty') {
+      <cs-empty-state [message]="'users.empty' | t" [hint]="'users.emptyHint' | t" />
+    } @else {
+      <div class="overflow-x-auto table-container">
+        <table class="cs-data-table min-w-[900px]">
+          <thead class="bg-surface sticky top-0 z-10 border-b border-border-subtle">
+              <tr>
+              <th scope="col" class="py-3 px-4 text-label-md text-on-surface-variant uppercase tracking-wider w-12">
+                <input class="rounded border-border-subtle text-primary focus:ring-primary" type="checkbox" [attr.aria-label]="'users.selectAll' | t" />
+              </th>
+              <th scope="col" class="py-3 px-4 text-start" [attr.aria-sort]="ariaSort('firstname')">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 text-label-md text-on-surface-variant uppercase tracking-wider hover:text-primary transition-colors"
+                  (click)="sort('firstname')"
+                >
+                  {{ 'users.column.user' | t }}
+                  @if (isSorted('firstname')) {
+                    <cs-icon [name]="sortDirection() === 'desc' ? 'arrow_downward' : 'arrow_upward'" [size]="14" />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="py-3 px-4 text-label-md text-on-surface-variant uppercase tracking-wider">{{ 'users.state' | t }}</th>
+              <th scope="col" class="py-3 px-4 text-label-md text-on-surface-variant uppercase tracking-wider">{{ 'users.roles' | t }}</th>
+              <th scope="col" class="py-3 px-4 text-start" [attr.aria-sort]="ariaSort('createdat')">
+                <button
+                  type="button"
+                  class="inline-flex items-center gap-1 text-label-md text-on-surface-variant uppercase tracking-wider hover:text-primary transition-colors"
+                  (click)="sort('createdat')"
+                >
+                  {{ 'field.created' | t }}
+                  @if (isSorted('createdat')) {
+                    <cs-icon [name]="sortDirection() === 'desc' ? 'arrow_downward' : 'arrow_upward'" [size]="14" />
+                  }
+                </button>
+              </th>
+              <th scope="col" class="py-3 px-4 text-label-md text-on-surface-variant uppercase tracking-wider text-end">{{ 'users.actions' | t }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border-subtle bg-surface-container-lowest text-body-sm">
+            @for (user of items(); track user.id) {
+              <tr class="hover:bg-surface-container-low transition-colors group">
+                <td class="py-3 px-4">
+                  <input class="rounded border-border-subtle text-primary focus:ring-primary" type="checkbox" [attr.aria-label]="'users.selectRow' | t" />
+                </td>
+                <td class="py-3 px-4">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-label-lg" aria-hidden="true">
+                        {{ user.firstName[0] + user.lastName[0] }}
+                    </div>
+                    <div>
+                      <div class="text-label-lg text-on-surface group-hover:text-primary transition-colors">{{ user.firstName }} {{ user.lastName }}</div>
+                      <div class="text-on-surface-variant font-data-mono text-xs">{{ user.email }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-3 px-4">
+                  <span
+                    class="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-label-md font-semibold"
+                    [class.bg-success/12]="user.isActive"
+                    [class.text-success]="user.isActive"
+                    [class.bg-error/12]="!user.isActive"
+                    [class.text-error]="!user.isActive"
+                  >
+                    <span class="size-1.5 shrink-0 rounded-full" [class.bg-success]="user.isActive" [class.bg-error]="!user.isActive" aria-hidden="true"></span>
+                    {{ (user.isActive ? 'users.active' : 'users.deactivated') | t }}
+                  </span>
+                </td>
+                <td class="py-3 px-4">
+                  @for (role of user.roles.slice(0, 2); track role) {
+                    <span class="inline-flex items-center gap-1 bg-surface border border-border-subtle rounded px-2 py-1 text-on-surface me-1">
+                      <cs-icon name="shield" [size]="14" />
+                      {{ role }}
+                    </span>
+                  }
+                </td>
+                <td class="py-3 px-4 whitespace-nowrap text-on-surface-variant font-data-mono text-xs">{{ user.createdAt | csDate: 'date' }}</td>
+                <td class="py-3 px-4 text-end">
+                  <button
+                    type="button"
+                    class="text-label-md font-semibold text-primary hover:underline disabled:cursor-not-allowed disabled:opacity-40"
+                    [disabled]="user.id === ownUserId()"
+                    (click)="toggleActive(user)"
+                  >
+                    {{ (user.isActive ? 'users.deactivate' : 'users.activate') | t }}
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <cs-pagination
+        [summary]="'pagination.summary' | t: summaryRange().start : summaryRange().end : totalCount()"
+        [page]="page()"
+        [hasMore]="hasMore()"
+        [totalCount]="totalCount()"
+        [pageSize]="pageSize()"
+        (previous)="goToPage($event)"
+        (next)="goToPage($event)"
+        (pageSelected)="goToPage($event)"
+      />
+    }
+  </div>
+</section>

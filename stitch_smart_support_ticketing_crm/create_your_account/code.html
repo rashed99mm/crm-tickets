@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CommandCenter CRM - Sign Up</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@600;700&amp;family=Inter:wght@400;600&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-bright": "#f8f9ff",
+                      "status-open": "#4F46E5",
+                      "error-container": "#ffdad6",
+                      "on-primary-fixed": "#001453",
+                      "on-tertiary-fixed": "#002114",
+                      "surface-container": "#e5eeff",
+                      "tertiary": "#003d28",
+                      "secondary-container": "#645efb",
+                      "on-secondary-fixed-variant": "#3323cc",
+                      "surface-variant": "#d3e4fe",
+                      "surface-tint": "#3755c3",
+                      "secondary": "#4b41e1",
+                      "surface-container-highest": "#d3e4fe",
+                      "primary-container": "#1e40af",
+                      "outline": "#757684",
+                      "on-tertiary-container": "#5bcf9e",
+                      "on-secondary-container": "#fffbff",
+                      "status-resolved": "#059669",
+                      "on-error": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "status-pending": "#F59E0B",
+                      "surface-dim": "#cbdbf5",
+                      "on-error-container": "#93000a",
+                      "outline-variant": "#c4c5d5",
+                      "priority-low": "#10B981",
+                      "surface-container-lowest": "#ffffff",
+                      "tertiary-fixed": "#85f8c4",
+                      "on-primary-container": "#a8b8ff",
+                      "on-primary-fixed-variant": "#173bab",
+                      "error": "#ba1a1a",
+                      "tertiary-fixed-dim": "#68dba9",
+                      "primary-fixed-dim": "#b8c4ff",
+                      "border-subtle": "#E2E8F0",
+                      "on-surface-variant": "#444653",
+                      "priority-critical": "#B91C1C",
+                      "secondary-fixed-dim": "#c3c0ff",
+                      "surface-container-high": "#dce9ff",
+                      "primary-fixed": "#dde1ff",
+                      "surface-container-low": "#eff4ff",
+                      "on-secondary": "#ffffff",
+                      "priority-high": "#EF4444",
+                      "priority-medium": "#F59E0B",
+                      "inverse-surface": "#213145",
+                      "background": "#f8f9ff",
+                      "secondary-fixed": "#e2dfff",
+                      "primary": "#00288e",
+                      "inverse-primary": "#b8c4ff",
+                      "on-background": "#0b1c30",
+                      "on-secondary-fixed": "#0f0069",
+                      "inverse-on-surface": "#eaf1ff",
+                      "status-escalated": "#DC2626",
+                      "on-tertiary-fixed-variant": "#005137",
+                      "surface": "#F8FAFC",
+                      "tertiary-container": "#00563a",
+                      "on-surface": "#0b1c30"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "container-lg": "24px",
+                      "container-sm": "8px",
+                      "container-md": "16px",
+                      "margin-desktop": "24px",
+                      "unit": "4px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "data-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-lg": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "data-mono": [
+                              "13px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-lg": [
+                              "13px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+</head>
+<body class="bg-background h-full text-on-surface flex flex-col md:flex-row antialiased">
+<!-- Left Side: Testimonial/Benefits (Hidden on mobile) -->
+<div class="hidden md:flex flex-1 flex-col bg-surface-container-low border-r border-border-subtle relative overflow-hidden">
+<!-- Decorative Background Element -->
+<div class="absolute inset-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 100% 0%, var(--tw-colors-primary-container) 0%, transparent 50%);"></div>
+<div class="flex flex-col h-full p-margin-desktop justify-between z-10">
+<!-- Brand Logo -->
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+</div>
+<span class="font-headline-md text-headline-md font-bold text-primary">CommandCenter CRM</span>
+</div>
+<!-- Content -->
+<div class="max-w-md mx-auto my-auto space-y-8">
+<h1 class="font-display-lg text-display-lg text-on-background">Accelerate your support operations.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Join thousands of enterprise teams using CommandCenter to resolve tickets faster, reduce agent fatigue, and deliver exceptional customer experiences at scale.</p>
+<ul class="space-y-4 pt-4">
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-status-resolved mt-1">check_circle</span>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface block">Intelligent Routing</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Automatically assign tickets based on agent skill and workload.</span>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-status-resolved mt-1">check_circle</span>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface block">Unified Inbox</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Manage Email, WhatsApp, and SMS from a single, high-density view.</span>
+</div>
+</li>
+<li class="flex items-start gap-3">
+<span class="material-symbols-outlined text-status-resolved mt-1">check_circle</span>
+<div>
+<span class="font-label-lg text-label-lg text-on-surface block">Real-time Analytics</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Track resolution times and SLA breaches instantly.</span>
+</div>
+</li>
+</ul>
+</div>
+<!-- Small testimonial -->
+<div class="bg-surface p-container-md rounded-lg border border-border-subtle shadow-sm">
+<p class="font-body-sm text-body-sm text-on-surface italic">"CommandCenter cut our first-response time by 40% in the first week. The density and clarity of the interface are unmatched."</p>
+<div class="mt-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a corporate executive in a modern office setting. The lighting is bright and even, highlighting a confident expression. The background features slightly blurred glass panels and subtle blue tones, fitting a modern B2B tech aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrQpT74HgH11Ca6LnYBYXhNFa_EAkgifneUSnQlkwIwBAGmcYOONdQk93mcCZKcuQr1QvWdJ7XR7CGP0j1gep-A4W02A0URmAqbq6LkMdGzwnMEb5F1zOQgh-unnWTHJ-zbQBHkym2UZ6loAv6071kfs-l_wZ1yMV29RdHoqNxww9IHr2pYz8jPv2BGo4mniq1kIWgRnUE20ge69z98dXHPcbO_-Ud6B5iQm8w8yWPWJatL60fiW-HgQ"/>
+</div>
+<div>
+<span class="font-label-md text-label-md text-on-surface block">Sarah Jenkins</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant block">VP of Customer Success, TechCorp</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Side: Signup Form -->
+<div class="flex-1 flex flex-col justify-center items-center p-margin-mobile md:p-margin-desktop bg-surface relative">
+<!-- Mobile Brand (Hidden on Desktop) -->
+<div class="md:hidden flex items-center gap-2 absolute top-margin-mobile left-margin-mobile">
+<div class="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+</div>
+</div>
+<div class="w-full max-w-sm">
+<div class="text-center mb-8">
+<h2 class="font-headline-lg text-headline-lg text-on-background">Create Account</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Start your 14-day enterprise trial.</p>
+</div>
+<!-- Social Auth -->
+<div class="space-y-3 mb-6">
+<button class="w-full flex items-center justify-center gap-2 py-2 px-4 bg-surface border border-border-subtle rounded-lg hover:bg-surface-container-low transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm">
+<svg class="w-5 h-5" fill="none" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+<span class="font-label-md text-label-md text-on-surface">Sign up with Google</span>
+</button>
+<button class="w-full flex items-center justify-center gap-2 py-2 px-4 bg-surface border border-border-subtle rounded-lg hover:bg-surface-container-low transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent shadow-sm">
+<svg class="w-5 h-5" fill="none" viewbox="0 0 21 21" xmlns="http://www.w3.org/2000/svg">
+<rect fill="#F25022" height="9" width="9" x="1" y="1"></rect>
+<rect fill="#7FBA00" height="9" width="9" x="11" y="1"></rect>
+<rect fill="#00A4EF" height="9" width="9" x="1" y="11"></rect>
+<rect fill="#FFB900" height="9" width="9" x="11" y="11"></rect>
+</svg>
+<span class="font-label-md text-label-md text-on-surface">Sign up with Microsoft</span>
+</button>
+</div>
+<div class="relative flex items-center py-4">
+<div class="flex-grow border-t border-border-subtle"></div>
+<span class="flex-shrink-0 mx-4 font-label-md text-label-md text-on-surface-variant">or</span>
+<div class="flex-grow border-t border-border-subtle"></div>
+</div>
+<!-- Form -->
+<form action="#" class="space-y-4" method="POST">
+<div class="space-y-1">
+<label class="block font-label-md text-label-md text-on-surface" for="email">Work Email</label>
+<input class="w-full font-body-md text-body-md text-on-surface bg-surface border border-outline-variant rounded px-3 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" id="email" name="email" placeholder="you@company.com" required="" type="email"/>
+</div>
+<div class="space-y-1">
+<label class="block font-label-md text-label-md text-on-surface" for="password">Password</label>
+<input class="w-full font-body-md text-body-md text-on-surface bg-surface border border-outline-variant rounded px-3 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="block font-label-md text-label-md text-on-surface" for="company">Company Name</label>
+<input class="w-full font-body-md text-body-md text-on-surface bg-surface border border-outline-variant rounded px-3 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" id="company" name="company" placeholder="Acme Inc." required="" type="text"/>
+</div>
+<div class="space-y-1">
+<label class="block font-label-md text-label-md text-on-surface" for="industry">Industry</label>
+<select class="w-full font-body-md text-body-md text-on-surface bg-surface border border-outline-variant rounded px-3 py-2 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary shadow-sm" id="industry" name="industry">
+<option value="">Select...</option>
+<option value="saas">SaaS / Tech</option>
+<option value="ecommerce">E-commerce</option>
+<option value="finance">Financial Services</option>
+<option value="healthcare">Healthcare</option>
+<option value="other">Other</option>
+</select>
+</div>
+</div>
+<button class="w-full mt-6 bg-primary text-on-primary font-label-lg text-label-lg py-2.5 px-4 rounded hover:bg-on-primary-fixed transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary" type="submit">
+                    Create Account
+                </button>
+</form>
+<p class="mt-6 text-center font-body-sm text-body-sm text-on-surface-variant">
+                Already have an account? <a class="text-primary font-label-md hover:underline" href="#">Log in</a>
+</p>
+</div>
+</div>
+</body></html>

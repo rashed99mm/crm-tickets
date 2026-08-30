@@ -1,0 +1,152 @@
+<div class="bg-background text-on-background text-body-lg min-h-screen flex flex-col selection:bg-primary selection:text-on-primary" data-design-system="command-center">
+  @if (!authOnlyLayout()) {
+    <header
+      class="bg-surface/95 backdrop-blur-md text-primary text-headline-md top-0 z-50 border-b border-border-subtle shadow-xs flex justify-between items-center h-16 px-4 sm:px-8 w-full transition-all sticky"
+    >
+      <div class="flex items-center gap-4">
+        <a routerLink="/" class="flex items-center gap-2.5 group">
+          <span class="grid size-9 place-items-center rounded-lg bg-primary text-on-primary font-bold shadow-xs transition-transform group-hover:scale-105">
+            <cs-icon name="support_agent" [size]="22" />
+          </span>
+          <span class="text-headline-md font-bold text-primary tracking-tight">
+            {{ 'landing.brand' | t }}
+          </span>
+        </a>
+      </div>
+
+      <nav class="hidden h-full items-center gap-7 text-label-lg md:flex">
+        <a
+          routerLink="/"
+          routerLinkActive="border-primary text-primary"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="flex h-full items-center border-b-2 border-transparent px-1.5 font-semibold text-on-surface-variant transition-colors hover:text-primary"
+        >
+          {{ 'landing.nav.product' | t }}
+        </a>
+        <a
+          routerLink="/solution"
+          routerLinkActive="border-primary text-primary"
+          class="flex h-full items-center border-b-2 border-transparent px-1.5 font-semibold text-on-surface-variant transition-colors hover:text-primary"
+        >
+          {{ 'landing.nav.solutions' | t }}
+        </a>
+        <a
+          routerLink="/live-chat"
+          routerLinkActive="border-primary text-primary"
+          class="flex h-full items-center border-b-2 border-transparent px-1.5 font-semibold text-on-surface-variant transition-colors hover:text-primary"
+        >
+          {{ 'landing.nav.liveChat' | t }}
+        </a>
+        <a
+          routerLink="/kb"
+          routerLinkActive="border-primary text-primary"
+          class="flex h-full items-center border-b-2 border-transparent px-1.5 font-semibold text-on-surface-variant transition-colors hover:text-primary"
+        >
+          {{ 'landing.nav.resources' | t }}
+        </a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <cs-language-switcher />
+
+        <a
+          routerLink="/app/tickets/new"
+          class="bg-primary text-on-primary text-label-lg px-4 sm:px-5 py-2 rounded-lg hover:bg-surface-tint transition-all shadow-xs active:scale-95 inline-flex items-center justify-center gap-1.5"
+        >
+          <cs-icon name="add" [size]="18" />
+          <span class="hidden sm:inline">{{ 'landing.nav.newTicket' | t }}</span>
+        </a>
+
+        @if (isAuthenticated()) {
+          <div class="flex items-center gap-2 ms-1 border-s border-border-subtle ps-3">
+            <a
+              routerLink="/app/profile"
+              class="flex items-center gap-2 rounded-lg bg-surface-container-low px-3 py-1.5 text-label-md font-semibold text-on-surface hover:bg-surface-container transition-colors"
+            >
+              <span class="grid size-7 place-items-center rounded-full bg-primary text-on-primary text-label-sm font-bold">
+                {{ (displayName() || 'U')[0] }}
+              </span>
+              <span class="hidden lg:inline font-medium max-w-[120px] truncate">{{ displayName() }}</span>
+            </a>
+            <button
+              type="button"
+              (click)="signOut()"
+              class="text-label-md font-semibold text-on-surface-variant hover:text-error transition-colors px-2 py-1"
+            >
+              {{ 'auth.signOut' | t }}
+            </button>
+          </div>
+        } @else {
+          <div class="flex items-center gap-2 ms-1 border-s border-border-subtle ps-2">
+            <a
+              routerLink="/login"
+              class="rounded-lg px-3 py-2 text-label-lg font-semibold text-on-surface-variant transition-colors hover:bg-surface-container-low"
+            >
+              {{ 'portal.home.signIn' | t }}
+            </a>
+            <a
+              routerLink="/signup"
+              class="hidden sm:inline-flex rounded-lg border border-outline-variant bg-surface-lowest px-3.5 py-2 text-label-lg font-semibold text-primary transition-all hover:bg-surface-bright active:scale-95 shadow-xs"
+            >
+              {{ 'portal.home.createAccount' | t }}
+            </a>
+          </div>
+        }
+      </div>
+    </header>
+  }
+
+  <div class="flex-grow flex flex-col min-h-0">
+    <router-outlet />
+  </div>
+
+  @if (!authOnlyLayout()) {
+    <footer
+      class="bg-surface-dim text-on-surface text-label-md border-t border-border-subtle py-12 px-4 sm:px-8 w-full"
+    >
+      <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <div class="flex flex-col gap-3 md:col-span-1">
+          <div class="flex items-center gap-2">
+            <span class="grid size-8 place-items-center rounded-lg bg-primary text-on-primary font-bold">
+              <cs-icon name="support_agent" [size]="18" />
+            </span>
+            <span class="text-headline-md font-bold text-primary">
+              {{ 'landing.brand' | t }}
+            </span>
+          </div>
+          <p class="text-body-sm text-on-surface-variant">
+            {{ 'landing.hero.subtitle' | t }}
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-2.5">
+          <span class="font-bold text-on-surface">{{ 'landing.nav.solutions' | t }}</span>
+          <a routerLink="/solution" class="text-on-surface-variant hover:text-primary transition-colors text-body-sm">{{ 'landing.nav.solutions' | t }}</a>
+          <a routerLink="/live-chat" class="text-on-surface-variant hover:text-primary transition-colors text-body-sm">{{ 'landing.channels.chat' | t }}</a>
+          <a routerLink="/contact" class="text-on-surface-variant hover:text-primary transition-colors text-body-sm">{{ 'landing.channels.webForm' | t }}</a>
+        </div>
+
+        <div class="flex flex-col gap-2.5">
+          <span class="font-bold text-on-surface">{{ 'landing.nav.resources' | t }}</span>
+          <a routerLink="/kb" class="text-on-surface-variant hover:text-primary transition-colors text-body-sm">{{ 'portal.kb.faqTitle' | t }}</a>
+          <a routerLink="/contact" class="text-on-surface-variant hover:text-primary transition-colors text-body-sm">{{ 'landing.nav.contact' | t }}</a>
+          <a routerLink="/live-chat" class="text-on-surface-variant hover:text-primary transition-colors text-body-sm">{{ 'landing.nav.liveChat' | t }}</a>
+        </div>
+
+        <div class="flex flex-col gap-2.5">
+          <span class="font-bold text-on-surface">{{ 'landing.footer.legal' | t }}</span>
+          <a routerLink="/kb" class="text-on-surface-variant hover:text-primary transition-colors text-body-sm">{{ 'landing.footer.privacy' | t }}</a>
+          <a routerLink="/kb" class="text-on-surface-variant hover:text-primary transition-colors text-body-sm">{{ 'landing.footer.terms' | t }}</a>
+          <a routerLink="/live-chat" class="text-on-surface-variant hover:text-primary transition-colors text-body-sm">{{ 'landing.footer.security' | t }}</a>
+        </div>
+      </div>
+
+      <div class="max-w-6xl mx-auto pt-8 border-t border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-4 text-on-surface-variant text-body-sm">
+        <div>{{ 'landing.footer.rights' | t }}</div>
+        <div class="flex items-center gap-4">
+          <cs-language-switcher />
+        </div>
+      </div>
+    </footer>
+  }
+</div>

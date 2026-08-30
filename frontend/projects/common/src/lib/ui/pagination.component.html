@@ -1,0 +1,49 @@
+<nav
+  class="flex flex-col gap-3 border-t border-border-subtle bg-surface-bright px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
+  [attr.aria-label]="'pagination.navigation' | t"
+>
+  <span class="text-body-sm text-on-surface-variant">{{ summary() }}</span>
+
+  <div class="flex flex-wrap items-center gap-2">
+    <button
+      type="button"
+      [disabled]="page() === 1"
+      (click)="previous.emit(page() - 1)"
+      [attr.aria-label]="'pagination.previous' | t"
+      [title]="'pagination.previous' | t"
+      class="inline-flex h-9 items-center gap-1 rounded border border-outline-variant bg-surface-lowest px-3 text-label-md font-semibold text-on-surface-variant transition-colors hover:bg-surface-high disabled:pointer-events-none disabled:opacity-40"
+    >
+      <cs-icon name="chevron_left" class="rtl:rotate-180" />
+      {{ 'pagination.previous' | t }}
+    </button>
+
+    <div class="flex items-center gap-1 rounded-lg border border-outline-variant bg-surface-low px-1 py-1">
+      @for (number of pages(); track number) {
+        <button
+          type="button"
+          (click)="selectPage(number)"
+          [attr.aria-current]="number === page() ? 'page' : null"
+          class="grid h-7 min-w-7 place-items-center rounded px-2 text-label-md font-semibold transition-colors"
+          [class.bg-primary]="number === page()"
+          [class.text-on-primary]="number === page()"
+          [class.text-on-surface-variant]="number !== page()"
+          [class.hover:bg-surface-high]="number !== page()"
+        >
+          {{ number }}
+        </button>
+      }
+    </div>
+
+    <button
+      type="button"
+      [disabled]="!hasMore()"
+      (click)="next.emit(page() + 1)"
+      [attr.aria-label]="'pagination.next' | t"
+      [title]="'pagination.next' | t"
+      class="inline-flex h-9 items-center gap-1 rounded border border-outline-variant bg-surface-lowest px-3 text-label-md font-semibold text-on-surface-variant transition-colors hover:bg-surface-high disabled:pointer-events-none disabled:opacity-40"
+    >
+      {{ 'pagination.next' | t }}
+      <cs-icon name="chevron_right" class="rtl:rotate-180" />
+    </button>
+  </div>
+</nav>

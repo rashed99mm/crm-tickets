@@ -1,0 +1,279 @@
+<section class="mx-auto flex max-w-7xl flex-col gap-6">
+  <header class="cs-page-heading flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 class="text-headline-lg text-on-surface mb-1">{{ 'dashboard.stitch.overview' | t }}</h1>
+      <p class="text-body-md text-on-surface-variant">{{ 'dashboard.stitch.realtime' | t }}</p>
+    </div>
+    <div class="flex items-center gap-2 sm:pb-1">
+      <select class="rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-body-sm text-on-surface outline-none focus:border-primary" aria-label="{{ 'dashboard.stitch.last24Hours' | t }}">
+        <option>{{ 'dashboard.stitch.last24Hours' | t }}</option>
+      </select>
+      <button type="button" class="inline-flex items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 text-body-sm text-on-surface transition-colors hover:bg-surface-container-low">
+        <cs-icon name="download" [size]="16" />
+        {{ 'dashboard.stitch.export' | t }}
+      </button>
+    </div>
+  </header>
+
+  @switch (counts().status) {
+    @case ('loading') {
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4" role="status">
+        <div class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-md animate-pulse">
+          <div class="h-4 bg-surface-container-low rounded w-1/2 mb-4"></div>
+          <div class="h-8 bg-surface-container-low rounded w-1/3"></div>
+        </div>
+        <div class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-md animate-pulse">
+          <div class="h-4 bg-surface-container-low rounded w-1/2 mb-4"></div>
+          <div class="h-8 bg-surface-container-low rounded w-1/3"></div>
+        </div>
+        <div class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-md animate-pulse">
+          <div class="h-4 bg-surface-container-low rounded w-1/2 mb-4"></div>
+          <div class="h-8 bg-surface-container-low rounded w-1/3"></div>
+        </div>
+        @if (isSupervisor()) {
+          <div class="bg-surface-container-lowest border border-outline-variant/40 rounded-xl p-md animate-pulse">
+            <div class="h-4 bg-surface-container-low rounded w-1/2 mb-4"></div>
+            <div class="h-8 bg-surface-container-low rounded w-1/3"></div>
+          </div>
+        }
+      </div>
+    }
+    @case ('error') {
+      @if (countsError(); as failure) {
+        <cs-error-state [error]="failure" (retry)="loadCounts()" />
+      }
+    }
+    @default {
+      <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div class="cs-dashboard-card flex min-h-[156px] flex-col justify-between p-md">
+          <div class="flex justify-between items-start mb-4">
+            <div class="grid size-9 place-items-center rounded-lg bg-error-container/45 text-on-error-container shadow-sm">
+              <cs-icon name="inbox" [size]="20" />
+            </div>
+          </div>
+          <div>
+            <p class="text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">{{ 'dashboard.stitch.avgResponse' | t }}</p>
+            <h3 class="text-display text-on-surface">{{ 'dashboard.stitch.responseValue' | t }}</h3>
+          </div>
+        </div>
+        <div class="cs-dashboard-card flex min-h-[156px] flex-col justify-between p-md">
+          <div class="flex justify-between items-start mb-4">
+            <div class="grid size-9 place-items-center rounded-lg bg-surface-high text-on-surface-variant shadow-sm">
+              <cs-icon name="hourglass_empty" [size]="20" />
+            </div>
+          </div>
+          <div>
+            <p class="text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">{{ 'dashboard.stitch.ticketVolume' | t }}</p>
+            <h3 class="text-display text-on-surface">{{ 'dashboard.stitch.volumeValue' | t }}</h3>
+          </div>
+        </div>
+        <div class="cs-dashboard-card flex min-h-[156px] flex-col justify-between p-md" [attr.data-testid]="isSupervisor() ? 'csat' : null">
+          <div class="flex justify-between items-start mb-4">
+            <div class="grid size-9 place-items-center rounded-lg bg-surface-high text-on-surface-variant shadow-sm">
+              <cs-icon name="check_circle" [size]="20" />
+            </div>
+          </div>
+          <div>
+            <p class="text-label-md text-on-surface-variant mb-1 uppercase tracking-wider">{{ 'dashboard.stitch.globalCsat' | t }}</p>
+            @if (isSupervisor()) {
+              @if (csatAverage(); as average) {
+                <h3 class="text-display text-on-surface">{{ 'reports.csat.scoreOutOf' | t: average }}</h3>
+              } @else {
+                <h3 class="text-display text-on-surface-variant">—</h3>
+              }
+            } @else {
+              <h3 class="text-display text-on-surface">{{ 'dashboard.stitch.csatValue' | t }}</h3>
+            }
+          </div>
+        </div>
+      </div>
+    }
+  }
+
+  <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+    <section class="cs-dashboard-card flex min-h-[360px] flex-col p-md lg:col-span-2">
+      <div class="mb-5 flex items-center justify-between">
+        <h2 class="text-headline-md text-on-surface">{{ 'dashboard.stitch.ticketTrends' | t }}</h2>
+        <button type="button" class="grid size-8 place-items-center rounded-lg text-on-surface-variant transition-colors hover:bg-surface-container-low" aria-label="{{ 'dashboard.stitch.ticketTrends' | t }}">
+          <cs-icon name="more_vert" [size]="18" />
+        </button>
+      </div>
+      <div class="relative flex min-h-[280px] flex-1 items-center justify-center overflow-hidden rounded-lg border border-outline-variant/40 bg-surface-container-low">
+        <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(0deg, transparent, transparent 49px, rgb(11, 28, 48) 50px), repeating-linear-gradient(90deg, transparent, transparent 49px, rgb(11, 28, 48) 50px);"></div>
+        <svg class="absolute inset-0 size-full stroke-primary" fill="none" preserveAspectRatio="none" stroke-width="2.5" viewBox="0 0 100 100" aria-hidden="true">
+          <path d="M0,80 Q15,60 30,70 T50,40 T70,55 T90,20 T100,30"></path>
+          <path class="fill-primary/5 stroke-none" d="M0,80 Q15,60 30,70 T50,40 T70,55 T90,20 T100,30 L100,100 L0,100 Z"></path>
+        </svg>
+        <div class="relative z-10 rounded-lg bg-on-surface px-3 py-2 text-xs text-on-primary shadow-popover">
+          <p class="font-bold">{{ 'dashboard.stitch.peakVolume' | t }}</p>
+          <p class="mt-1 opacity-80">
+            @if (peakVolume(); as peak) {
+              {{ 'dashboard.stitch.tickets' | t: peak.toLocaleString() }}
+            } @else {
+              —
+            }
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="cs-dashboard-card p-md">
+      <div class="mb-4 flex items-center justify-between">
+        <h2 class="text-headline-md text-on-surface">{{ 'dashboard.stitch.topAgents' | t }}</h2>
+        <a routerLink="/reports/agent-performance" class="text-label-md font-semibold text-primary hover:underline">{{ 'dashboard.stitch.viewAll' | t }}</a>
+      </div>
+      <div class="flex flex-col divide-y divide-border-subtle">
+        @for (agent of topAgents(); track agent.agentId) {
+          <div class="flex items-center gap-2.5 py-3">
+            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-surface-high text-on-surface-variant text-label-md font-bold">{{ agentInitials(agent.agentName) }}</span>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-label-lg font-semibold text-on-surface">{{ agent.agentName }}</p>
+              <p class="text-body-sm text-on-surface-variant">{{ 'dashboard.stitch.avgHandle' | t: agent.avgHandleMinutes.toFixed(0) }}</p>
+            </div>
+            <div class="text-end">
+              <p class="font-mono text-data-mono font-semibold text-on-surface">{{ agent.ticketsResolved }}</p>
+              <p class="text-body-sm text-on-surface-variant">{{ 'dashboard.stitch.resolved' | t }}</p>
+            </div>
+          </div>
+        } @empty {
+          <p class="py-6 text-center text-body-sm text-on-surface-variant">—</p>
+        }
+      </div>
+    </section>
+  </div>
+
+  @if (counts().status === 'loaded') {
+    <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      @for (tile of statusCounts(); track tile.status) {
+        <cs-stat-card
+          [attr.data-testid]="'count-' + tile.status"
+          [icon]="tileIcon[tile.status] ?? 'inbox'"
+          [iconTone]="statIconTone[tile.status] ?? 'bg-surface-high text-primary'"
+          [label]="(statLabel[tile.status] ?? 'dashboard.stat.pending') | t"
+          [value]="tile.count"
+          href="/tickets"
+        />
+      }
+      @if (isSupervisor()) {
+        <cs-stat-card
+          data-testid="unassigned"
+          icon="person_search"
+          iconTone="bg-secondary-container/50 text-on-secondary-container"
+          [label]="'dashboard.unassigned' | t"
+          [value]="unassignedCount()"
+          href="/tickets"
+          [queryParams]="{ unassigned: true }"
+        />
+      }
+    </div>
+  }
+
+  <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+  <div class="cs-dashboard-card overflow-hidden">
+    <div class="px-md py-4 border-b border-outline-variant/40 flex justify-between items-center bg-surface-bright">
+      <h3 class="text-headline-md text-on-surface">{{ 'dashboard.recentTickets' | t }}</h3>
+      <a routerLink="/tickets" class="text-label-md text-primary hover:text-on-surface-variant transition-colors flex items-center gap-1">
+        {{ 'dashboard.viewAll' | t }} <cs-icon name="arrow_forward" [size]="16" />
+      </a>
+    </div>
+    <div data-testid="my-work">
+    @switch (myWork().status) {
+      @case ('loading') {
+        <div class="p-8 text-center">
+          <cs-loading-state [label]="'dashboard.loadingMyTickets' | t" />
+        </div>
+      }
+      @case ('error') {
+        @if (myWorkError(); as failure) {
+          <cs-error-state [error]="failure" (retry)="loadMyWork()" />
+        }
+      }
+      @case ('empty') {
+        <cs-empty-state [message]="'dashboard.emptyMessage' | t" [hint]="'dashboard.emptyHint' | t" />
+      }
+      @default {
+        <div class="overflow-x-auto">
+          <table class="cs-data-table">
+            <thead>
+              <tr class="bg-surface-container-low border-b border-outline-variant/40">
+                <th class="py-3 px-md text-label-md text-on-surface-variant font-semibold text-start">{{ 'field.reference' | t }}</th>
+                <th class="py-3 px-md text-label-md text-on-surface-variant font-semibold text-start">{{ 'field.subject' | t }}</th>
+                <th class="py-3 px-md text-label-md text-on-surface-variant font-semibold text-start">{{ 'field.customer' | t }}</th>
+                <th class="py-3 px-md text-label-md text-on-surface-variant font-semibold text-start">{{ 'field.status' | t }}</th>
+                <th class="py-3 px-md text-label-md text-on-surface-variant font-semibold text-end">{{ 'dashboard.updated' | t }}</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant/20">
+              @for (ticket of tickets(); track ticket.id) {
+                <tr class="hover:bg-surface-container-low/50 transition-colors cursor-pointer">
+                  <td class="py-3 px-md font-mono text-data-mono text-secondary">
+                    <a [routerLink]="['/tickets', ticket.id]" class="hover:underline">{{ ticket.reference }}</a>
+                  </td>
+                  <td class="py-3 px-md text-body-sm text-on-surface font-medium truncate max-w-[200px]">{{ ticket.subject }}</td>
+                  <td class="py-3 px-md text-body-sm text-on-surface-variant">{{ ticket.customerName }}</td>
+                  <td class="py-3 px-md"><cs-status-pill [value]="ticket.status" /></td>
+                  <td class="py-3 px-md text-body-sm text-on-surface-variant text-end">{{ ticket.createdAt | csDate: 'datetime' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    }
+    </div>
+  </div>
+
+  <aside class="flex flex-col gap-4">
+    <cs-card [heading]="'dashboard.customerContext' | t">
+      <ul class="flex flex-col divide-y divide-border-subtle">
+        @for (ticket of tickets().slice(0, 3); track ticket.id) {
+          <li class="px-4 py-3">
+            <p class="truncate text-label-md font-semibold text-on-surface">{{ ticket.customerName }}</p>
+            <p class="truncate text-body-sm text-on-surface-variant">{{ ticket.subject }}</p>
+          </li>
+        }
+        @if (tickets().length === 0) {
+          <li class="px-4 py-4 text-body-sm text-on-surface-variant">{{ 'dashboard.emptyMessage' | t }}</li>
+        }
+      </ul>
+    </cs-card>
+
+    <cs-card [heading]="'dashboard.tasksReminders' | t">
+      <ul class="flex flex-col gap-2 p-4">
+        <li class="flex items-start gap-2 rounded border border-outline-variant bg-surface-low p-3">
+          <cs-icon name="schedule" [size]="18" />
+          <span class="text-body-sm text-on-surface">{{ 'dashboard.reminder.respond' | t }}</span>
+        </li>
+        <li class="flex items-start gap-2 rounded border border-outline-variant bg-surface-low p-3">
+          <cs-icon name="priority_high" [size]="18" />
+          <span class="text-body-sm text-on-surface">{{ 'dashboard.reminder.escalations' | t: unassignedCount() }}</span>
+        </li>
+      </ul>
+    </cs-card>
+
+    <cs-card [heading]="'dashboard.quickReplies' | t">
+      <div class="flex flex-col gap-2 p-4">
+        @for (reply of quickReplies; track reply) {
+          <button
+            type="button"
+            class="rounded border border-outline-variant bg-surface-lowest px-3 py-2 text-start text-body-sm text-primary transition-colors hover:bg-surface-high"
+            (click)="copyQuickReply(reply)"
+          >
+            {{ reply | t }}
+          </button>
+        }
+      </div>
+    </cs-card>
+
+    <cs-card [heading]="'dashboard.teamCollaboration' | t">
+      <div class="flex flex-col gap-3 p-4 text-body-sm text-on-surface-variant">
+        <p>{{ 'dashboard.collaboration.handoff' | t }}</p>
+        <a routerLink="/tickets" class="inline-flex items-center gap-1 text-label-md font-semibold text-primary">
+          {{ 'dashboard.openQueue' | t }}
+          <cs-icon name="arrow_forward" [size]="16" />
+        </a>
+      </div>
+    </cs-card>
+  </aside>
+  </div>
+</section>

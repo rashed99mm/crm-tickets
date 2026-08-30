@@ -1,0 +1,266 @@
+namespace CustomerSupport.Application.Messages;
+
+/// <summary>
+/// Maps domain keys (from ApplicationErrors / Resources.yaml) to unique system codes.
+/// </summary>
+public static class SystemCodeMap
+{
+    private static readonly Dictionary<string, string> Map = new(StringComparer.OrdinalIgnoreCase)
+    {
+        // ── Auth ──────────────────────────────────────────────────────────
+        ["INVALID_CREDENTIALS"] = SystemCode.ERR023,
+        ["INVALID_TOKEN"] = SystemCode.ERR024,
+        ["INVALID_REFRESH_TOKEN"] = SystemCode.ERR025,
+        ["ACCOUNT_DEACTIVATED"] = SystemCode.ERR026,
+        ["NOT_AUTHENTICATED"] = SystemCode.ERR027,
+        ["LOGIN_SUCCESS"] = SystemCode.CON001,
+        ["REGISTER_SUCCESS"] = SystemCode.CON002,
+        ["LOGOUT_SUCCESS"] = SystemCode.CON003,
+        ["TOKEN_REFRESHED"] = SystemCode.CON004,
+        ["CURRENT_PASSWORD_INCORRECT"] = SystemCode.ERR028,
+        ["PASSWORD_TOO_WEAK"] = SystemCode.ERR029,
+        ["PASSWORD_CHANGED"] = SystemCode.CON005,
+
+        // ── User ──────────────────────────────────────────────────────────
+        ["USER_NOT_FOUND"] = SystemCode.ERR020,
+        ["EMAIL_EXISTS"] = SystemCode.ERR021,
+        ["USERNAME_EXISTS"] = SystemCode.ERR022,
+        ["USER_CREATED"] = SystemCode.CON006,
+        ["USER_UPDATED"] = SystemCode.CON007,
+        ["USER_DELETED"] = SystemCode.CON008,
+        ["USER_ACTIVATED"] = SystemCode.CON009,
+        ["USER_DEACTIVATED"] = SystemCode.CON010,
+        ["ROLES_ASSIGNED"] = SystemCode.CON011,
+        ["USER_CREATION_FAILED"] = SystemCode.ERR005,
+        ["USER_UPDATE_FAILED"] = SystemCode.ERR005,
+        ["USER_DELETE_FAILED"] = SystemCode.ERR005,
+        ["ACTIVATE_FAILED"] = SystemCode.ERR005,
+        ["DEACTIVATE_FAILED"] = SystemCode.ERR005,
+        ["REMOVE_ROLES_FAILED"] = SystemCode.ERR005,
+        ["ADD_ROLES_FAILED"] = SystemCode.ERR005,
+
+        // ── Content ───────────────────────────────────────────────────────
+        ["CONTENT_NOT_FOUND"] = SystemCode.ERR030,
+        ["CONTENT_EXISTS"] = SystemCode.ERR031,
+        ["CONTENT_CREATED"] = SystemCode.CON012,
+        ["CONTENT_UPDATED"] = SystemCode.CON013,
+        ["CONTENT_DELETED"] = SystemCode.CON014,
+        ["CONTENT_PUBLISHED"] = SystemCode.CON015,
+        ["CONTENT_ARCHIVED"] = SystemCode.CON016,
+        ["CONTENT_NOT_PUBLISHABLE"] = SystemCode.ERR055,
+        ["CONTENT_NOT_ARCHIVABLE"] = SystemCode.ERR056,
+        ["CONTENT_CATEGORY_NOT_FOUND"] = SystemCode.ERR057,
+        ["CONTENT_CATEGORY_NAME_EXISTS"] = SystemCode.ERR058,
+        ["CONTENT_TICKET_LINK_EXISTS"] = SystemCode.ERR059,
+        ["CONTENT_TICKET_LINK_NOT_FOUND"] = SystemCode.ERR060,
+
+        // ── Notification ──────────────────────────────────────────────────
+        ["NOTIFICATION_NOT_FOUND"] = SystemCode.ERR032,
+        ["ACCESS_DENIED"] = SystemCode.ERR033,
+        ["NOTIFICATION_CREATED"] = SystemCode.CON017,
+        ["NOTIFICATION_MARKED_READ"] = SystemCode.CON018,
+        ["NOTIFICATION_DELETED"] = SystemCode.CON019,
+
+        // ── PlatformSetting ───────────────────────────────────────────────
+        ["SETTING_NOT_FOUND"] = SystemCode.ERR034,
+        ["SETTING_EXISTS"] = SystemCode.ERR035,
+        ["SETTING_CREATED"] = SystemCode.CON020,
+        ["SETTING_UPDATED"] = SystemCode.CON021,
+        ["SETTING_DELETED"] = SystemCode.CON022,
+        ["SETTING_REPROTECT_FAILED"] = SystemCode.ERR036,
+
+        // ── ExternalApi ───────────────────────────────────────────────────
+        ["EXTERNAL_API_NOT_CONFIGURED"] = SystemCode.ERR037,
+        ["EXTERNAL_API_ERROR"] = SystemCode.ERR038,
+        ["EXTERNAL_API_CONFIG_NOT_FOUND"] = SystemCode.ERR039,
+        ["EXTERNAL_API_CONFIG_EXISTS"] = SystemCode.ERR040,
+
+        // ── General ───────────────────────────────────────────────────────
+        ["VALIDATION_ERROR"] = SystemCode.VAL001,
+        ["INTERNAL_ERROR"] = SystemCode.ERR005,
+        ["UNAUTHORIZED_ACCESS"] = SystemCode.ERR003,
+        ["FORBIDDEN_ACCESS"] = SystemCode.ERR004,
+        ["BAD_REQUEST"] = SystemCode.ERR006,
+        ["RESOURCE_NOT_FOUND"] = SystemCode.ERR001,
+        ["SUCCESS_CREATED"] = SystemCode.CON032,
+        ["SUCCESS_UPDATED"] = SystemCode.CON033,
+        ["SUCCESS_DELETED"] = SystemCode.CON034,
+        ["SUCCESS_OPERATION"] = SystemCode.CON035,
+
+        ["PERMISSION_NOT_FOUND"] = SystemCode.ERR001,
+        ["PERMISSION_ROLE_NOT_FOUND"] = SystemCode.ERR001,
+        ["PERMISSION_MAPPING_NOT_FOUND"] = SystemCode.ERR001,
+        ["PERMISSION_ASSIGNED"] = SystemCode.CON035,
+        ["PERMISSION_REVOKED"] = SystemCode.CON035,
+        ["PERMISSION_LAST_REQUIRED"] = SystemCode.ERR002,
+
+        // ── Customer ──────────────────────────────────────────────────────
+        ["CUSTOMER_NOT_FOUND"] = SystemCode.ERR007,
+        ["CUSTOMER_EMAIL_EXISTS"] = SystemCode.ERR008,
+        ["CUSTOMER_HAS_TICKETS"] = SystemCode.ERR009,
+        ["CUSTOMER_CREATED"] = SystemCode.CON023,
+        ["CUSTOMER_UPDATED"] = SystemCode.CON024,
+        ["CUSTOMER_DELETED"] = SystemCode.CON025,
+        ["CUSTOMER_NOTE_ADDED"] = SystemCode.CON026,
+
+        // ── Attachment ────────────────────────────────────────────────────
+        ["ATTACHMENT_NOT_FOUND"] = SystemCode.ERR041,
+        ["ATTACHMENT_TOO_LARGE"] = SystemCode.ERR042,
+        ["ATTACHMENT_TYPE_NOT_ALLOWED"] = SystemCode.ERR043,
+        ["ATTACHMENT_EMPTY"] = SystemCode.ERR044,
+        ["ATTACHMENT_ADDED"] = SystemCode.CON027,
+        ["ATTACHMENT_REMOVED"] = SystemCode.CON028,
+
+        // ── Ticket ────────────────────────────────────────────────────────
+        ["TICKET_NOT_FOUND"] = SystemCode.ERR010,
+        ["TICKET_CREATED"] = SystemCode.CON029,
+        ["TICKET_CUSTOMER_NOT_FOUND"] = SystemCode.ERR011,
+        ["TICKET_CATEGORY_NOT_FOUND"] = SystemCode.ERR012,
+        ["TICKET_TRANSITION_NOT_ALLOWED"] = SystemCode.ERR013,
+        ["TICKET_ALREADY_IN_STATUS"] = SystemCode.ERR014,
+        ["TICKET_MODIFIED_BY_ANOTHER_USER"] = SystemCode.ERR015,
+        ["TICKET_NOT_ASSIGNED_TO_YOU"] = SystemCode.ERR016,
+        ["TICKET_ASSIGNEE_NOT_FOUND"] = SystemCode.ERR017,
+        ["TICKET_ASSIGNEE_NOT_AN_AGENT"] = SystemCode.ERR018,
+        ["TICKET_ASSIGNEE_DEACTIVATED"] = SystemCode.ERR019,
+        ["TICKET_STATUS_CHANGED"] = SystemCode.CON030,
+        ["TICKET_ASSIGNED"] = SystemCode.CON031,
+        ["TICKET_ASSIGNMENT_REFUSED"] = SystemCode.ERR079,
+        ["TICKET_ESCALATION_OWNER_SET"] = SystemCode.CON073,
+
+        // ── Validation keys ───────────────────────────────────────────────
+        ["REQUIRED_FIELD"] = SystemCode.VAL002,
+        ["NAME_REQUIRED"] = SystemCode.VAL012,
+        ["NAME_MAX_LENGTH"] = SystemCode.VAL013,
+        ["EMAIL_MAX_LENGTH"] = SystemCode.VAL014,
+        ["PHONE_MAX_LENGTH"] = SystemCode.VAL015,
+        ["INVALID_EMAIL"] = SystemCode.VAL003,
+        ["INVALID_PHONE"] = SystemCode.VAL004,
+        ["MIN_LENGTH"] = SystemCode.VAL005,
+        ["MAX_LENGTH"] = SystemCode.VAL006,
+        ["INVALID_FORMAT"] = SystemCode.VAL007,
+        ["PASSWORD_UPPERCASE"] = SystemCode.VAL008,
+        ["PASSWORD_LOWERCASE"] = SystemCode.VAL009,
+        ["PASSWORD_NUMBER"] = SystemCode.VAL010,
+        ["PAGE_SIZE_EXCEEDED"] = SystemCode.VAL011,
+        ["EMAIL_REQUIRED"] = SystemCode.VAL016,
+        ["PASSWORD_REQUIRED"] = SystemCode.VAL017,
+        ["USERNAME_REQUIRED"] = SystemCode.VAL018,
+        ["FIRST_NAME_REQUIRED"] = SystemCode.VAL019,
+        ["LAST_NAME_REQUIRED"] = SystemCode.VAL020,
+        ["TOKEN_REQUIRED"] = SystemCode.VAL021,
+        ["TITLE_REQUIRED"] = SystemCode.VAL022,
+        ["TITLE_MAX_LENGTH"] = SystemCode.VAL023,
+        ["BODY_REQUIRED"] = SystemCode.VAL024,
+        ["SUMMARY_MAX_LENGTH"] = SystemCode.VAL025,
+        ["CONTENT_TYPE_REQUIRED"] = SystemCode.VAL026,
+        ["CONTENT_TYPE_MAX_LENGTH"] = SystemCode.VAL027,
+        ["AUTHOR_ID_REQUIRED"] = SystemCode.VAL028,
+        ["STATUS_REQUIRED"] = SystemCode.VAL029,
+        ["STATUS_INVALID"] = SystemCode.VAL030,
+        ["FEATURED_IMAGE_URL_MAX_LENGTH"] = SystemCode.VAL031,
+        ["CATEGORY_MAX_LENGTH"] = SystemCode.VAL032,
+        ["USER_ID_REQUIRED"] = SystemCode.VAL033,
+        ["MESSAGE_REQUIRED"] = SystemCode.VAL034,
+        ["MESSAGE_MAX_LENGTH"] = SystemCode.VAL035,
+        ["NOTIFICATION_TYPE_REQUIRED"] = SystemCode.VAL036,
+        ["NOTIFICATION_TYPE_MAX_LENGTH"] = SystemCode.VAL037,
+        ["CHANNEL_REQUIRED"] = SystemCode.VAL038,
+        ["CHANNEL_INVALID"] = SystemCode.VAL039,
+        ["KEY_REQUIRED"] = SystemCode.VAL040,
+        ["KEY_MAX_LENGTH"] = SystemCode.VAL041,
+        ["VALUE_REQUIRED"] = SystemCode.VAL042,
+        ["VALUE_MAX_LENGTH"] = SystemCode.VAL043,
+        ["SUBJECT_REQUIRED"] = SystemCode.VAL044,
+        ["SUBJECT_MAX_LENGTH"] = SystemCode.VAL045,
+        ["DESCRIPTION_REQUIRED"] = SystemCode.VAL046,
+        ["TICKET_PRIORITY_REQUIRED"] = SystemCode.VAL047,
+        ["TICKET_PRIORITY_INVALID"] = SystemCode.VAL048,
+        ["TICKET_STATUS_INVALID"] = SystemCode.VAL049,
+        ["TICKET_STATUS_REQUIRED"] = SystemCode.VAL056,
+        ["CUSTOMER_ID_REQUIRED"] = SystemCode.VAL050,
+        ["CATEGORY_ID_REQUIRED"] = SystemCode.VAL051,
+        ["NOTE_BODY_REQUIRED"] = SystemCode.VAL052,
+        ["NOTE_BODY_MAX_LENGTH"] = SystemCode.VAL053,
+        ["ROW_VERSION_REQUIRED"] = SystemCode.VAL054,
+        ["ASSIGNEE_ID_REQUIRED"] = SystemCode.VAL055,
+
+        // ── Organisation structure (FEAT-16) ─────────────────────────────────
+        ["SLA_POLICY_CREATED"] = SystemCode.CON042,
+        ["SLA_POLICY_UPDATED"] = SystemCode.CON043,
+        ["SLA_POLICY_DEACTIVATED"] = SystemCode.CON044,
+        ["BUSINESS_HOURS_CALENDAR_CREATED"] = SystemCode.CON045,
+        ["BUSINESS_HOURS_HOLIDAY_CREATED"] = SystemCode.CON046,
+        ["SLA_POLICY_NOT_FOUND"] = SystemCode.ERR051,
+        ["SLA_PRIORITY_INVALID"] = SystemCode.VAL060,
+        ["SLA_RESPONSE_TARGET_INVALID"] = SystemCode.VAL061,
+        ["SLA_RESOLUTION_TARGET_INVALID"] = SystemCode.VAL062,
+        ["DEPARTMENT_NOT_FOUND"] = SystemCode.ERR047,
+        ["DEPARTMENT_CREATED"] = SystemCode.CON036,
+        ["DEPARTMENT_UPDATED"] = SystemCode.CON037,
+        ["DEPARTMENT_DEACTIVATED"] = SystemCode.CON038,
+        ["BRANCH_NOT_FOUND"] = SystemCode.ERR048,
+        ["BRANCH_CREATED"] = SystemCode.CON039,
+        ["BRANCH_UPDATED"] = SystemCode.CON040,
+        ["BRANCH_DEACTIVATED"] = SystemCode.CON041,
+        ["ORG_NAME_REQUIRED"] = SystemCode.VAL057,
+        ["ORG_NAME_MAX_LENGTH"] = SystemCode.VAL058,
+        ["ORG_TIMEZONE_MAX_LENGTH"] = SystemCode.VAL059,
+        ["DEPARTMENT_NAME_EXISTS"] = SystemCode.ERR049,
+        ["BRANCH_NAME_EXISTS"] = SystemCode.ERR050,
+        ["TEAM_NOT_FOUND"] = SystemCode.ERR077,
+        ["TEAM_NAME_EXISTS"] = SystemCode.ERR078,
+        ["TEAM_CREATED"] = SystemCode.CON070,
+        ["TEAM_UPDATED"] = SystemCode.CON071,
+        ["TEAM_DEACTIVATED"] = SystemCode.CON072,
+        ["DEPARTMENT_ID_REQUIRED"] = SystemCode.VAL066,
+
+        // ── AI assist (FEAT-21) ───────────────────────────────────────────
+        ["AI_NOT_CONFIGURED"] = SystemCode.ERR052,
+        ["AI_UNGROUNDED"] = SystemCode.ERR053,
+        ["AI_THREAD_TOO_SHORT"] = SystemCode.ERR054,
+        ["AI_SUGGESTION_NOT_FOUND"] = SystemCode.ERR001,
+        ["AI_SUGGESTION_INVALID_TRANSITION"] = SystemCode.ERR013,
+
+        // FEAT-15 / notification gateway.
+        ["NOTIFICATION_CONFIG_MISSING"] = SystemCode.ERR061,
+        ["NOTIFICATION_TEMPLATE_INVALID"] = SystemCode.ERR062,
+        ["NOTIFICATION_DELIVERY_FAILED"] = SystemCode.ERR063,
+        ["NOTIFICATION_INAPP_REQUIRES_USER"] = SystemCode.ERR064,
+        ["NOTIFICATION_CHANNEL_NOT_SUPPORTED"] = SystemCode.ERR065,
+        ["NOTIFICATION_SIGNALR_FAILED"] = SystemCode.ERR066,
+
+        // ── Inbound external channels (FEAT-24..FEAT-27) ────────────────────
+        ["CHANNEL_WEBHOOK_SIGNATURE_INVALID"] = SystemCode.ERR067,
+        ["CHANNEL_PAYLOAD_INVALID"] = SystemCode.ERR068,
+
+        // OTP verification (profile-update flow, AC-439..AC-445).
+        ["OTP_INVALID"] = SystemCode.ERR069,
+        ["OTP_VERIFIED"] = SystemCode.CON067,
+        ["OTP_REQUESTED"] = SystemCode.CON068,
+        ["OTP_COOLDOWN"] = SystemCode.ERR074,
+        ["OTP_DISPATCH_FAILED"] = SystemCode.ERR073,
+
+        // ── Customer survey (FEAT-22 portal) ────────────────────────────────
+        ["SURVEY_ALREADY_SUBMITTED"] = SystemCode.ERR075,
+        ["SURVEY_TICKET_NOT_RESOLVED"] = SystemCode.ERR076,
+        ["SURVEY_SUBMITTED"] = SystemCode.CON069,
+        ["SURVEY_RATING_REQUIRED"] = SystemCode.VAL064,
+        ["SURVEY_RATING_INVALID"] = SystemCode.VAL065,
+
+        // AI provider abstraction and multi-turn chatbot.
+        ["AI_PROVIDER_FAILED"] = SystemCode.ERR070,
+        ["AI_RATE_LIMITED"] = SystemCode.ERR071,
+        ["AI_CHAT_NOT_FOUND"] = SystemCode.ERR072,
+
+        // Profile self-service field keys — map property names to meaningful validation codes so the
+        // ResponseValidationBehavior emits a code rather than the generic ERR005.
+        ["FirstName"] = SystemCode.VAL012,
+        ["LastName"] = SystemCode.VAL012,
+        ["PhoneNumber"] = SystemCode.VAL004,
+        ["ProfileImageUrl"] = SystemCode.VAL007,
+    };
+
+    public static string Resolve(string domainKey) =>
+        Map.TryGetValue(domainKey, out var code) ? code : SystemCode.ERR005;
+}
