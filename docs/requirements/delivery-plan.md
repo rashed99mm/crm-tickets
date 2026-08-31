@@ -398,4 +398,4 @@ deliberate breaking change to the create-ticket contract.
 
 | Sprint | Name | Slice | FEAT | Stories | Points | Status |
 |---|---|---|---|---|---|---|
-| 20 | Ticket domain enrichment — resolution discipline, impact/urgency matrix, tags, links | EPIC-02 (enrichment) | `FEAT-32` | US-922–US-925 | 29 | stories filed 2026-08-31 · spec drafted, **awaiting approval** · not implemented |
+| 20 | Ticket domain enrichment — resolution discipline, impact/urgency matrix, tags, links | EPIC-02 (enrichment) | `FEAT-32` | US-922–US-925 | 29 | stories filed 2026-08-31 · spec approved 2026-08-31 · backend plan written ([`EPIC-02-US-922-feat-32-ticket-domain-enrichment/`](../superpowers/plans/EPIC-02-US-922-feat-32-ticket-domain-enrichment/implementation-plan.md)) · **not implemented** |
