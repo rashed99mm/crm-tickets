@@ -114,8 +114,8 @@ Stable ids, permanent. Convention: `AC-<story>.n`, one block per story/slice.
 - **AC-923.2** Given a reclassify request on an existing ticket with new impact/urgency, then the
   priority is re-derived; when the derived value changes, history records a `Reprioritized` row
   with the old and new priority.
-- **AC-923.3** Given any write surface (create, update), then `priority` is absent from every
-  request contract — a request body carrying a `priority` value has no effect on the stored
+- **AC-923.3** Given any write surface (create, classification), then `priority` is absent from
+  every request contract — a request body carrying a `priority` value has no effect on the stored
   priority (integration-tested: send it, assert the derived value stands).
 - **AC-923.4** Given the migration runs on existing data, then every existing ticket keeps its
   stored `Priority`, `Impact`/`Urgency` are null, and SLA policy matching behaviour is unchanged
@@ -194,7 +194,10 @@ Stable ids, permanent. Convention: `AC-<story>.n`, one block per story/slice.
 
 ### Persistence (`CustomerSupport.Infrastructure`)
 
-One migration, `Sprint2TicketEnrichment`:
+One migration **per slice** — `AddResolutionDiscipline`, `AddImpactUrgencyClassification`,
+`AddTicketTags`, `AddTicketLinks` *(corrected 2026-08-31 during planning: slices ship and commit
+vertically, so a single up-front migration would create tables for slices whose entities do not
+exist yet)*. Across the four:
 - `Tickets`: `Impact` (nvarchar, null), `Urgency` (null), `ResolutionCode` (null),
   `ResolutionNotes` (nvarchar(2000), null), `ReopenCount` (int, not null, default 0).
 - `TicketTags`: FK to `Tickets`, unique index `(TicketId, Value)`.
@@ -208,7 +211,7 @@ No data backfill (A1).
 |---|---|
 | Changed | `POST /api/tickets` — `impact`+`urgency` required, `priority` removed |
 | Changed | status-change endpoint — optional `resolutionCode`+`resolutionNotes`, required for `Resolved` |
-| Changed | the existing ticket-update endpoint — `impact`+`urgency` (optional, both-or-neither) replace `priority`; supplying both triggers `Reclassify`. No new endpoint. |
+| New | `POST /api/tickets/{id}/classification` — `impact`+`urgency`+`rowVersion`; triggers `Reclassify`. *(Corrected 2026-08-31 during planning: this previously read "the existing ticket-update endpoint", but no ticket-update endpoint exists — `Ticket.UpdateDetails` is unreferenced dead code. A sub-resource `POST` matches the established `/{id}/status`, `/{id}/assignee`, `/{id}/escalation-owner` convention.)* |
 | New | `POST /api/tickets/{id}/tags` · `DELETE /api/tickets/{id}/tags/{value}` |
 | New | `POST /api/tickets/{id}/links` · `DELETE /api/tickets/{id}/links/{linkId}` |
 | Changed | `GET /api/tickets` — `tag=` filter |
