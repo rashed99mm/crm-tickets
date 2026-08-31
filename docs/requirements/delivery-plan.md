@@ -384,3 +384,18 @@ in the same feature; sprints 18–19 follow the same FEAT-ships-vertically rule 
 file. `FEAT-28` is a large production pass and is deliberately split into two delivery slices
 (enrichment, then the 8-state machine) — the plan's tasks will be ordered accordingly and each slice
 names the `AC-n` its tests cite.
+
+---
+
+## Assessment Sprint 2 — ticket domain enrichment
+
+**Added 2026-08-31.** What the standalone assessment calls "Sprint 2": four real-ticketing
+enrichments to the ticket domain, specced as one feature delivered in four vertical slices with an
+explicit cut order (resolution → matrix → tags → links; cut from the tail). Canonical spec:
+[`EPIC-02-US-922-ticket-domain-enrichment.md`](../superpowers/specs/EPIC-02-US-922-ticket-domain-enrichment.md).
+Decision recorded there: priority becomes **matrix-only** (derived from impact × urgency), a
+deliberate breaking change to the create-ticket contract.
+
+| Sprint | Name | Slice | FEAT | Stories | Points | Status |
+|---|---|---|---|---|---|---|
+| 20 | Ticket domain enrichment — resolution discipline, impact/urgency matrix, tags, links | EPIC-02 (enrichment) | `FEAT-32` | US-922–US-925 | 29 | stories filed 2026-08-31 · spec drafted, **awaiting approval** · not implemented |
