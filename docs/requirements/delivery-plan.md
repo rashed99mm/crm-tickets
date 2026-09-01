@@ -399,3 +399,28 @@ deliberate breaking change to the create-ticket contract.
 | Sprint | Name | Slice | FEAT | Stories | Points | Status |
 |---|---|---|---|---|---|---|
 | 20 | Ticket domain enrichment — resolution discipline, impact/urgency matrix, tags, links | EPIC-02 (enrichment) | `FEAT-32` | US-922–US-925 | 29 | stories filed 2026-08-31 · spec approved 2026-08-31 · backend plan written ([`EPIC-02-US-922-feat-32-ticket-domain-enrichment/`](../superpowers/plans/EPIC-02-US-922-feat-32-ticket-domain-enrichment/implementation-plan.md)) · **not implemented** |
+
+---
+
+## Assessment Sprint 3 — role & permission workbench
+
+**Added 2026-09-01.** Closes half of row 12's recorded gap: *"a role-editor UI with permission
+assignment"*. The permission matrix stops applying every click straight to production and becomes a
+staged, reviewable, confirmable change, backed by a new atomic per-role endpoint with optimistic
+concurrency. Ships with the cross-cutting confirmation hardening it depends on. Canonical spec:
+[`EPIC-09-US-806-permissions-workbench-and-global-confirmation.md`](../superpowers/specs/EPIC-09-US-806-permissions-workbench-and-global-confirmation.md).
+
+`FEAT-33` was already taken by
+[ticket triage and BI alignment](../superpowers/specs/EPIC-02-US-926-ticket-triage-and-bi-alignment.md),
+so this feature is **`FEAT-34`** — checked against every `FEAT-3n` reference in `docs/` before
+numbering, per the collision corrections recorded above.
+
+**Still open after this sprint, deliberately:** the other half of row 12's gap — authorization
+policies built dynamically from assigned permissions. Today's policies remain role-based
+(`[Authorize(Policy = "UserManagement")]`); editing the matrix changes `RolePermissions` rows and
+what `PermissionAuthorizationHandler` reads, and does not rewrite those policies. Recorded in the
+spec's Out of scope so a missing layer is never mistaken for a forgotten one.
+
+| Sprint | Name | Slice | FEAT | Stories | Points | Status |
+|---|---|---|---|---|---|---|
+| 21 | Role & permission workbench — staged editing, atomic per-role saves, global confirmation | EPIC-09 (administration) | `FEAT-34` | US-806–US-807 | 18 | stories filed 2026-09-01 · spec approved 2026-09-01 · backend + frontend plans written ([`EPIC-09-US-806-feat-34-permissions-workbench/`](../superpowers/plans/EPIC-09-US-806-feat-34-permissions-workbench/implementation-plan.md)) · **not implemented** |
