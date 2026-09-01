@@ -187,8 +187,11 @@ Numbered; each written so it can be proven wrong.
 - **AC-806.23** Given a role row, when `Grant all` or `Revoke all` is pressed, then every currently
   visible (search- and collapse-filtered) permission for that role is **staged**, nothing is sent,
   and the pending count reflects only cells that actually changed.
-- **AC-806.24** Given no staged changes, then `Save` and `Discard` are disabled and the sticky
-  action bar is not rendered.
+- **AC-806.24** Given no staged changes, then the sticky action bar carrying `Save` and `Discard` is
+  not rendered at all, and invoking either action programmatically is a no-op that issues no
+  request. *(Reworded 2026-09-01, before implementation: the first draft said the buttons are
+  "disabled", which contradicts a bar that only exists while dirty. The approved design shows the bar
+  appearing with the first staged change.)*
 - **AC-806.25** Given a staged cell, then its staged state is conveyed by text or icon and not by
   colour alone, and the pending-change count is announced through an `aria-live` region.
 - **AC-806.26** Given the Arabic locale, then the sticky action bar, the group headers and the
