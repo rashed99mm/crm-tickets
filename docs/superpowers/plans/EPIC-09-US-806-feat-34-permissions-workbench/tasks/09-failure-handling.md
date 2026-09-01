@@ -336,8 +336,29 @@ new refusal path; the criterion keeps integration coverage at `Integration/Permi
 
 ## Test evidence
 
-*Not yet executed.*
+Implemented 2026-09-01, in the same commit as Tasks 08, 10, 11 and 12 (see deviation note below).
+`AC-806.15`, `AC-806.16`, `AC-806.17` are each covered by a named test in
+`permissions.component.spec.ts`:
+
+```
+npx ng test admin-app --watch=false --include='**/permissions*.spec.ts'
+Test Files  2 passed (2)
+     Tests  31 passed (31)
+```
+
+`AC806_15_PartialFailureNamesWhatSavedAndWhatDidNot`,
+`AC806_17_BuiltInRoleRefusalKeepsTheStagedChange` and
+`AC806_16_StaleRefusalOffersAReloadThatDropsThatRolesDraft` all pass. `AC-805.4`'s frontend
+assertion (the old `AC805_4_CannotRemoveLastPermission` test, which asserted an immediate `DELETE`)
+is retired; the criterion keeps integration coverage at `Integration/PermissionTests.cs:72` (itself
+currently blocked — see Task 03).
 
 ## Deviations from the plan
 
-*None yet.*
+1. **Merged into one commit with Tasks 08, 10, 11, 12** — see Task 08's evidence entry for the
+   rationale.
+2. **One test assertion was wrong, not the code**: the plan's `AC806_13` test asserted
+   `text(fixture)).toContain('Permission changes saved.')`. That string is a `ToastService` toast,
+   rendered by `CsToastHost` in the app shell — a component this isolated fixture does not mount.
+   Fixed by asserting on the observable state (the action bar and outcome banner both cleared)
+   instead of toast text that was never going to appear in this fixture.

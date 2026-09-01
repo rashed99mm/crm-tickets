@@ -375,8 +375,24 @@ git commit -m "feat: confirm discard, refresh and navigation away from staged pe
 
 ## Test evidence
 
-*Not yet executed.*
+Implemented 2026-09-01, in the same commit as Tasks 08, 09, 11 and 12:
+
+```
+npx ng test admin-app --watch=false --include='**/permissions*.spec.ts'
+Test Files  2 passed (2)
+     Tests  31 passed (31)
+```
+
+`permissions-dirty.guard.spec.ts` (3 tests: clean-screen no-op, dirty-and-decline, dirty-and-accept)
+passes as its own file within that run. `npx ng build admin-app` confirms `permissions-component`
+still code-splits as a separate lazy chunk (19.03 kB) — the guard's `import type` did not pull it
+into the eagerly-loaded routes bundle.
 
 ## Deviations from the plan
 
-*None yet.*
+1. **Merged into one commit with Tasks 08, 09, 11, 12** — see Task 08's evidence entry.
+2. **The guard needed an explicit re-export.** The plan wrote `import type { UnsavedChangesHost }
+   from './permissions.component'` in the guard file and had the guard's own spec import
+   `UnsavedChangesHost` from `./permissions-dirty.guard'` — but a type-only import does not
+   re-export by itself (TS2459). Added `export type { UnsavedChangesHost };` to
+   `permissions-dirty.guard.ts` immediately after the import.

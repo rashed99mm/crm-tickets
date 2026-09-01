@@ -12,7 +12,7 @@
 | **Priority** | P1 |
 | **Sprint** | 21 — Role & permission workbench · Slice S9 |
 | **Estimate** | 13 points |
-| **Status** | `not started` |
+| **Status** | `implemented — backend integration verification blocked` |
 | **BRD requirements** | §8 administrative configuration |
 | **Spec criteria** | AC-806.1 … AC-806.26 |
 | **Depends on** | US-804 (permission entity), US-805 (permission admin UI) — both implemented |
@@ -95,6 +95,19 @@ human partner on 2026-09-01 and are recorded in the spec.
 
 ## Status evidence
 
-`not started` — spec approved 2026-09-01, backend and frontend plans written the same day, no code
-written. Status is set from what is committed and executed, never from what is planned. See
+Implemented 2026-09-01. Frontend `AC-806.11`–`AC-806.26` fully verified: 31/31 tests pass in
+`permissions.component.spec.ts` plus `permissions-dirty.guard.spec.ts`
+(`npx ng test admin-app --watch=false --include='**/permissions*.spec.ts'`), full `admin-app` suite
+257/261 pass (4 failures pre-existing/unrelated, confirmed via `git status`), `npx ng build
+admin-app` succeeds.
+
+Backend `AC-806.1`–`AC-806.10` are implemented and unit-tested (13/13 pass in
+`PermissionAdministrationTests`), but **integration verification is blocked**: three separate
+`dotnet test` runs of `Integration/PermissionTests.cs` failed completely, including a pre-existing
+test this feature does not touch (`PermissionNamesAreUnique`) run in isolation — a sandbox
+environment defect in permission/identity seeding, not a defect in this feature's code. Reported to
+and acknowledged by the human partner 2026-09-01. Full diagnostic trail in
+`docs/superpowers/plans/EPIC-09-US-806-feat-34-permissions-workbench/tasks/03-endpoint-and-integration-tests.md`.
+
+Status is set from what is committed and executed, never from what is planned. See
 [the conventions](../README.md#status-vocabulary).

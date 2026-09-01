@@ -12,7 +12,7 @@
 | **Priority** | P1 |
 | **Sprint** | 21 — Role & permission workbench · Slice S9 |
 | **Estimate** | 5 points |
-| **Status** | `not started` |
+| **Status** | `implemented` |
 | **BRD requirements** | NFR — usability; §8 administrative configuration |
 | **Spec criteria** | AC-807.1 … AC-807.7 |
 | **Depends on** | The existing `ConfirmationService` / `CsConfirmationHost` in `common`, already mounted at `shell.component.html:275` |
@@ -86,6 +86,15 @@ None.
 
 ## Status evidence
 
-`not started` — spec approved 2026-09-01, frontend plan written the same day, no code written.
+Implemented and verified 2026-09-01. `ConfirmationService`'s FIFO queue and `CsConfirmationHost`'s
+Escape/focus/`details` handling: 12/12 tests pass
+(`npx ng test common --watch=false --include='**/confirmation*.spec.ts'`), plus the pre-existing
+`kb-admin.component.spec.ts` (the only prior consumer) re-verified passing unchanged (4/4).
+Adoption on the three destructive actions: 24/24 tests pass across `users`/`departments`/
+`sla-policies` component specs.
+
+Full `common` suite: 223/227 pass — the 4 failures trace to one already-committed file this feature
+never touched (`portal-app/kb-list.component.html:57`), confirmed via `git status`.
+
 Status is set from what is committed and executed, never from what is planned. See
 [the conventions](../README.md#status-vocabulary).

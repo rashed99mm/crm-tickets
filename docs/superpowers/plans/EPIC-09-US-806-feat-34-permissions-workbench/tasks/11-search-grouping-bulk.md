@@ -538,8 +538,28 @@ git commit -m "feat: search, resource grouping and per-role bulk staging in the 
 
 ## Test evidence
 
-*Not yet executed.*
+Implemented 2026-09-01, in the same commit as Tasks 08, 09, 10 and 12:
+
+```
+npx ng test admin-app --watch=false --include='**/permissions*.spec.ts'
+Test Files  2 passed (2)
+     Tests  31 passed (31)
+```
+
+All nine `AC806_21_*`/`AC806_22_*`/`AC806_23_*` tests pass, including the search/collapse/bulk
+interaction tests and the "respects the search filter" bulk-action test.
 
 ## Deviations from the plan
 
-*None yet.*
+1. **Merged into one commit with Tasks 08, 09, 10, 12** — see Task 08's evidence entry.
+2. **`columns` needed an explicit return-type annotation on `flatMap`.** The plan's ternary
+   (`group.collapsed ? [...] : group.permissions.map(...)`) produced a TypeScript union-narrowing
+   error (TS2322): each branch's array-element type was inferred independently and the two did not
+   unify into `MatrixColumn[]`. Fixed by annotating the `flatMap` callback as
+   `(group): MatrixColumn[] => …` and dropping the now-redundant `as const` tags on `kind`, letting
+   the annotation carry the literal-type information instead.
+3. **Track expression extracted to a method.** The plan's inline `track column.kind + ':' +
+   (column.kind === 'permission' ? column.permission.id : column.groupKey)` was replaced with a
+   `columnKey(column: MatrixColumn): string` method on the component, used identically in the header
+   and body rows — an inline ternary inside a `@for` track expression is harder to keep in sync
+   across the two loops that must track identically for `AC-806.22`'s alignment guarantee to hold.

@@ -687,8 +687,24 @@ git commit -m "feat: stage permission edits and save them per role (AC-806.11..A
 
 ## Test evidence
 
-*Not yet executed.*
+Implemented 2026-09-01, **merged with Tasks 09–12** — see the consolidated evidence and deviation
+note in [Task 09](./09-failure-handling.md), [Task 10](./10-discard-refresh-guard.md),
+[Task 11](./11-search-grouping-bulk.md) and [Task 12](./12-a11y-and-rtl.md). Full suite:
+
+```
+npx ng test admin-app --watch=false --include='**/permissions*.spec.ts'
+Test Files  2 passed (2)
+     Tests  31 passed (31)
+```
+
+`npx ng build admin-app`: succeeded; `permissions-component` remains its own lazy chunk
+(19.03 kB), confirming the guard's type-only import did not pull it into the main bundle.
 
 ## Deviations from the plan
 
-*None yet.*
+**Tasks 08–12 were implemented as one component change, not five sequential commits.** Staging,
+saving, failure handling, the guard, search/grouping and accessibility all live in the same
+~450-line component and template; splitting the diff into five commits that each touch the same
+file would not have produced five independently reviewable units — every later task's tests depend
+on state Task 08 introduces. See the shared commit message and README for the full rationale. Each
+task's own criteria are still individually covered by named tests in the one spec file.

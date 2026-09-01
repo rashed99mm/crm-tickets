@@ -273,8 +273,56 @@ Only then is the feature shippable per `CLAUDE.md`'s definition — and per
 
 ## Test evidence
 
-*Not yet executed.*
+Implemented 2026-09-01, in the same commit as Tasks 08–11:
+
+```
+npx ng test admin-app --watch=false --include='**/permissions*.spec.ts'
+Test Files  2 passed (2)
+     Tests  31 passed (31)
+```
+
+`AC806_25_TheStagedMarkerNamesTheDirectionAndIsNotColourOnly`,
+`AC806_25_TheLiveRegionSurvivesTheCountReachingZero`,
+`AC806_25_EveryInteractiveControlIsKeyboardReachable` and `AC806_26_RendersUnderArabicRtl` all pass.
+
+Full `common` suite re-run after this feature's translation-key and template additions:
+
+```
+npx ng test common --watch=false
+Test Files  3 failed | 47 passed (50)
+     Tests   4 failed | 223 passed (227)
+```
+
+All four failures trace to one file: `portal-app/kb-list.component.html:57`
+(`-right-10`, a physical-direction utility the `rtl-safety` sweep flags). Confirmed via `git status`
+that this file is **already committed and untouched by this feature** — a pre-existing defect, not
+a regression from FEAT-34's translation or template changes.
+
+Full `admin-app` suite:
+
+```
+npx ng test admin-app --watch=false
+Test Files  3 failed | 29 passed (32)
+     Tests   4 failed | 257 passed (261)
+```
+
+The four failures are `nav-routes.spec.ts` (an orphaned `/kb-admin/:id` route, unrelated to the
+`permissions` route), and two tests in `ticket-detail.component.spec.ts` — that file is confirmed
+via `git status` to already be modified by FEAT-32's in-progress, uncommitted work on this branch.
+None touch permissions, confirmation, users, departments or SLA policies.
+
+`npx ng build admin-app`: succeeded, one pre-existing bundle-size budget warning unrelated to this
+feature's files.
+
+**Backend full suite was not re-run as part of this task** — no backend files changed in Tasks
+08–12, and the backend integration-test environment remains blocked per Task 03's evidence.
 
 ## Deviations from the plan
 
-*None yet.*
+1. **Merged into one commit with Tasks 08–11** — see Task 08's evidence entry for the rationale.
+2. **The `permissions.staged` key was never added, rather than added then deleted.** The plan's
+   Step 6 says to delete it once `stagedGrant`/`stagedRevoke` make it redundant; since Tasks 08–12
+   were implemented together, the direction-aware markers were written from the start and the
+   single generic key was simply never introduced.
+3. **The remaining task-record updates** (this section, and the sibling task files' Test evidence)
+   are themselves Step 11 of this task, executed now rather than as a separate pass.
