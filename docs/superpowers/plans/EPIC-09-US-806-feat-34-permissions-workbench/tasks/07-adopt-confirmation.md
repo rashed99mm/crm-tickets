@@ -335,8 +335,27 @@ tests for no behaviour change.
 
 ## Test evidence
 
-*Not yet executed.*
+Implemented 2026-09-01:
+
+```
+npx ng test admin-app --watch=false --include='**/users.component.spec.ts' \
+  --include='**/departments.component.spec.ts' --include='**/sla-policies.component.spec.ts'
+Test Files  3 passed (3)
+     Tests  24 passed (24)
+```
+
+`npx ng build admin-app`: succeeded (one pre-existing bundle-size budget warning, unrelated to this
+task's files).
 
 ## Deviations from the plan
 
-*None yet.*
+1. **`departments.component.spec.ts` needed a `createdAt` field.** The plan's fixture DEPARTMENT
+   object omitted it; `Department` (`organisation.api.ts:7-12`) requires it. Added
+   `createdAt: '2026-08-01T00:00:00Z'` to the fixture.
+2. **`SLAPolicy` has no `name` field** (`sla-policy.api.ts:8-17`) — only `priority`,
+   `responseTargetHours`, `resolutionTargetHours`. The plan's confirm-message design assumed a name;
+   the message instead identifies the policy by its priority ("The {0} priority policy will stop
+   applying…"), and the translation copy was written accordingly rather than as originally drafted.
+3. **Tests call the component methods directly** (`fixture.componentInstance.deactivate(...)`)
+   rather than clicking a table button, matching this file's own established convention
+   (`sla-policies.component.spec.ts` already tests via `startEdit()`/`saveEdit()`, not DOM clicks).

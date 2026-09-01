@@ -34,4 +34,17 @@ export class PermissionApi {
   revoke(roleId: string, permissionId: string): Observable<unknown> {
     return this.http.delete(`/api/admin/permissions/${roleId}/${permissionId}`);
   }
+
+  /**
+   * Replaces the role's whole permission set (AC-806.13). `expectedPermissionIds` is the set the UI
+   * staged from — the server refuses the call if the stored set has moved since (AC-806.5), which is
+   * what stops two administrators silently overwriting one another.
+   */
+  setRolePermissions(
+    roleId: string,
+    permissionIds: readonly string[],
+    expectedPermissionIds: readonly string[],
+  ): Observable<unknown> {
+    return this.http.put(`/api/admin/permissions/${roleId}`, { permissionIds, expectedPermissionIds });
+  }
 }

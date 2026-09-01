@@ -1,21 +1,54 @@
 <section class="flex flex-col gap-6">
-  <header>
-    <h1 class="text-headline-lg text-on-surface">{{ 'permissions.title' | t }}</h1>
-    <p class="mt-1 text-body-md text-on-surface-variant">{{ 'permissions.subtitle' | t }}</p>
-    @if (summary(); as counts) {
-      <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'permissions.count' | t: counts.roles : counts.permissions }}</p>
-    }
+  <header class="cs-page-heading flex flex-col gap-4 border-b border-border-subtle pb-6 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <p class="mb-2 text-label-md font-semibold tracking-[0.16em] text-primary uppercase">{{ 'nav.permissions' | t }}</p>
+      <h1 class="text-display-lg text-on-surface">{{ 'permissions.title' | t }}</h1>
+      <p class="mt-2 text-body-lg text-on-surface-variant">{{ 'permissions.subtitle' | t }}</p>
+      @if (summary(); as counts) {
+        <p class="mt-2 text-body-sm text-on-surface-variant">{{ 'permissions.count' | t: counts.roles : counts.permissions }}</p>
+      }
+    </div>
+    <cs-button variant="secondary" type="button" (pressed)="refresh()">
+      <cs-icon name="refresh" [size]="18" />
+      {{ 'action.refresh' | t }}
+    </cs-button>
   </header>
 
-  @if (mutationSuccess(); as success) {
-    <p class="rounded-lg bg-success/12 p-3 text-body-md text-success" role="status">
-      {{ (success === 'assigned' ? 'permissions.assigned' : 'permissions.revoked') | t }}
-    </p>
-  }
-  @if (mutationError()) {
-    <p class="rounded-lg bg-error/12 p-3 text-body-md text-error" role="alert">
-      {{ (lastPermissionError() ? 'permissions.lastRequired' : 'permissions.mutationError') | t }}
-    </p>
+  <p
+    data-testid="permissions-announcer"
+    class="sr-only"
+    role="status"
+    aria-live="polite"
+    aria-atomic="true"
+  >
+    {{ announcement() }}
+  </p>
+  <p id="permissions-staged-hint" class="sr-only">{{ 'permissions.stagedHint' | t }}</p>
+
+  @if (saveOutcome(); as outcome) {
+    <div
+      data-testid="permissions-save-outcome"
+      role="alert"
+      class="flex flex-col gap-3 rounded-xl border border-error bg-error-container px-4 py-3 text-on-error-container"
+    >
+      <p class="text-label-lg font-semibold">
+        {{ 'permissions.savePartial' | t: outcome.saved : outcome.total }}
+      </p>
+      <ul class="flex flex-col gap-1 text-body-sm">
+        @for (failure of outcome.failures; track failure.roleId) {
+          <li><span class="font-semibold">{{ failure.roleName }}</span> — {{ failure.message }}</li>
+        }
+      </ul>
+      <p class="text-body-sm">{{ 'permissions.retained' | t }}</p>
+      @if (staleRoleIds().length) {
+        <span data-testid="permissions-reload" class="self-start">
+          <cs-button variant="secondary" type="button" (pressed)="reloadStale()">
+            <cs-icon name="refresh" [size]="18" />
+            {{ 'permissions.reload' | t }}
+          </cs-button>
+        </span>
+      }
+    </div>
   }
 
   <cs-card [heading]="'permissions.list.title' | t">
@@ -25,41 +58,159 @@
       @case ('empty') { <cs-empty-state [message]="'permissions.empty' | t" /> }
       @default {
         @if (data(); as model) {
-          <div class="overflow-x-auto">
-            <table class="cs-data-table min-w-3xl">
-              <thead>
-                <tr class="border-b border-border-subtle bg-surface-low text-label-md text-on-surface-variant">
-                  <th scope="col" class="px-4 py-3 text-start">{{ 'permissions.role' | t }}</th>
-                  @for (permission of model.permissions; track permission.id) {
-                    <th scope="col" class="px-4 py-3 text-start" [title]="permission.description ?? undefined">{{ permission.name }}</th>
-                  }
-                </tr>
-              </thead>
-              <tbody>
-                @for (role of model.roles; track role.id) {
-                  <tr class="border-b border-border-subtle last:border-transparent">
-                    <th scope="row" class="px-4 py-3 text-start text-label-lg text-on-surface">{{ role.name }}</th>
-                    @for (permission of model.permissions; track permission.id) {
-                      <td class="px-4 py-3">
-                        <label class="inline-flex min-h-10 items-center gap-2">
-                          <input
-                            type="checkbox"
-                            [checked]="isAssigned(role, permission.id)"
-                            [disabled]="mutating() !== null"
-                            [attr.aria-label]="role.name + ': ' + permission.name"
-                            (change)="toggle(role, permission, $any($event.target).checked)"
-                            class="size-4 accent-primary"
-                          />
-                        </label>
-                      </td>
+          <div class="mb-4 flex flex-wrap items-center gap-2">
+            <label class="relative flex min-w-64 items-center">
+              <span class="sr-only">{{ 'permissions.searchPlaceholder' | t }}</span>
+              <cs-icon name="search" [size]="18" class="absolute start-3 text-on-surface-variant" />
+              <input
+                data-testid="permissions-search"
+                type="search"
+                [value]="search()"
+                [placeholder]="'permissions.searchPlaceholder' | t"
+                (input)="search.set($any($event.target).value)"
+                class="w-full rounded-lg border border-outline-variant bg-surface-lowest py-2 pe-3 ps-10 text-body-md text-on-surface"
+              />
+            </label>
+            @if (search()) {
+              <span data-testid="permissions-clear-search">
+                <cs-button variant="ghost" type="button" (pressed)="clearSearch()">
+                  <cs-icon name="close" [size]="16" />
+                  {{ 'permissions.clearSearch' | t }}
+                </cs-button>
+              </span>
+            }
+          </div>
+
+          @if (hasNoMatch()) {
+            <p data-testid="permissions-no-match" class="px-4 py-6 text-body-md text-on-surface-variant">
+              {{ 'permissions.noMatch' | t }}
+            </p>
+          } @else {
+            <div class="overflow-x-auto">
+              <table class="cs-data-table min-w-3xl">
+                <thead>
+                  <tr class="border-b border-border-subtle bg-surface-low text-label-md text-on-surface-variant">
+                    <th scope="col" rowspan="2" class="px-4 py-3 text-start align-bottom">{{ 'permissions.role' | t }}</th>
+                    @for (group of groups(); track group.key) {
+                      <th
+                        scope="colgroup"
+                        [attr.data-testid]="'permissions-group-' + group.key"
+                        [attr.colspan]="group.collapsed ? 1 : group.permissions.length"
+                        class="border-s border-border-subtle px-4 py-2 text-start"
+                      >
+                        <button
+                          type="button"
+                          class="inline-flex items-center gap-1 rounded text-label-md font-semibold text-on-surface hover:underline"
+                          [attr.aria-expanded]="!group.collapsed"
+                          [attr.aria-label]="(group.collapsed ? 'permissions.expandGroup' : 'permissions.collapseGroup') | t: group.label"
+                          (click)="toggleGroup(group.key)"
+                        >
+                          <cs-icon [name]="group.collapsed ? 'chevron_right' : 'expand_more'" [size]="16" />
+                          {{ group.label }} ({{ group.permissions.length }})
+                        </button>
+                      </th>
+                    }
+                    <th scope="col" rowspan="2" class="border-s border-border-subtle px-4 py-3 text-end align-bottom">
+                      {{ 'permissions.bulk' | t }}
+                    </th>
+                  </tr>
+                  <tr class="border-b border-border-subtle bg-surface-low text-label-md text-on-surface-variant">
+                    @for (column of columns(); track columnKey(column)) {
+                      <th scope="col" class="px-4 py-3 text-start font-normal">
+                        @if (column.kind === 'permission') {
+                          <span [title]="column.permission.description ?? undefined">{{ column.permission.name }}</span>
+                        } @else {
+                          <span class="text-on-surface-variant">{{ 'permissions.assigned' | t }}</span>
+                        }
+                      </th>
                     }
                   </tr>
-                }
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  @for (role of model.roles; track role.id) {
+                    <tr class="border-b border-border-subtle last:border-transparent">
+                      <th scope="row" class="px-4 py-3 text-start text-label-lg text-on-surface">{{ role.name }}</th>
+                      @for (column of columns(); track columnKey(column)) {
+                        <td class="px-4 py-3">
+                          @if (column.kind === 'permission') {
+                            <label class="inline-flex min-h-10 items-center gap-2">
+                              <input
+                                type="checkbox"
+                                [checked]="isChecked(role.id, column.permission.id)"
+                                [disabled]="saving()"
+                                [attr.aria-label]="role.name + ': ' + column.permission.name"
+                                [attr.aria-describedby]="isStaged(role.id, column.permission.id) ? 'permissions-staged-hint' : null"
+                                (change)="toggle(role, column.permission, $any($event.target).checked)"
+                                class="size-4 accent-primary"
+                              />
+                              @if (stagedDirection(role.id, column.permission.id); as direction) {
+                                <span
+                                  data-testid="staged-marker"
+                                  class="rounded px-1.5 py-0.5 text-label-md font-semibold"
+                                  [class.bg-primary-container]="direction === 'grant'"
+                                  [class.text-on-primary-container]="direction === 'grant'"
+                                  [class.bg-error-container]="direction === 'revoke'"
+                                  [class.text-on-error-container]="direction === 'revoke'"
+                                >
+                                  {{ (direction === 'grant' ? 'permissions.stagedGrant' : 'permissions.stagedRevoke') | t }}
+                                </span>
+                              }
+                            </label>
+                          } @else {
+                            <span
+                              data-testid="permissions-group-summary"
+                              class="font-data-mono text-body-sm text-on-surface-variant"
+                            >
+                              {{ groupCount(role.id, column.groupKey) }}
+                            </span>
+                          }
+                        </td>
+                      }
+                      <td class="px-4 py-3">
+                        <div class="flex justify-end gap-1">
+                          <span [attr.data-testid]="'permissions-grant-all-' + role.id">
+                            <cs-button variant="ghost" type="button" [disabled]="saving()" (pressed)="grantAll(role)">
+                              {{ 'permissions.grantAll' | t }}
+                            </cs-button>
+                          </span>
+                          <span [attr.data-testid]="'permissions-revoke-all-' + role.id">
+                            <cs-button variant="ghost" type="button" [disabled]="saving()" (pressed)="revokeAll(role)">
+                              {{ 'permissions.revokeAll' | t }}
+                            </cs-button>
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
         }
       }
     }
   </cs-card>
+
+  @if (isDirty()) {
+    <div
+      data-testid="permissions-action-bar"
+      class="sticky bottom-4 z-40 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-subtle bg-surface-lowest px-4 py-3 shadow-popover"
+    >
+      <p class="text-label-lg text-on-surface">
+        {{ 'permissions.pending' | t: changes().length }}
+      </p>
+      <div class="flex gap-2">
+        <span data-testid="permissions-discard">
+          <cs-button variant="secondary" type="button" [disabled]="saving()" (pressed)="discard()">
+            {{ 'permissions.discard' | t }}
+          </cs-button>
+        </span>
+        <span data-testid="permissions-save">
+          <cs-button variant="primary" type="button" [busy]="saving()" (pressed)="save()">
+            {{ 'permissions.save' | t: changes().length }}
+          </cs-button>
+        </span>
+      </div>
+    </div>
+  }
 </section>

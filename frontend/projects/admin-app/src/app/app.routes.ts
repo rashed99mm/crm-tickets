@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard, roleGuard } from 'common';
+import { permissionsDirtyGuard } from './features/admin/permissions-dirty.guard';
 import { AdminShell } from './layout/shell.component';
 
 export const routes: Routes = [
@@ -124,6 +125,8 @@ export const routes: Routes = [
       {
         path: 'permissions',
         canActivate: [roleGuard('Admin')],
+        // AC-806.19 — staged permission changes are not silently dropped by navigating away.
+        canDeactivate: [permissionsDirtyGuard],
         loadComponent: () => import('./features/admin/permissions.component'),
       },
       {

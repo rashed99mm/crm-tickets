@@ -261,8 +261,20 @@ git commit -m "fix: queue confirmation requests instead of dropping the displace
 
 ## Test evidence
 
-*Not yet executed.*
+Implemented 2026-09-01, in the same run as Task 06 (both spec files run together):
+
+```
+npx ng test common --watch=false --include='**/confirmation*.spec.ts'
+Test Files  2 passed (2)
+     Tests  12 passed (12)
+```
+
+Full `common` suite also run (`npx ng test common --watch=false`): 223 passed, 4 failed — all four
+failures trace to one already-committed, unmodified file
+(`portal-app/kb-list.component.html:57`, a physical `-right-10` utility), confirmed via `git status`
+to be untouched by this feature and pre-existing on the branch. No regression from this task's
+changes.
 
 ## Deviations from the plan
 
-*None yet.*
+None. Implemented exactly as specified.

@@ -359,8 +359,18 @@ git commit -m "fix: make the confirmation dialog keyboard-dismissable and render
 
 ## Test evidence
 
-*Not yet executed.*
+Implemented 2026-09-01:
+
+```
+npx ng test common --watch=false --include='**/confirmation*.spec.ts'
+Test Files  2 passed (2)
+     Tests  12 passed (12)
+```
+
+`kb-admin.component.spec.ts` (the existing, only prior consumer of the dialog) also re-run in
+isolation and still passes: `Test Files 1 passed (1)`, `Tests 4 passed (4)` — confirms the
+`details`/queue/focus changes are backwards compatible.
 
 ## Deviations from the plan
 
-*None yet.*
+None.
