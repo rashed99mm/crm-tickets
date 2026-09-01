@@ -43,13 +43,15 @@ public static class ResponseExtensions
             or SystemCode.ERR030 or SystemCode.ERR032 or SystemCode.ERR034
             or SystemCode.ERR039 or SystemCode.ERR041 or SystemCode.ERR047
             or SystemCode.ERR048 or SystemCode.ERR051 or SystemCode.ERR057
-            or SystemCode.ERR060 => StatusCodes.Status404NotFound,
+            or SystemCode.ERR060 or SystemCode.ERR080 or SystemCode.ERR086 => StatusCodes.Status404NotFound,
         SystemCode.ERR002 or SystemCode.ERR008 or SystemCode.ERR009
             or SystemCode.ERR013 or SystemCode.ERR014 or SystemCode.ERR015
             or SystemCode.ERR021 or SystemCode.ERR022 or SystemCode.ERR031
             or SystemCode.ERR035 or SystemCode.ERR040 or SystemCode.ERR049
             or SystemCode.ERR050 or SystemCode.ERR055 or SystemCode.ERR056
-            or SystemCode.ERR058 or SystemCode.ERR059 or SystemCode.ERR075 => StatusCodes.Status409Conflict,
+            or SystemCode.ERR058 or SystemCode.ERR059 or SystemCode.ERR075
+            or SystemCode.ERR082 or SystemCode.ERR083 or SystemCode.ERR085
+            or SystemCode.ERR087 => StatusCodes.Status409Conflict,
         SystemCode.ERR074 => StatusCodes.Status429TooManyRequests,
         SystemCode.VAL001 => StatusCodes.Status400BadRequest,
         SystemCode.ERR042 or SystemCode.ERR045 => StatusCodes.Status413PayloadTooLarge,

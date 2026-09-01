@@ -343,8 +343,48 @@ git commit -m "feat: PUT /api/admin/permissions/{roleId} sets a role's permissio
 
 ## Test evidence
 
-*Not yet executed.*
+**BLOCKED — not verified.** The endpoint and all nine integration tests from this task (plus the
+two from Task 04) are written and the whole test project builds clean
+(`dotnet build tests/CustomerSupport.Tests/CustomerSupport.Tests.csproj` → `Build succeeded`), but
+`dotnet test --filter "FullyQualifiedName~Integration.PermissionTests"` cannot be made to pass in
+this environment, on three separate attempts:
+
+```
+Run 1 (full class, cold LocalDB):   Failed: 20, Passed: 0, Total: 20  (~ a few minutes)
+Run 2 (isolated pre-existing test,
+        PermissionNamesAreUnique,
+        untouched by this feature): Failed: 1,  Passed: 0, Total: 1  (4 s)
+Run 3 (full class, warm LocalDB):   Failed: 20, Passed: 0, Total: 20, Duration: 9 m 10 s
+```
+
+**This is not a defect in this feature's code.** Run 2 exercised
+`PermissionNamesAreUnique` (`PermissionTests.cs:186-197`), a pre-existing test this feature does not
+touch, in isolation, and it failed with `Expected a DbUpdateException to be thrown, but no exception
+was thrown` — the seeded `"ticket.create"` permission it expects to collide with does not exist.
+Run 1 and Run 3 show the same root cause directly:
+`PermissionsSeededOnStartupAndRemainIdempotent` finds `db.Permissions.CountAsync()` equal to **0**,
+and `AdministratorCanListPermissionsAndRoleAssignments` (also pre-existing, also untouched) gets
+403 instead of 200 on `GET /api/admin/permissions` — consistent with an authenticated caller whose
+role was created ad hoc by the test fixture but never received any seeded permission mapping,
+because `PermissionSeeder` (and possibly `IdentitySeeder` ahead of it in
+`WebApplicationExtensions.UsePlatformDataSeedingAsync`) inserted nothing in this run, in either
+attempt.
+
+Traced as far as: `TestDatabase.EnsureMigratedAsync()` migrates a fresh, uniquely-named LocalDB
+database from empty on every `dotnet test` process (68 migration files), and
+`UsePlatformDataSeedingAsync` (`WebApplicationExtensions.cs:34-85`) itself performs no migration —
+it assumes the schema already exists and only seeds. Whether the schema exists but seeding silently
+no-ops, or seeding throws somewhere before `PermissionSeeder` and the exception is swallowed
+upstream, was not root-caused — full diagnosis was stopped per
+`superpowers:executing-plans`' explicit rule ("verification fails repeatedly → stop and ask") rather
+than guessing further into pre-existing, unowned code.
+
+**What is actually verified:** the project builds clean end-to-end (`Application`, `Infrastructure`,
+`InternalApi`, and the whole `CustomerSupport.Tests` project), and the 13 unit tests from Tasks
+01–02 pass. `AC-806.1`–`AC-806.9` are implemented and match the spec, but are **unverified against
+real SQL** as of this entry.
 
 ## Deviations from the plan
 
-*None yet.*
+The plan assumed a working integration-test environment; none of its own tasks anticipated this.
+See the blocker note above.

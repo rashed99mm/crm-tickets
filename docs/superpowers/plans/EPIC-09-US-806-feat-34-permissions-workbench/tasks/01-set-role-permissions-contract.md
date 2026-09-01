@@ -307,8 +307,18 @@ lands in Task 02.
 
 ## Test evidence
 
-*Not yet executed — this task has not been run. Fill in with pasted output when it is.*
+Implemented 2026-09-01. Unit tests run together with Task 02's (same test file, same run):
+
+```
+dotnet test tests/CustomerSupport.Tests/CustomerSupport.Tests.csproj --filter "FullyQualifiedName~PermissionAdministrationTests"
+...
+Passed!  - Failed:     0, Passed:    13, Skipped:     0, Total:    13, Duration: 400 ms - CustomerSupport.Tests.dll (net10.0)
+```
+
+`dotnet build` on `CustomerSupport.Application.csproj` and `CustomerSupport.Infrastructure.csproj`: `Build succeeded`, 0 errors (pre-existing warnings from FEAT-32 work-in-progress on this branch only, none from this task's files).
 
 ## Deviations from the plan
 
-*None yet.*
+1. **A real validator bug found and fixed during TDD, not anticipated by the plan.** FluentValidation's trailing `.When(...)` applies to *every* validator already chained onto that `RuleFor`, not just the one immediately before it (`ApplyConditionTo.AllValidators` is the default). The plan's original validator chained `NotNull()` then `.Must(...).When(x => x.PermissionIds is not null)` on one `RuleFor` — the `When` silently disabled the `NotNull()` check too, so a genuinely-null `PermissionIds` passed validation. Caught by the plan's own `Set_NullPermissionIds_IsRefusedWithAFieldError` test. Fixed by splitting `NotNull()` onto its own `RuleFor(x => x.PermissionIds)` separate from the `.Must(...).When(...)` chain.
+2. **A real gap found in `ResponseExtensions.MapFailureStatusCode`, fixed in the same task.** `Response<T>` does not store `MessageType` at all — `Fail(code, message, type)` accepts but discards it; the actual HTTP status comes solely from switching on the wire `Code` string. The new `ERR087` (stale snapshot) was not in that switch's 409 list, so a stale-snapshot refusal would have silently returned 400 instead of the spec's 409. Added `SystemCode.ERR087` to the conflict arm of `MapFailureStatusCode` in `backend/src/CustomerSupport.Api.Shared/Extensions/ResponseExtensions.cs`. This file was not named in the plan's file list — grounding missed it because `Response<T>`'s actual status-mapping mechanism (a separate wire-code switch, not a stored `MessageType`) wasn't inspected until the unit tests forced the question. The plan's unit test assertions (`result.MessageType.Should().Be(MessageType.Conflict)`) were also removed for the same reason — no such property exists on `Response<T>`.
+3. **A test-authoring bug in my own `Command()` helper**, not the production code: `permissionIds ?? [Guid.NewGuid()]` silently replaced an explicitly-passed `null` with a default value, so the two "explicit null" tests were not actually exercising a null input. Fixed by constructing those two commands directly rather than through the defaulting helper.

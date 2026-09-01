@@ -19,7 +19,10 @@ public class AuditBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
         "CreateUserCommand", "UpdateUserCommand", "DeleteUserCommand",
         "CreateContentCommand", "UpdateContentCommand", "DeleteContentCommand",
         "CreateNotificationCommand", "DeleteNotificationCommand",
-        "CreatePlatformSettingCommand", "UpdatePlatformSettingCommand", "DeletePlatformSettingCommand"
+        "CreatePlatformSettingCommand", "UpdatePlatformSettingCommand", "DeletePlatformSettingCommand",
+        // FEAT-34 / AC-806.10 — changing a role's permission set is the most security-relevant
+        // administrative action in the system and was, until now, the only one leaving no trail.
+        "SetRolePermissionsCommand"
     };
 
     private static readonly Dictionary<string, string> EntityTypeMapping = new(StringComparer.OrdinalIgnoreCase)
@@ -34,7 +37,8 @@ public class AuditBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
         { "DeleteNotificationCommand", "Notification" },
         { "CreatePlatformSettingCommand", "PlatformSetting" },
         { "UpdatePlatformSettingCommand", "PlatformSetting" },
-        { "DeletePlatformSettingCommand", "PlatformSetting" }
+        { "DeletePlatformSettingCommand", "PlatformSetting" },
+        { "SetRolePermissionsCommand", "Role" }
     };
 
     public AuditBehavior(
@@ -116,6 +120,10 @@ public class AuditBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
     /// A create command's new id is the response's <c>Data</c>; an update/delete command's target
     /// id is a property named <c>Id</c> on the request itself. Both are read by reflection because
     /// this behavior has to work across every auditable command's distinct shape.
+    ///
+    /// <c>RoleId</c> is checked last: a command whose subject is a role names it that way
+    /// (<c>SetRolePermissionsCommand</c>), and without this fallback the entry is skipped silently
+    /// at the null check in <see cref="RecordAsync"/> rather than failing loudly (AC-806.10).
     /// </summary>
     private static Guid? ResolveEntityId(TRequest request, TResponse response)
     {
@@ -127,6 +135,11 @@ public class AuditBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
         if (typeof(TRequest).GetProperty("Id")?.GetValue(request) is Guid fromRequest)
         {
             return fromRequest;
+        }
+
+        if (typeof(TRequest).GetProperty("RoleId")?.GetValue(request) is Guid fromRoleId)
+        {
+            return fromRoleId;
         }
 
         return null;

@@ -339,8 +339,19 @@ cannot vouch for.
 
 ## Test evidence
 
-*Not yet executed.*
+Implemented 2026-09-01, in the same commit as Task 01 (same test file). Unit-level result:
+
+```
+Passed!  - Failed:     0, Passed:    13, Skipped:     0, Total:    13, Duration: 400 ms - CustomerSupport.Tests.dll (net10.0)
+```
+
+**Not yet proven against real SQL.** The `UPDLOCK` read, the transaction rollback and the
+composite-key delete in `SetAsync` are exactly what a mocked unit test cannot verify — that
+verification is Task 03's integration suite, and it is currently **blocked**; see Task 03's Test
+evidence for the full account. `SetAsync`'s code is written and compiles and builds clean, but is
+unverified end-to-end as of this entry.
 
 ## Deviations from the plan
 
-*None yet.*
+None beyond the shared `Response<T>`/`MessageType` finding recorded in Task 01 (this task's handler
+switch was written exactly as planned once that finding was known).

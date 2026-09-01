@@ -100,4 +100,83 @@ public sealed class PermissionAdministrationService(AppDbContext db) : IPermissi
             return PermissionMutationResult.Succeeded;
         });
     }
+
+    public async Task<PermissionMutationResult> SetAsync(
+        Guid roleId,
+        IReadOnlyCollection<Guid> permissionIds,
+        IReadOnlyCollection<Guid> expectedPermissionIds,
+        CancellationToken ct = default)
+    {
+        var role = await db.Roles.AsNoTracking().SingleOrDefaultAsync(x => x.Id == roleId, ct);
+        if (role is null) return PermissionMutationResult.RoleNotFound;
+
+        var requested = permissionIds.ToHashSet();
+
+        // AC-806.3 — every id must name a real permission. Checked outside the transaction: the
+        // catalogue is seeded and is not what the lock below defends against.
+        if (requested.Count > 0)
+        {
+            var known = await db.Permissions.CountAsync(x => requested.Contains(x.Id), ct);
+            if (known != requested.Count) return PermissionMutationResult.PermissionNotFound;
+        }
+
+        // AC-806.2 — a built-in role may never be emptied. Cheap pre-check for the obvious case;
+        // re-asserted inside the lock below, because "would this leave it empty" is a question about
+        // state a concurrent writer can move.
+        if (requested.Count == 0 && BuiltInRoles.Contains(role.Name!))
+            return PermissionMutationResult.LastPermissionRequired;
+
+        // Same shape as RevokeAsync (:83-101) and for the same reason: EnableRetryOnFailure forbids
+        // bare user transactions, so the transaction runs inside the retrying execution strategy.
+        var strategy = db.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
+            await using var transaction = await db.Database.BeginTransactionAsync(ct);
+
+            // The UPDLOCK read is taken BEFORE any decision, so a second concurrent save blocks
+            // here, then re-reads and finds its expected set no longer current (AC-806.8). Both
+            // mapped columns are selected, so these materialise as tracked entities and can be
+            // removed directly (RolePermission has no other property — RolePermission.cs:5-11).
+            var current = await db.RolePermissions
+                .FromSqlInterpolated(
+                    $"SELECT RoleId, PermissionId FROM RolePermissions WITH (UPDLOCK) WHERE RoleId = {roleId}")
+                .ToListAsync(ct);
+            var currentIds = current.Select(x => x.PermissionId).ToHashSet();
+
+            // AC-806.5 — order-insensitive set equality (spec A4). A stale save is refused, never
+            // merged: merging is how a revoke silently un-revokes itself (spec A6).
+            if (!currentIds.SetEquals(expectedPermissionIds))
+            {
+                await transaction.RollbackAsync(ct);
+                return PermissionMutationResult.StaleSnapshot;
+            }
+
+            if (requested.Count == 0 && BuiltInRoles.Contains(role.Name!))
+            {
+                await transaction.RollbackAsync(ct);
+                return PermissionMutationResult.LastPermissionRequired;
+            }
+
+            var toRemove = current.Where(x => !requested.Contains(x.PermissionId)).ToList();
+            var toAdd = requested.Where(id => !currentIds.Contains(id)).ToList();
+
+            // AC-806.9 — a no-op set writes nothing at all, rather than deleting and re-inserting
+            // the same rows.
+            if (toRemove.Count == 0 && toAdd.Count == 0)
+            {
+                await transaction.RollbackAsync(ct);
+                return PermissionMutationResult.Succeeded;
+            }
+
+            db.RolePermissions.RemoveRange(toRemove);
+            foreach (var permissionId in toAdd)
+            {
+                db.RolePermissions.Add(RolePermission.Create(roleId, permissionId));
+            }
+
+            await db.SaveChangesAsync(ct);
+            await transaction.CommitAsync(ct);
+            return PermissionMutationResult.Succeeded;
+        });
+    }
 }

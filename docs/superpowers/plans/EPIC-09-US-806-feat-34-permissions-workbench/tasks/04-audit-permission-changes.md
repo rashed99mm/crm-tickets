@@ -194,8 +194,13 @@ redesign** — recorded here so the choice is visible rather than forgotten.
 
 ## Test evidence
 
-*Not yet executed.*
+**BLOCKED — not verified**, for the same reason recorded in Task 03: the integration test
+environment cannot get permission seeding to run in this sandbox (evidenced by pre-existing,
+untouched tests failing identically). The code — the `AuditableCommands`/`EntityTypeMapping`
+registrations and the `RoleId` fallback in `ResolveEntityId` — is written and compiles, but
+`SetRolePermissions_WritesAnAuditEntry` and `SetRolePermissions_RefusedChangeWritesNoAuditEntry`
+have not been run to a pass.
 
 ## Deviations from the plan
 
-*None yet.*
+None in the code itself. See Task 03 for the shared environment blocker.

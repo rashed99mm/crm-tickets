@@ -4,6 +4,7 @@ using CustomerSupport.Application.Contracts;
 using CustomerSupport.Application.Errors;
 using CustomerSupport.Application.Features.Admin.Commands.AssignPermission;
 using CustomerSupport.Application.Features.Admin.Commands.RevokePermission;
+using CustomerSupport.Application.Features.Admin.Commands.SetRolePermissions;
 using CustomerSupport.Application.Features.Admin.Dtos;
 using CustomerSupport.Application.Features.Admin.Queries.GetPermissions;
 using CustomerSupport.Domain;
@@ -42,4 +43,20 @@ public sealed class PermissionsController(IMediator mediator) : ControllerBase
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> Revoke(Guid roleId, Guid permissionId, CancellationToken ct)
         => this.ToActionResult(await mediator.Send(new RevokePermissionCommand(roleId, permissionId), ct));
+
+    /// <summary>
+    /// Replaces the role's permission set in one transaction (AC-806.1). The body's
+    /// <c>expectedPermissionIds</c> is the set the caller staged from; a mismatch is a 409 rather
+    /// than a silent overwrite (AC-806.5).
+    /// </summary>
+    [HttpPut("{roleId:guid}")]
+    [ProducesResponseType(typeof(Response<Unit>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response<Unit>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response<Unit>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Response<Unit>), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> Set(
+        Guid roleId, [FromBody] SetRolePermissionsRequest request, CancellationToken ct)
+        => this.ToActionResult(await mediator.Send(
+            new SetRolePermissionsCommand(roleId, request.PermissionIds, request.ExpectedPermissionIds), ct));
 }

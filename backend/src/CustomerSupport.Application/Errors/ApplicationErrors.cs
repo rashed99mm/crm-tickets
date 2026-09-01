@@ -138,6 +138,8 @@ public static class ApplicationErrors
         public const string ASSIGNED = "PERMISSION_ASSIGNED";
         public const string REVOKED = "PERMISSION_REVOKED";
         public const string LAST_REQUIRED = "PERMISSION_LAST_REQUIRED";
+        public const string UPDATED = "PERMISSION_UPDATED";
+        public const string STALE_SNAPSHOT = "PERMISSION_STALE_SNAPSHOT";
     }
 
     /// <summary>Customer records — FEAT-03, AC-7…AC-16.</summary>
@@ -203,6 +205,26 @@ public static class ApplicationErrors
 
         /// <summary>AC-41. Optimistic concurrency: the first change stands, the second is refused.</summary>
         public const string MODIFIED_BY_ANOTHER_USER = "TICKET_MODIFIED_BY_ANOTHER_USER";
+
+        /// <summary>US-923 / AC-923.2 — reclassification applied, priority re-derived.</summary>
+        public const string RECLASSIFIED = "TICKET_RECLASSIFIED";
+
+        // US-924.
+        public const string TAG_ADDED = "TICKET_TAG_ADDED";
+        public const string TAG_REMOVED = "TICKET_TAG_REMOVED";
+        public const string TAG_NOT_FOUND = "TICKET_TAG_NOT_FOUND";
+
+        // US-925.
+        public const string LINK_TARGET_NOT_FOUND = "TICKET_LINK_TARGET_NOT_FOUND";
+        public const string LINK_SELF = "TICKET_LINK_SELF";
+        public const string LINK_EXISTS = "TICKET_LINK_EXISTS";
+        public const string LINK_CYCLE = "TICKET_LINK_CYCLE";
+        public const string LINK_NOT_FOUND = "TICKET_LINK_NOT_FOUND";
+        public const string LINK_CREATED = "TICKET_LINK_CREATED";
+        public const string LINK_REMOVED = "TICKET_LINK_REMOVED";
+
+        /// <summary>AC-925.3. Resolving as Duplicate without a DuplicateOf link is a state conflict.</summary>
+        public const string DUPLICATE_REQUIRES_LINK = "TICKET_DUPLICATE_REQUIRES_LINK";
 
         /// <summary>AC-45. Per-record authorization, decided only once the ticket is loaded.</summary>
         public const string NOT_ASSIGNED_TO_YOU = "TICKET_NOT_ASSIGNED_TO_YOU";
@@ -303,6 +325,31 @@ public static class ApplicationErrors
         public const string TICKET_PRIORITY_INVALID = "TICKET_PRIORITY_INVALID";
         public const string TICKET_STATUS_INVALID = "TICKET_STATUS_INVALID";
         public const string TICKET_SOURCE_INVALID = "TICKET_SOURCE_INVALID";
+
+        // US-922 — resolution discipline (AC-922.1/3).
+        public const string RESOLUTION_CODE_REQUIRED = "RESOLUTION_CODE_REQUIRED";
+        public const string RESOLUTION_CODE_INVALID = "RESOLUTION_CODE_INVALID";
+        public const string RESOLUTION_NOTES_REQUIRED = "RESOLUTION_NOTES_REQUIRED";
+        public const string RESOLUTION_NOTES_MAX_LENGTH = "RESOLUTION_NOTES_MAX_LENGTH";
+
+        // US-923 — impact/urgency classification (AC-923.1).
+        public const string TICKET_IMPACT_REQUIRED = "TICKET_IMPACT_REQUIRED";
+        public const string TICKET_IMPACT_INVALID = "TICKET_IMPACT_INVALID";
+        public const string TICKET_URGENCY_REQUIRED = "TICKET_URGENCY_REQUIRED";
+        public const string TICKET_URGENCY_INVALID = "TICKET_URGENCY_INVALID";
+
+        // US-924 — tags (AC-924.1).
+        public const string TICKET_TAG_INVALID = "TICKET_TAG_INVALID";
+        public const string TICKET_TAG_DUPLICATE = "TICKET_TAG_DUPLICATE";
+        public const string TICKET_TAG_LIMIT = "TICKET_TAG_LIMIT";
+
+        // US-925 — links (AC-925.1).
+        public const string TICKET_LINK_TYPE_INVALID = "TICKET_LINK_TYPE_INVALID";
+        public const string TICKET_LINK_TARGET_REQUIRED = "TICKET_LINK_TARGET_REQUIRED";
+
+        // FEAT-34 / AC-806.6 — the batch permission set's field-keyed refusals.
+        public const string PERMISSION_SET_INVALID = "PERMISSION_SET_INVALID";
+        public const string PERMISSION_SNAPSHOT_REQUIRED = "PERMISSION_SNAPSHOT_REQUIRED";
 
         // Ticket messages — FEAT-14, AC-101..AC-104.
         public const string MESSAGE_BODY_REQUIRED = "MESSAGE_BODY_REQUIRED";

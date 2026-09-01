@@ -212,4 +212,45 @@ public static class SystemCode
         public const string VAL064 = "VAL064"; // Survey rating required
         public const string VAL065 = "VAL065"; // Survey rating invalid (1..5)
         public const string VAL066 = "VAL066"; // Department ID required
+
+        public const string VAL067 = "VAL067"; // Resolution code required (AC-922.1)
+        public const string VAL068 = "VAL068"; // Resolution code invalid (AC-922.3)
+        public const string VAL069 = "VAL069"; // Resolution notes required (AC-922.1)
+        public const string VAL070 = "VAL070"; // Resolution notes too long (AC-922.3)
+
+        public const string VAL071 = "VAL071"; // Ticket impact required (AC-923.1)
+        public const string VAL072 = "VAL072"; // Ticket impact invalid (AC-923.1)
+        public const string VAL073 = "VAL073"; // Ticket urgency required (AC-923.1)
+        public const string VAL074 = "VAL074"; // Ticket urgency invalid (AC-923.1)
+
+        public const string CON074 = "CON074"; // Ticket reclassified (AC-923.2)
+
+        public const string VAL075 = "VAL075"; // Tag invalid (AC-924.1)
+        public const string VAL076 = "VAL076"; // Tag duplicate (AC-924.1)
+        public const string VAL077 = "VAL077"; // Tag limit reached (AC-924.1)
+
+        public const string ERR080 = "ERR080"; // Tag not found on ticket
+
+        public const string CON075 = "CON075"; // Tag added
+        public const string CON076 = "CON076"; // Tag removed
+
+        public const string VAL078 = "VAL078"; // Link type invalid (AC-925.1)
+        public const string VAL079 = "VAL079"; // Link target reference required (AC-925.1)
+
+        public const string ERR081 = "ERR081"; // Link target ticket not found
+        public const string ERR082 = "ERR082"; // Link already exists
+        public const string ERR083 = "ERR083"; // Direct duplicate cycle (AC-925.2)
+        public const string ERR084 = "ERR084"; // Self link
+        public const string ERR085 = "ERR085"; // Duplicate resolution requires a DuplicateOf link (AC-925.3)
+        public const string ERR086 = "ERR086"; // Link not found
+
+        public const string CON077 = "CON077"; // Link created
+        public const string CON078 = "CON078"; // Link removed
+
+        // FEAT-34 — role permission workbench (AC-806.x). Last used before this feature:
+        // CON078, ERR086, VAL079.
+        public const string CON079 = "CON079"; // Role permission set updated (AC-806.1)
+        public const string ERR087 = "ERR087"; // Role permission snapshot is stale (AC-806.5)
+        public const string VAL080 = "VAL080"; // Permission set invalid (AC-806.6)
+        public const string VAL081 = "VAL081"; // Expected permission snapshot required (AC-806.6)
     }
