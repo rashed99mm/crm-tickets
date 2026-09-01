@@ -1,7 +1,7 @@
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { envelopeInterceptor } from 'common';
+import { ConfirmationService, envelopeInterceptor } from 'common';
 import SLAPoliciesComponent from './sla-policies.component';
 
 function ok<T>(data: T) {
@@ -120,5 +120,33 @@ describe('SLAPoliciesComponent', () => {
     fixture.detectChanges();
 
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Monday');
+  });
+
+  it('AC807_7_DeactivateConfirmsBeforeSending: cancelling issues no request', () => {
+    const fixture = render();
+    const confirmations = TestBed.inject(ConfirmationService);
+
+    fixture.componentInstance.deactivate(POLICY as never);
+
+    expect(confirmations.current()).not.toBeNull();
+    expect(confirmations.current()?.danger).toBe(true);
+    http.expectNone((r) => r.method === 'DELETE');
+
+    confirmations.resolve(false);
+
+    http.expectNone((r) => r.method === 'DELETE');
+  });
+
+  it('AC807_7_DeactivateSendsAfterConfirming', () => {
+    const fixture = render();
+    const confirmations = TestBed.inject(ConfirmationService);
+
+    fixture.componentInstance.deactivate(POLICY as never);
+    confirmations.resolve(true);
+
+    const request = http.expectOne((r) => r.method === 'DELETE' && r.url === '/api/SLAPolicies/p-1');
+    request.flush(ok(null));
+
+    http.expectOne((r) => r.url === '/api/SLAPolicies');
   });
 });

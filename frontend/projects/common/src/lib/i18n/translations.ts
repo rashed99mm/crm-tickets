@@ -453,6 +453,8 @@ export const TRANSLATIONS = {
 
   // ---- Shared actions and controls ---------------------------------------
   'action.cancel': { en: 'Cancel', ar: 'إلغاء' },
+  'action.apply': { en: 'Apply', ar: 'تطبيق' },
+  'action.add': { en: 'Add', ar: 'إضافة' },
   'action.edit': { en: 'Edit', ar: 'تعديل' },
   'action.remove': { en: 'Remove', ar: 'إزالة' },
   'action.clear': { en: 'Clear', ar: 'مسح' },
@@ -581,6 +583,8 @@ export const TRANSLATIONS = {
   'ai.autoSummary': { en: 'Auto-Summary', ar: 'الملخص التلقائي' },
   'ai.sentiment': { en: 'Sentiment', ar: 'المشاعر' },
   'field.priority': { en: 'Priority', ar: 'الأولوية' },
+  'field.impact': { en: 'Impact', ar: 'التأثير' },
+  'field.urgency': { en: 'Urgency', ar: 'الإلحاح' },
   'field.category': { en: 'Category', ar: 'التصنيف' },
   'field.customer': { en: 'Customer', ar: 'العميل' },
   'field.created': { en: 'Created', ar: 'تاريخ الإنشاء' },
@@ -789,6 +793,42 @@ export const TRANSLATIONS = {
   'tickets.escalation.level2': { en: 'Level 2', ar: 'المستوى 2' },
   'tickets.escalation.level3': { en: 'Level 3', ar: 'المستوى 3' },
   'tickets.queue.sortByEscalation': { en: 'Sort by escalation', ar: 'الفرز حسب التصعيد' },
+  'tickets.queue.tagFilter': { en: 'Tag', ar: 'الوسم' },
+  'tickets.queue.tagFilterPlaceholder': { en: 'Filter by tag', ar: 'تصفية حسب الوسم' },
+
+  // ---- Resolution discipline (US-922) --------------------------------------
+  'tickets.detail.resolve.title': { en: 'Resolve this ticket', ar: 'حل هذه التذكرة' },
+  'tickets.detail.resolve.code': { en: 'Resolution', ar: 'طريقة الحل' },
+  'tickets.detail.resolve.selectCode': { en: 'Select a resolution', ar: 'اختر طريقة الحل' },
+  'tickets.detail.resolve.notes': { en: 'Resolution notes', ar: 'ملاحظات الحل' },
+  'tickets.detail.resolve.submit': { en: 'Mark resolved', ar: 'وضع علامة كمحلولة' },
+  'tickets.detail.resolve.reopenCount': { en: 'Reopened {0} time(s)', ar: 'أُعيد فتحها {0} مرة' },
+
+  // ---- Impact/urgency matrix (US-923) --------------------------------------
+  'tickets.detail.reclassify': { en: 'Impact / urgency', ar: 'التأثير / الإلحاح' },
+
+  // ---- Ticket tags (US-924) -------------------------------------------------
+  'tickets.detail.tags': { en: 'Tags', ar: 'الوسوم' },
+  'tickets.detail.noTags': { en: 'No tags yet.', ar: 'لا توجد وسوم بعد.' },
+  'tickets.detail.addTag': { en: 'Add a tag', ar: 'أضف وسمًا' },
+  'tickets.detail.removeTag': { en: 'Remove tag {0}', ar: 'إزالة الوسم {0}' },
+  'tickets.detail.tagLimit': {
+    en: 'A ticket cannot carry more than 10 tags.',
+    ar: 'لا يمكن أن تحمل التذكرة أكثر من 10 وسوم.',
+  },
+
+  // ---- Related / duplicate links (US-925) -----------------------------------
+  'tickets.detail.links': { en: 'Related tickets', ar: 'التذاكر المرتبطة' },
+  'tickets.detail.links.none': { en: 'No linked tickets.', ar: 'لا توجد تذاكر مرتبطة.' },
+  'tickets.detail.links.related': { en: 'Related to', ar: 'مرتبطة بـ' },
+  'tickets.detail.links.duplicateOf': { en: 'Duplicate of', ar: 'نسخة مكررة من' },
+  'tickets.detail.links.duplicatedBy': { en: 'Duplicated by', ar: 'نسخت بواسطة' },
+  'tickets.detail.links.type': { en: 'Link type', ar: 'نوع الربط' },
+  'tickets.detail.links.targetPlaceholder': {
+    en: 'Target ticket reference (TKT-000000)',
+    ar: 'مرجع التذكرة المستهدفة (TKT-000000)',
+  },
+  'tickets.detail.links.remove': { en: 'Remove link to {0}', ar: 'إزالة الربط بـ {0}' },
 
   // ---- Customers ----------------------------------------------------------
   'customers.title': { en: 'Customers', ar: 'العملاء' },
@@ -891,6 +931,24 @@ export const TRANSLATIONS = {
   'departments.active': { en: 'Active', ar: 'نشط' },
   'departments.deactivated': { en: 'Deactivated', ar: 'غير نشط' },
   'departments.deactivate': { en: 'Deactivate', ar: 'إلغاء التفعيل' },
+  'departments.deactivateConfirm.title': { en: 'Deactivate this department?', ar: 'إلغاء تنشيط هذا القسم؟' },
+  'departments.deactivateConfirm.body': {
+    en: '{0} will stop appearing in assignment and routing choices. Existing tickets keep their department.',
+    ar: 'لن يظهر {0} في خيارات التعيين والتوجيه. تحتفظ التذاكر الحالية بقسمها.',
+  },
+
+  'users.deactivateConfirm.title': { en: 'Deactivate this account?', ar: 'إلغاء تنشيط هذا الحساب؟' },
+  'users.deactivateConfirm.body': {
+    en: '{0} will be signed out and will not be able to sign in again until the account is reactivated.',
+    ar: 'سيتم تسجيل خروج {0} ولن يتمكن من تسجيل الدخول حتى يتم إعادة تنشيط الحساب.',
+  },
+  'users.deactivateConfirm.confirm': { en: 'Deactivate', ar: 'إلغاء التنشيط' },
+
+  'slaPolicies.deactivateConfirm.title': { en: 'Deactivate this SLA policy?', ar: 'إلغاء تنشيط سياسة الخدمة؟' },
+  'slaPolicies.deactivateConfirm.body': {
+    en: 'The {0} priority policy will stop applying to new tickets. Tickets already tracking against it keep their targets.',
+    ar: 'لن تُطبق سياسة أولوية {0} على التذاكر الجديدة. تحتفظ التذاكر الحالية بأهدافها.',
+  },
 
   // ---- Admin: audit log and platform settings (FEAT-21) --------------------
   'auditLog.title': { en: 'Audit Log', ar: 'سجل التدقيق' },
@@ -980,6 +1038,7 @@ export const TRANSLATIONS = {
   },
   'permissions.list.title': { en: 'Role permissions', ar: 'صلاحيات الأدوار' },
   'permissions.empty': { en: 'No permissions found.', ar: 'لم يتم العثور على صلاحيات.' },
+  'permissions.loadError': { en: 'The permissions could not be loaded.', ar: 'تعذر تحميل الصلاحيات.' },
   'permissions.role': { en: 'Role', ar: 'الدور' },
   'permissions.assigned': { en: 'Permission assigned successfully.', ar: 'تم إسناد الصلاحية بنجاح.' },
   'permissions.revoked': { en: 'Permission revoked successfully.', ar: 'تم إلغاء الصلاحية بنجاح.' },

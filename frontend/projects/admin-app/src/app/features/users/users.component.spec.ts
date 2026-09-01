@@ -2,7 +2,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { envelopeInterceptor } from 'common';
+import { ConfirmationService, envelopeInterceptor } from 'common';
 import UsersComponent from './users.component';
 
 function envelope(data: unknown) {
@@ -156,17 +156,50 @@ describe('UsersComponent', () => {
     expect(fixture.componentInstance.fieldError('email')).toBeNull();
   });
 
-  it('deactivates through the PUT activation endpoint', () => {
+  it('AC807_5_DeactivateConfirmsBeforeSending: cancelling issues no request', () => {
     const fixture = render();
     flushList();
     fixture.detectChanges();
 
+    const confirmations = TestBed.inject(ConfirmationService);
     fixture.componentInstance.toggleActive(STAFF[0]);
+
+    expect(confirmations.current()).not.toBeNull();
+    expect(confirmations.current()?.danger).toBe(true);
+    http.expectNone((r) => r.method === 'PUT');
+
+    confirmations.resolve(false);
+
+    http.expectNone((r) => r.method === 'PUT');
+  });
+
+  it('AC807_5_DeactivateSendsAfterConfirming', () => {
+    const fixture = render();
+    flushList();
+    fixture.detectChanges();
+
+    const confirmations = TestBed.inject(ConfirmationService);
+    fixture.componentInstance.toggleActive(STAFF[0]);
+    confirmations.resolve(true);
 
     const call = http.expectOne('/api/Users/1/deactivate');
     expect(call.request.method).toBe('PUT');
     call.flush(envelope(null));
 
+    http.expectOne((r) => isUsersList(r));
+  });
+
+  it('AC807_5_ActivatingDoesNotConfirm: only the destructive direction is gated', () => {
+    const fixture = render();
+    flushList();
+    fixture.detectChanges();
+
+    const confirmations = TestBed.inject(ConfirmationService);
+    // STAFF[1] is inactive, so this activates.
+    fixture.componentInstance.toggleActive(STAFF[1]);
+
+    expect(confirmations.current()).toBeNull();
+    http.expectOne('/api/Users/2/activate').flush(envelope(null));
     http.expectOne((r) => isUsersList(r));
   });
 

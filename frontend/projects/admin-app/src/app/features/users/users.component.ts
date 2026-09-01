@@ -3,6 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import {
   ApiError,
   AsyncState,
+  ConfirmationService,
   CsButton,
   CsDatePipe,
   CsDialog,
@@ -66,6 +67,7 @@ const STAFF_ROLES = ['Agent', 'Supervisor', 'Admin', 'SuperAdmin', 'ContentManag
 export default class UsersComponent {
   private readonly api = inject(StaffApi);
   private readonly session = inject(SessionStore);
+  private readonly confirmations = inject(ConfirmationService);
 
   protected readonly locale = inject(LocaleStore);
 
@@ -241,8 +243,33 @@ export default class UsersComponent {
     });
   }
 
+  /**
+   * AC-807.5 — deactivation signs the account out and is confirmed; activation is not destructive
+   * and is not gated. One button serves both directions (users.component.html:220).
+   */
   toggleActive(user: StaffUser): void {
-    this.api.setActive(user.id, !user.isActive).subscribe({
+    if (!user.isActive) {
+      this.setActive(user, true);
+      return;
+    }
+
+    this.confirmations
+      .confirm({
+        title: this.locale.t('users.deactivateConfirm.title'),
+        message: this.locale.t('users.deactivateConfirm.body', `${user.firstName} ${user.lastName}`),
+        confirmText: this.locale.t('users.deactivateConfirm.confirm'),
+        cancelText: this.locale.t('action.cancel'),
+        danger: true,
+      })
+      .subscribe((accepted) => {
+        if (accepted) {
+          this.setActive(user, false);
+        }
+      });
+  }
+
+  private setActive(user: StaffUser, isActive: boolean): void {
+    this.api.setActive(user.id, isActive).subscribe({
       next: () => this.load(),
       error: (error: unknown) => this.state.set(failed(this.toApiError(error))),
     });

@@ -3,6 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import {
   ApiError,
   AsyncState,
+  ConfirmationService,
   CsButton,
   CsCard,
   CsDialog,
@@ -46,6 +47,7 @@ import {
 })
 export default class DepartmentsComponent {
   private readonly api = inject(DepartmentApi);
+  private readonly confirmations = inject(ConfirmationService);
 
   protected readonly locale = inject(LocaleStore);
 
@@ -108,11 +110,25 @@ export default class DepartmentsComponent {
     });
   }
 
+  /** AC-807.6 — deactivation removes the department from routing choices, so it confirms first. */
   deactivate(department: Department): void {
-    this.api.deactivate(department.id).subscribe({
-      next: () => this.load(),
-      error: (error: unknown) => this.state.set(failed(this.toApiError(error))),
-    });
+    this.confirmations
+      .confirm({
+        title: this.locale.t('departments.deactivateConfirm.title'),
+        message: this.locale.t('departments.deactivateConfirm.body', department.name),
+        confirmText: this.locale.t('departments.deactivate'),
+        cancelText: this.locale.t('action.cancel'),
+        danger: true,
+      })
+      .subscribe((accepted) => {
+        if (!accepted) {
+          return;
+        }
+        this.api.deactivate(department.id).subscribe({
+          next: () => this.load(),
+          error: (error: unknown) => this.state.set(failed(this.toApiError(error))),
+        });
+      });
   }
 
   /** Server field error for one control, so it lands on the right input. */

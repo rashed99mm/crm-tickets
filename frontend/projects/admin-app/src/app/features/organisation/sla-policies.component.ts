@@ -4,6 +4,7 @@ import {
   ApiError,
   AsyncState,
   BusinessHoursCalendar,
+  ConfirmationService,
   CsButton,
   CsCard,
   CsDialog,
@@ -49,6 +50,7 @@ type SLATab = 'policies' | 'businessHours' | 'holidays';
 })
 export default class SLAPoliciesComponent {
   private readonly api = inject(SLAPolicyApi);
+  private readonly confirmations = inject(ConfirmationService);
 
   protected readonly locale = inject(LocaleStore);
   protected readonly priorities = TICKET_PRIORITIES;
@@ -248,11 +250,25 @@ export default class SLAPoliciesComponent {
     });
   }
 
+  /** AC-807.7 — a deactivated policy stops applying to new tickets, so it confirms first. */
   deactivate(policy: SLAPolicy): void {
-    this.api.deactivate(policy.id).subscribe({
-      next: () => this.load(),
-      error: (error: unknown) => this.state.set(failed(this.toApiError(error))),
-    });
+    this.confirmations
+      .confirm({
+        title: this.locale.t('slaPolicies.deactivateConfirm.title'),
+        message: this.locale.t('slaPolicies.deactivateConfirm.body', policy.priority),
+        confirmText: this.locale.t('departments.deactivate'),
+        cancelText: this.locale.t('action.cancel'),
+        danger: true,
+      })
+      .subscribe((accepted) => {
+        if (!accepted) {
+          return;
+        }
+        this.api.deactivate(policy.id).subscribe({
+          next: () => this.load(),
+          error: (error: unknown) => this.state.set(failed(this.toApiError(error))),
+        });
+      });
   }
 
   fieldError(field: string) {
