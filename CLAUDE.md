@@ -64,6 +64,10 @@ exist** — an instruction file listing commands that fail is worse than one lis
 | Frontend tests | `cd frontend && npx ng test common --watch=false` (also `admin-app`, `portal-app`) |
 | Frontend build | `cd frontend && npx ng build admin-app` |
 | E2E | `cd frontend && npx playwright test` |
+| Run mock channel gateway | `cd cms-integration-gateway && npm start` (port 3001) |
+| Use the mocks | set `Channels__UseMocks=true` on either API host |
+| Simulate inbound SMS | `cd cms-integration-gateway && npm run simulate:sms` (needs the ExternalApi host running) |
+| Simulate inbound email | `cd cms-integration-gateway && npm run simulate:email` |
 
 ### Both hosts need two settings, or every request returns 500
 
@@ -80,6 +84,16 @@ first in the pipeline - converts it into the standard envelope for **every** req
 
 Logging reads its configuration from `appsettings`, which has no console sink. To see an actual
 exception, override it: `Serilog__Using__0=Serilog.Sinks.Console Serilog__WriteTo__0__Name=Console`.
+
+**Locally you also need `Messaging__Required=false`**, or startup throws
+`RabbitMQ credentials must be configured` before the host ever listens — this one fails *earlier*
+than the two above, so it does not even produce the 500-on-everything symptom. The test factories
+already set it (`CrmExternalApiFactory.cs:30`); a hand-started host does not.
+
+**`dotnet run` overrides your shell's environment from `launchSettings.json`.** Anything you set
+inline that the launch profile also sets — `ASPNETCORE_ENVIRONMENT` in particular — is silently
+replaced, which once produced a convincing "the production guard does not fire" reading. Pass
+`--no-launch-profile` whenever the environment matters.
 
 Seeded administrator: configure credentials through the seed settings or environment variables; do
 not commit a real password. The checked-in settings contain placeholders only.

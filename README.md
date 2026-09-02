@@ -51,6 +51,122 @@ Controller -> MediatR command/query -> Handler -> Repository/unit of work -> Dat
 - API responses use the shared bilingual response envelope with success/code/message/data/errors/traceId/timestamp.
 - Frontend API clients consume the unwrapped `data` payload through the shared envelope interceptor.
 
+## System Flow Catalog
+
+How a request actually travels, end to end. Each flow names the real entry point and the files that
+carry it, so a reader can follow one path without reconstructing it from the directory tree.
+
+### 1. Ticket capture — three doors, one lifecycle
+
+| Door | Entry point | Who | Notes |
+|---|---|---|---|
+| Staff create | `POST /api/Tickets` (`InternalApi/Controllers/TicketsController.cs`) | authenticated agent | Chooses the customer on someone's behalf; takes `impact` + `urgency`. |
+| Customer portal | `POST /api/portal/tickets` (`ExternalApi/Controllers/PortalController.cs`) | signed-in customer | No `customerId` in the body — it comes from the session (`PJ-8`). No priority either: customer-origin tickets do not self-classify (`US-923`), the server derives it. |
+| Public web form | `POST /api/external/webform/submit` (`ExternalApi/Controllers/WebFormController.cs`) | anonymous visitor | Honeypot + per-IP window; both refusals answer exactly like a success so a bot learns nothing (`CC-47`). |
+
+All three converge on `Ticket.Create`, which assigns a `TKT-nnnnnn` reference from a SQL sequence
+(`Infrastructure/Persistence/TicketReferenceGenerator.cs`). `NEXT VALUE FOR` sits outside the
+caller's transaction, so a rolled-back create burns a number rather than reissuing one.
+
+### 2. Inbound channel ingestion — provider payload in, ticket message out
+
+```text
+provider webhook -> channel controller (parse + verify) -> IngestInboundChannelMessageCommand
+                 -> resolve/create Customer -> resolve/create open Ticket for (customer, channel)
+                 -> append TicketMessage
+```
+
+| Channel | Route | Authenticity |
+|---|---|---|
+| WhatsApp | `POST /api/channels/whatsapp/webhook` | `X-Hub-Signature-256` — HMAC-SHA256 over the **raw body** (`MetaSignatureVerifier`) |
+| SMS | `POST /api/channels/sms/webhook` | `X-Twilio-Signature` — HMAC-SHA1, Base64, over the **request URL plus ordinal-sorted form parameters** (`TwilioSignatureVerifier`) |
+| Email | `POST /api/channels/email/webhook` | **None** — SendGrid Inbound Parse does not sign its posts; the payload authenticates nothing beyond what it claims |
+| Web form | `POST /api/external/webform/submit` | Honeypot + rate window, not a signature |
+
+Both signed channels are verified **before any database write**, and both verifiers sit behind one
+`IWebhookSignatureVerifier` port via `CompositeWebhookSignatureVerifier`, which dispatches on the
+provider name each verifier already gates on. Adding a provider adds an implementation, not a branch.
+
+One open ticket per `(customer, channel)`: a non-terminal ticket receives the message, a terminal one
+starts a new ticket. A retried delivery carrying a provider message id already seen is a no-op
+success, not a duplicate row — the webhook still gets `200`, because a failed ingestion is not
+something the provider should redeliver for hours.
+
+### 3. Outbound reply — agent to customer, over the customer's own channel
+
+```text
+POST /api/Tickets/{id}/messages -> RecordTicketMessageCommandHandler
+   -> TicketMessage (Outbound) -> INotificationGateway -> channel sender -> provider
+```
+
+The contact field is chosen per channel and never both: phone channels carry `PhoneNumber`, email
+carries `Email`. Email additionally skips `@channel.invalid` addresses — the placeholders minted for
+phone-only customers to satisfy a non-nullable email column, which are not deliverable.
+
+The three HTTP senders share `ChannelHttpSender` (transport, auth, bounded retry, result mapping) and
+own only their payload shape and id/error mapping: SendGrid v3 for email, Meta Cloud API for
+WhatsApp, Twilio's form-encoded contract for SMS.
+
+### 4. The mock/real toggle — a decorator, not a second code path
+
+Every sender and the inbound verifiers read their base URL and credential through
+`IExternalApiConfigurationProvider` and nothing else. `Channels:UseMocks` therefore needs one
+decorator — `MockRoutingExternalApiConfigurationProvider` — to point the three channel gateways at
+the local mock server. No sender, handler or controller knows mocks exist. Startup **fails** if the
+flag is ever true under `Production`: a mock that accepts and discards customer notifications is
+worse than an outage, because every send reports success.
+
+Credentials arrive already decrypted at the provider boundary; nothing downstream unprotects them
+again.
+
+### 5. Live chat — anonymous, session-scoped, real time
+
+```text
+POST /api/external/chat/start -> session + opaque token
+   -> SignalR /hubs/chat joined with that token (no account, no bearer)
+   -> agent claim -> messages both ways -> agent may convert the session to a ticket
+```
+
+### 6. SLA and escalation — the only clock in the system
+
+A hosted scanner sweeps for breaches, sets escalation levels, appends history and notifies the
+assignee. Business-hours arithmetic lives behind `IBusinessHoursCalculator`, so "four working hours"
+does not silently mean four wall-clock hours.
+
+### 7. Notifications — one gateway, many channels
+
+`INotificationGateway` resolves the recipient's channels, renders the template, and dispatches
+through the per-channel senders, recording a `NotificationDeliveries` row per attempt with the
+provider's own message id. Transient provider failures retry within a bounded policy; permanent ones
+never retry.
+
+### 8. AI assist — grounded, and in the reader's language
+
+Summaries, draft replies, suggested solutions and the knowledge-base "ask" all run through
+`ResilientAiService`, which selects its **entire prompt** — English or Arabic — from
+`IUserContext.Locale`. That locale is read from the `Accept-Language` header, which the frontend
+sends from its own language store (`acceptLanguageInterceptor`). Without that header the server would
+follow the *browser's* language and the UI's language switch would not reach the model.
+
+### 9. Request/response envelope and localization
+
+```text
+Angular API client -> refresh -> auth -> accept-language -> HTTP
+   -> server resolves message text in the requested language
+   -> envelope { success, code, message, data, errors, traceId, timestamp }
+   -> envelopeInterceptor unwraps to `data`, or throws a typed ApiError
+```
+
+Components therefore see plain typed models or an `ApiError` — never envelope fields. Domain enum
+values (statuses, priorities) are deliberately **not** translated client-side; that would keep a
+second copy of a server-owned vocabulary and blank any value the server later adds.
+
+### 10. Attachments
+
+Uploaded after the ticket exists, because the endpoint is keyed off a real ticket id: the form
+secures the row first, then streams files at it, best-effort per file so one failure strands neither
+the ticket nor the other files.
+
 ## Requirements
 
 - .NET SDK 10
