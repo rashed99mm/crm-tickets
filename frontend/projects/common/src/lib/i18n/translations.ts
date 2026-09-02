@@ -996,6 +996,9 @@ export const TRANSLATIONS = {
   'platformSettings.branding.title': { en: 'Global Branding', ar: 'الهوية البصرية العامة' },
   'platformSettings.branding.logoUrl': { en: 'Company Logo', ar: 'شعار الشركة' },
   'platformSettings.branding.uploadNew': { en: 'Upload New', ar: 'رفع جديد' },
+  // The upload control and this text field are two different inputs; both were labelled
+  // "Company Logo", so the panel showed the same heading twice.
+  'platformSettings.branding.logoUrlField': { en: 'Logo URL', ar: 'رابط الشعار' },
   'platformSettings.branding.primaryColor': { en: 'Primary Brand Color', ar: 'لون العلامة الأساسي' },
   'platformSettings.branding.accentColor': { en: 'Accent Brand Color', ar: 'لون العلامة الثانوي' },
   'platformSettings.branding.portalTitle': { en: 'Portal Title', ar: 'عنوان البوابة' },
