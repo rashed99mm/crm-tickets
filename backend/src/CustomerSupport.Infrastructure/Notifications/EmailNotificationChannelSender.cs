@@ -1,113 +1,58 @@
-using CustomerSupport.Application.Errors;
-using CustomerSupport.Application.ExternalApis.DTOs;
+using CustomerSupport.Application.Common.Options;
 using CustomerSupport.Application.Interfaces;
 using CustomerSupport.Application.Notifications;
 using CustomerSupport.Domain.ValueObjects;
+using CustomerSupport.Infrastructure.Notifications.Channels;
 using Microsoft.Extensions.Logging;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
+using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace CustomerSupport.Infrastructure.Notifications;
 
 /// <summary>
-/// Delivers email through the configured <c>EmailGateway</c> integration URL. Credentials are
-/// restored only at the transport boundary via <see cref="ISecretProtector"/> and never logged.
+/// Delivers email through the configured <c>EmailGateway</c> integration URL, speaking SendGrid
+/// v3's contract (CC-34). See <see cref="ChannelHttpSender"/> for the shared transport/retry/auth
+/// contract.
 /// </summary>
-public sealed class EmailNotificationChannelSender : INotificationChannelSender
+public sealed class EmailNotificationChannelSender : ChannelHttpSender
 {
-    private readonly IExternalApiConfigurationProvider _configProvider;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ISecretProtector _secretProtector;
-    private readonly ILogger<EmailNotificationChannelSender> _logger;
+    private readonly ChannelOptions _options;
 
     public EmailNotificationChannelSender(
         IExternalApiConfigurationProvider configProvider,
         IHttpClientFactory httpClientFactory,
-        ISecretProtector secretProtector,
+        IOptions<ChannelOptions> options,
         ILogger<EmailNotificationChannelSender> logger)
+        : base(configProvider, httpClientFactory, logger)
     {
-        _configProvider = configProvider;
-        _httpClientFactory = httpClientFactory;
-        _secretProtector = secretProtector;
-        _logger = logger;
+        _options = options.Value;
     }
 
-    public NotificationChannel SupportedChannel => NotificationChannel.Email;
+    public override NotificationChannel SupportedChannel => NotificationChannel.Email;
 
-    public async Task<ChannelSendResult> SendAsync(RenderedNotification notification, CancellationToken ct = default)
-    {
-        var config = _configProvider.GetConfig(NotificationGatewayConstants.EmailGatewayConfigName);
-        if (config is null)
+    protected override string ConfigName => NotificationGatewayConstants.EmailGatewayConfigName;
+
+    /// <summary>SendGrid v3 `POST /v3/mail/send`. `from` is required and had no equivalent in the
+    /// house payload this replaces, so it comes from `Channels:EmailFrom`.</summary>
+    protected override HttpContent BuildContent(RenderedNotification notification) =>
+        JsonContent(new
         {
-            _logger.LogWarning("Email gateway configuration '{Config}' is missing", NotificationGatewayConstants.EmailGatewayConfigName);
-            return new ChannelSendResult(NotificationChannel.Email, false, ApplicationErrors.Notification.CONFIG_MISSING);
-        }
-
-        var payload = new { to = notification.Email, subject = notification.Title, body = notification.Message };
-        using var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
-
-        using var client = _httpClientFactory.CreateClient();
-        client.Timeout = TimeSpan.FromSeconds(Math.Max(1, config.TimeoutSeconds));
-        ApplyAuth(client, config.Auth);
-
-        for (var attempt = 1; attempt <= NotificationGatewayConstants.TransientRetryCount; attempt++)
-        {
-            try
+            personalizations = new[]
             {
-                using var response = await client.PostAsync(config.BaseUrl, content, ct);
-                if (response.IsSuccessStatusCode)
-                    return new ChannelSendResult(NotificationChannel.Email, true, ProviderMessageId: $"email:{Guid.NewGuid():N}");
-
-                if (!IsTransient(response.StatusCode))
-                {
-                    _logger.LogWarning("Email gateway returned {StatusCode} (non-transient)", (int)response.StatusCode);
-                    return new ChannelSendResult(NotificationChannel.Email, false, ApplicationErrors.Notification.DELIVERY_FAILED);
-                }
-            }
-            catch (OperationCanceledException) when (ct.IsCancellationRequested)
+                new { to = new[] { new { email = notification.Email } } },
+            },
+            from = new { email = _options.EmailFrom },
+            subject = notification.Title,
+            content = new[]
             {
-                throw;
-            }
-            catch (Exception ex) when (IsTransient(ex))
-            {
-                _logger.LogWarning(ex, "Email gateway transient failure on attempt {Attempt}", attempt);
-            }
+                new { type = "text/plain", value = notification.Message },
+            },
+        });
 
-            if (attempt < NotificationGatewayConstants.TransientRetryCount)
-                await Task.Delay(TimeSpan.FromMilliseconds(200 * attempt), ct);
-        }
-
-        return new ChannelSendResult(NotificationChannel.Email, false, ApplicationErrors.Notification.DELIVERY_FAILED);
-    }
-
-    private void ApplyAuth(HttpClient client, ExternalApiAuthConfig auth)
-    {
-        switch (auth.Type)
-        {
-            case ExternalApiAuthType.ApiKey:
-                client.DefaultRequestHeaders.Remove(auth.KeyName);
-                client.DefaultRequestHeaders.Add(auth.KeyName, _secretProtector.Unprotect(auth.Value));
-                break;
-            case ExternalApiAuthType.Bearer:
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _secretProtector.Unprotect(auth.Token));
-                break;
-            case ExternalApiAuthType.Basic:
-                var basic = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{auth.ClientId}:{auth.ClientSecret}"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basic);
-                break;
-            case ExternalApiAuthType.OAuth2:
-            case ExternalApiAuthType.None:
-            default:
-                break;
-        }
-    }
-
-    private static bool IsTransient(HttpStatusCode statusCode) =>
-        statusCode is >= HttpStatusCode.InternalServerError or HttpStatusCode.RequestTimeout;
-
-    private static bool IsTransient(Exception ex) =>
-        ex is TimeoutException or HttpRequestException or OperationCanceledException;
+    /// <summary>SendGrid returns 202 with an empty body; the id is in `X-Message-Id`.</summary>
+    protected override Task<string?> ReadProviderMessageIdAsync(
+        HttpResponseMessage response, CancellationToken ct) =>
+        Task.FromResult(response.Headers.TryGetValues("X-Message-Id", out var values)
+            ? values.FirstOrDefault()
+            : null);
 }

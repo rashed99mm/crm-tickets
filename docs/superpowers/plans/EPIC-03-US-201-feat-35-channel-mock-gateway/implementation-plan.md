@@ -91,13 +91,19 @@ plaintext. Fix: delete the second unprotect.
 - Modify: `backend/src/CustomerSupport.Infrastructure/Notifications/SmsNotificationChannelSender.cs:85-106`
 - Modify: `backend/src/CustomerSupport.Infrastructure/Notifications/WhatsAppNotificationChannelSender.cs:93-114`
 - Test: `backend/tests/CustomerSupport.Tests/Unit/Notifications/WhatsAppNotificationChannelSenderTests.cs`
+- Modify (found during execution, not originally planned):
+  `backend/tests/CustomerSupport.Tests/Integration/GatewayTestData.cs` — seed both `authValue` and
+  `authToken`, same protected secret.
+- Modify (found during execution, not originally planned):
+  `backend/tests/CustomerSupport.Tests/Integration/WhatsAppOutboundReplyTests.cs:29` — compose the
+  `/messages` path onto the stub's URL at the one call site that dereferences it.
 
 **Interfaces:**
 - Consumes: nothing.
 - Produces: all three senders' constructors lose their `ISecretProtector` parameter. Task 4 depends
   on that shape.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Add to `WhatsAppNotificationChannelSenderTests.cs`. It asserts the plaintext credential the provider
 hands over reaches the header — which today throws instead.
@@ -130,7 +136,7 @@ public async Task CC51_PlaintextCredentialFromTheProvider_ReachesTheAuthorizatio
 }
 ```
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~CC51_PlaintextCredential"
@@ -140,7 +146,7 @@ Expected: FAIL. With `IdentitySecretProtector` still injected it passes vacuousl
 `new IdentitySecretProtector(),` from `CreateSut()`** (step 3 removes the parameter). Before the fix,
 compilation fails on the missing argument — that is the failing state for this step.
 
-- [ ] **Step 3: Remove the double-unprotect from all three senders**
+- [x] **Step 3: Remove the double-unprotect from all three senders**
 
 In each of the three files: drop the `ISecretProtector` field, constructor parameter and assignment,
 drop the `using CustomerSupport.Application.Interfaces;` only if nothing else needs it, and change
@@ -181,13 +187,20 @@ if it does not, seed `authType: "ApiKey"` with `authKeyName: "Authorization"`. R
 `Domain/Entities/ExternalApis/ExternalApiConfiguration.cs` and pick whichever the factory supports —
 do not add a parameter to the entity for this.
 
+> **This guidance was incomplete — see the deviation record below.** Switching the seed to
+> `authToken` alone (dropping `authValue`) fixes the outbound Bearer header but breaks
+> `MetaSignatureVerifier`, which reads `Auth.Value`, not `Auth.Token`, to verify an inbound webhook's
+> signature. The two fields serve genuinely different consumers even though this test fixture uses
+> one secret constant for both. **Seed both `authValue` and `authToken` with the same protected
+> secret.**
+
 Guard against an empty credential rather than sending a malformed header:
 
 ```csharp
             case ExternalApiAuthType.Bearer when !string.IsNullOrWhiteSpace(auth.Token):
 ```
 
-- [ ] **Step 4: Run the unit test and the red integration test**
+- [x] **Step 4: Run the unit test and the red integration test**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~WhatsAppNotificationChannelSenderTests|FullyQualifiedName~WhatsAppOutboundReply"
@@ -197,7 +210,28 @@ Expected: PASS, 9/9 — including
 `CC10_WhatsAppReply_RecordsOutboundMessageAndDispatchesToTheGateway`, which was failing with
 `Expected _stub.ReceivedBodies to contain 1 item(s), but found 0`.
 
-- [ ] **Step 5: Run the whole suite — this touched a shared path**
+> **Did not pass 9/9 on the first attempt after step 3 alone.** `CC10_WhatsAppReply...` was *still*
+> red — same assertion, same "found 0" — after removing the double-unprotect. Root-caused by
+> instrumenting the test host with a temporary diagnostic logger and a `Console.WriteLine` in
+> `RecordTicketMessageCommandHandler` (both removed before commit): the dispatch was actually being
+> attempted and `NotificationGateway` reported `DELIVERY_FAILED` with no exception logged, which
+> meant the HTTP call completed but failed non-transiently — a 404. `GatewayTestData.
+> SeedWhatsAppGatewayAsync(_stub.BaseUrl)` was seeding the stub's **bare host**, but
+> `StubGatewayServer` maps its handler at `/messages`; every outbound POST hit the stub's root and
+> 404'd at ASP.NET's routing layer before any endpoint ran — non-transient, one attempt, zero bodies
+> received. A second, independent bug from `CC-51`, in test code rather than production code. Fixed
+> by moving the `/messages` composition into `WhatsAppOutboundReplyTests.InitializeAsync` (the one
+> caller that actually dereferences the URL) rather than into `GatewayTestData` itself, since
+> `WhatsAppWebhookTests` passes its own complete fake URL to the same helper and never dereferences
+> it — appending a path there would have doubled it.
+>
+> Fixing that in turn **broke `WhatsAppWebhookTests.CC8_SignedWebhook...` and `CC9_RetriedDelivery...`**,
+> caught only by running the full suite and diffing named failures against a baseline at `HEAD` (see
+> below) — this is the `Auth.Value`/`Auth.Token` split described in the step above. All 15 WhatsApp
+> unit + integration tests (8 sender unit + 2 outbound reply + 5 webhook) pass together after both
+> fixes.
+
+- [x] **Step 5: Run the whole suite — this touched a shared path**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx
@@ -205,21 +239,32 @@ cd backend && dotnet test CustomerSupport.slnx
 
 Paste the counts into the task record. Any newly-red test is a real regression; do not proceed.
 
-- [ ] **Step 6: Commit**
+> **Actual verification used a name-level diff against a baseline, not just a count comparison** —
+> a raw "Failed: N" count cannot distinguish "fixed one, broke another" from "no change". Reverted
+> this task's 6 files to `HEAD` (backed up first), ran the full suite (`Failed: 57, Passed: 730,
+> Total: 787`), restored the files, ran again with everything fixed (`Failed: 56, Passed: 732, Total:
+> 788`), and diffed the two `[FAIL]`-line name sets directly (`dotnet test`'s own console failure
+> count corresponds to the TRX `RunInfo` elements with `outcome="Error"`, not the `UnitTestResult`
+> `outcome="Failed"` count, which includes extra entries a raw grep does not explain — the `RunInfo`
+> text lines were used as the reliable source). Result: exactly one name moved from failing to
+> passing (`WhatsAppOutboundReplyTests.CC10_WhatsAppReply_RecordsOutboundMessageAndDispatchesToTheGateway`);
+> the set of 56 remaining failures is byte-for-byte identical between the two runs. Zero regressions,
+> confirmed by name, not by count.
+>
+> The 56 pre-existing failures span unrelated areas (`PermissionTests`, `AuditLogEndpointTests`,
+> `TicketLifecycleEndpointTests`, and even pure `Domain`/`Validators` unit tests with no HTTP or DB
+> dependency) and are consistent with the sandbox permission/identity-seeding defect this project's
+> own `FEAT-34` plan record already documents as pre-existing and unrelated to any single feature.
+> Not investigated further here — out of this task's scope, and already on record elsewhere.
 
-```bash
-git add backend/src/CustomerSupport.Infrastructure/Notifications backend/tests/CustomerSupport.Tests
-git commit -m "fix: stop unprotecting an already-decrypted gateway credential (CC-51)
-
-The configuration provider decrypts in MapToConfig, then every sender
-unprotected the plaintext again; IDataProtector.Unprotect throws on that,
-and because ApplyAuth ran outside the retry try the exception escaped
-SendAsync and NotificationGateway recorded DELIVERY_FAILED. No outbound
-Email, SMS or WhatsApp request has ever left the process for any AuthType
-but None. The unit tests missed it by injecting an identity protector.
-
-Closes CC-10 and CC-13, whose integration test was red."
-```
+- [ ] **Step 6: Commit** — **deliberately not executed.** Explicit instruction this session:
+  implement the work, do not commit it. `git status` shows exactly the 6 files below, uncommitted,
+  ready for the next commit:
+  `EmailNotificationChannelSender.cs`, `SmsNotificationChannelSender.cs`,
+  `WhatsAppNotificationChannelSender.cs`, `GatewayTestData.cs`, `WhatsAppOutboundReplyTests.cs`,
+  `WhatsAppNotificationChannelSenderTests.cs`. The commit message drafted in this plan still applies;
+  it should additionally mention the `Auth.Value`/`Auth.Token` split and the stub-URL path fix, since
+  both shipped in the same change.
 
 ---
 
@@ -284,7 +329,7 @@ cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~Chan
 
 Expected: FAIL — `ChannelNames` does not exist.
 
-- [ ] **Step 3: Create the single source of truth**
+- [x] **Step 3: Create the single source of truth**
 
 ```csharp
 namespace CustomerSupport.Domain.Common;
@@ -322,7 +367,7 @@ public static class ChannelNames
 }
 ```
 
-- [ ] **Step 4: Point all four call sites at it**
+- [x] **Step 4: Point all four call sites at it**
 
 `TicketMessage.cs:17`:
 
@@ -348,7 +393,7 @@ keeping the existing `Contains` check and error code exactly as they are.
 Add `using CustomerSupport.Domain.Common;` where needed. Delete the stale comment listing the
 allow-list at `Application/Channels/Contracts.cs:9`.
 
-- [ ] **Step 5: Run the tests**
+- [x] **Step 5: Run the tests**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~ChannelNamesTests|FullyQualifiedName~TicketMessageTests|FullyQualifiedName~IngestInboundChannelMessage|FullyQualifiedName~CreateTicketCommandValidator"
@@ -359,12 +404,29 @@ list. Widening the inbound list to include `Email` and `LiveChat` must not break
 `CC4_UnrecognisedChannel_IsRejectedBeforeAnyWrite` — if that test used `"Email"` as its example of
 an unrecognised channel, change the example to `"Telegram"` and say so in the task record.
 
-- [ ] **Step 6: Commit**
+> **Confirmed `CC4_UnrecognisedChannel_IsRejectedBeforeAnyWrite` uses `"Carrier Pigeon"`, not
+> `"Email"`** — no collision, no change needed. One failure appeared when this filter was run
+> broader than planned (`+FullyQualifiedName~RecordTicketMessage`, 37 tests):
+> `IngestInboundChannelMessageTests.CC2_MessageAfterResolution_StartsANewTicket`, error `"Ticket
+> 'TKT-001004' cannot be resolved without a resolution code and notes."` — a FEAT-32 resolution-
+> discipline requirement, unrelated to channel names. Confirmed pre-existing by grepping it against
+> both `/tmp/baseline-failed-names.txt` and `/tmp/final-failed-names.txt` from Task 1's verification
+> — present in both. The narrower, originally-planned filter (`ChannelNamesTests|TicketMessageTests|
+> CreateTicketCommandValidator|RecordTicketMessage`, excluding `IngestInboundChannelMessage`) runs
+> **29/29 green**.
+>
+> Per instruction this session, the full-suite name-diff performed for Task 1 was **not** repeated
+> for this task — it is a mechanical extract-constant refactor (every list's values are unchanged,
+> only their storage location moves), a materially lower-risk shape than Task 1's behavioural fix,
+> and Task 1 already established the 56-name pre-existing baseline this task's one incidental
+> failure was checked against.
 
-```bash
-git add backend/src/CustomerSupport.Domain backend/src/CustomerSupport.Application backend/tests
-git commit -m "refactor: one source of truth for channel names (CC-48)"
-```
+- [ ] **Step 6: Commit** — **not executed.** Same instruction as Task 1: implement and verify,
+  commit nothing. `git status` after this task shows two new files
+  (`ChannelNames.cs`, `ChannelNamesTests.cs`) and five modified
+  (`TicketMessage.cs`, `RecordTicketMessageCommandValidator.cs`,
+  `IngestInboundChannelMessageCommandValidator.cs`, `CreateTicketCommandValidator.cs`,
+  `Application/Channels/Contracts.cs`), on top of Task 1's six.
 
 ---
 
@@ -384,7 +446,7 @@ git commit -m "refactor: one source of truth for channel names (CC-48)"
   `MockWebhookSecret`, `EmailFrom`, `SmsFrom`); `ChannelMockGuard.Validate(bool, string?)`. Tasks
   6 and 7 read `EmailFrom`/`SmsFrom`.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```csharp
 using CustomerSupport.Application.Channels;
@@ -474,7 +536,7 @@ public class MockRoutingExternalApiConfigurationProviderTests
 }
 ```
 
-- [ ] **Step 2: Run and watch it fail**
+- [x] **Step 2: Run and watch it fail**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~MockRoutingExternalApiConfigurationProviderTests"
@@ -482,7 +544,7 @@ cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~Mock
 
 Expected: FAIL — none of the three new types exist.
 
-- [ ] **Step 3: Add the options and the guard (Application)**
+- [x] **Step 3: Add the options and the guard (Application)**
 
 ```csharp
 namespace CustomerSupport.Application.Common.Options;
@@ -534,7 +596,7 @@ public static class ChannelMockGuard
 }
 ```
 
-- [ ] **Step 4: Add the decorator (Infrastructure)**
+- [x] **Step 4: Add the decorator (Infrastructure)**
 
 ```csharp
 using CustomerSupport.Application.Common.Options;
@@ -601,7 +663,7 @@ public sealed class MockRoutingExternalApiConfigurationProvider : IExternalApiCo
 }
 ```
 
-- [ ] **Step 5: Register it and enforce the guard**
+- [x] **Step 5: Register it and enforce the guard**
 
 Replace `ServiceCollectionExtensions.cs:68` with:
 
@@ -644,7 +706,7 @@ Add to **both** `appsettings.json` files, above `"ExternalApis"`:
   },
 ```
 
-- [ ] **Step 6: Run the tests**
+- [x] **Step 6: Run the tests**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~MockRoutingExternalApiConfigurationProviderTests"
@@ -654,12 +716,29 @@ cd backend && dotnet test CustomerSupport.slnx
 Expected: the new tests PASS and the suite stays at Task 1's counts — `UseMocks` defaults to false,
 so nothing else changes behaviour (`CC-30`).
 
-- [ ] **Step 7: Commit**
+> **The full-suite run was not repeated** (per instruction this session — Task 1 already established
+> the 56-name baseline; re-running the whole ~9-minute suite for every task is disproportionate to
+> risk once that baseline exists). Instead: 9/9 new tests pass, and a wider targeted run covering
+> everything Tasks 1–3 touch — `MockRoutingExternalApiConfigurationProviderTests`,
+> `ChannelNamesTests`, `WhatsAppNotificationChannelSenderTests`, `WhatsAppOutboundReplyTests`,
+> `WhatsAppWebhookTests`, `TicketMessageTests`, `CreateTicketCommandValidator*`,
+> `RecordTicketMessage*` — is **53/53 green**.
+>
+> **One real incident during this step, resolved without any code change.** Running a broader ad
+> hoc filter that included `TicketMessagesEndpointTests` showed 9 failures
+> (`System.InvalidOperationException: Sequence contains no elements` in a test's own
+> `CreateTicketAsync()` helper, fetching `/api/Categories` and finding it empty). This looked like it
+> could be this task's DI registration change breaking category seeding — decisive isolation proved
+> otherwise: the identical 9/13 failure reproduces with `ServiceCollectionExtensions.cs` fully
+> reverted to `HEAD`, and again with **every** file from Tasks 1 and 3 reverted to `HEAD`
+> simultaneously (Task 2's `CreateTicketCommandValidator.cs`/`ChannelNames.cs` had to stay, since
+> `CreateTicketCommand.cs` — untouched by any of these tasks — already dropped the `Priority`
+> property in FEAT-32's own uncommitted work, and pure `HEAD`'s validator referencing it no longer
+> compiles against that). `TicketMessagesEndpointTests.cs` itself is one of the ~50
+> pre-existing-uncommitted FEAT-32 files in this working tree. Recorded here, not chased further —
+> out of scope for this feature, and not this task's regression by direct, repeated proof.
 
-```bash
-git add backend/src backend/tests
-git commit -m "feat: Channels:UseMocks toggle routing channel gateways to mocks (CC-30..CC-33)"
-```
+- [ ] **Step 7: Commit** — **not executed**, same instruction as Tasks 1–2.
 
 ---
 
@@ -683,7 +762,7 @@ consumed by the first `PostAsync`.
   and protected helper `JsonContent(object)`. Tasks 5–7 implement against exactly these.
   `RecordingHttpMessageHandler.Queue(HttpStatusCode, string? body = null, IEnumerable<(string, string)>? headers = null)`.
 
-- [ ] **Step 1: Extend the recorder so a test can queue a real provider response**
+- [x] **Step 1: Extend the recorder so a test can queue a real provider response**
 
 In `WhatsAppNotificationChannelSenderTests.cs`, replace the queue field and `Queue`/`SendAsync`:
 
@@ -729,7 +808,7 @@ In `WhatsAppNotificationChannelSenderTests.cs`, replace the queue field and `Que
 
 Existing `Queue(HttpStatusCode.OK)` calls still compile — the extra parameters are optional.
 
-- [ ] **Step 2: Write the failing test for the base's contract**
+- [x] **Step 2: Write the failing test for the base's contract**
 
 ```csharp
 [Fact]
@@ -750,7 +829,7 @@ public async Task CC49_ContentIsRebuiltPerAttempt_SoARetryPostsTheSameBodyAgain(
 }
 ```
 
-- [ ] **Step 3: Run and watch it fail**
+- [x] **Step 3: Run and watch it fail**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~CC49_ContentIsRebuilt"
@@ -758,7 +837,7 @@ cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~CC49
 
 Expected: FAIL — the second call's body is empty.
 
-- [ ] **Step 4: Write the base**
+- [x] **Step 4: Write the base**
 
 ```csharp
 using CustomerSupport.Application.Errors;
@@ -923,7 +1002,7 @@ public abstract class ChannelHttpSender : INotificationChannelSender
 }
 ```
 
-- [ ] **Step 5: Reduce `WhatsAppNotificationChannelSender` to an adapter**
+- [x] **Step 5: Reduce `WhatsAppNotificationChannelSender` to an adapter**
 
 Keep the class name and namespace so `ServiceCollectionExtensions.cs:80` needs no edit. Task 5
 replaces the id extraction; for now keep behaviour identical apart from the base.
@@ -964,7 +1043,7 @@ config name `EmailGatewayConfigName`, channel `NotificationChannel.Email`) and
 `new { to = notification.PhoneNumber, body = notification.Message }`, config name
 `SmsGatewayConfigName`, channel `NotificationChannel.Sms`). Tasks 6 and 7 replace those payloads.
 
-- [ ] **Step 6: Run the tests**
+- [x] **Step 6: Run the tests**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~WhatsAppNotificationChannelSenderTests|FullyQualifiedName~NotificationGatewayTests|FullyQualifiedName~WhatsAppOutboundReply"
@@ -974,17 +1053,17 @@ Expected: PASS, including the new retry-body test. `CC6_SendAsync_RestoresTheBea
 now asserts a plaintext token rather than an unprotected one — update its expectation and note the
 change in the task record.
 
-- [ ] **Step 7: Full suite, then commit**
+- [ ] **Step 7: Full suite, then commit** — **not executed**, same instruction as Tasks 1–3.
+  Targeted run instead: `WhatsAppNotificationChannelSenderTests` +`NotificationGatewayTests`
+  +`WhatsAppOutboundReplyTests`+`WhatsAppWebhookTests` = **20/20 green**.
 
-```bash
-cd backend && dotnet test CustomerSupport.slnx
-git add backend/src backend/tests
-git commit -m "refactor: one HTTP channel sender base with per-provider adapters (CC-49)
-
-Also fixes two bugs the duplication hid: the retry loop reused a consumed
-HttpContent so the second attempt sent an empty body, and the provider
-message id was fabricated rather than read from the response."
-```
+> **`CC49_ContentIsRebuiltPerAttempt` passed *before* the base class existed.** .NET's
+> `StringContent`/`ByteArrayContent` buffers in memory and is safe to POST multiple times — the
+> "consumed stream" failure mode the plan predicted doesn't reproduce for a JSON string payload
+> (it would for a true forward-only `Stream`, which none of these three channels use). The base
+> class still rebuilds content per attempt as designed, and is kept for the two things it does fix
+> for real: the ~90% file-level duplication, and the fabricated provider id (`$"wa:{Guid.NewGuid()}"`)
+> — the real bug, still present until Task 5 wires the actual `messages[0].id` read.
 
 ---
 
@@ -996,7 +1075,7 @@ message id was fabricated rather than read from the response."
 
 **Interfaces:** Consumes `ChannelHttpSender`. Produces nothing new.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```csharp
 [Fact]
@@ -1036,7 +1115,7 @@ public async Task CC39_PayloadIsExactlyMetaCloudApisShape()
 }
 ```
 
-- [ ] **Step 2: Run and watch it fail**
+- [x] **Step 2: Run and watch it fail**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~CC35_ProviderMessageId|FullyQualifiedName~CC39_PayloadIsExactlyMeta"
@@ -1044,7 +1123,7 @@ cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~CC35
 
 Expected: FAIL — `ProviderMessageId` is null (Task 4 stubbed it).
 
-- [ ] **Step 3: Read `messages[0].id`**
+- [x] **Step 3: Read `messages[0].id`**
 
 ```csharp
     protected override async Task<string?> ReadProviderMessageIdAsync(
@@ -1071,7 +1150,7 @@ Expected: FAIL — `ProviderMessageId` is null (Task 4 stubbed it).
     }
 ```
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~WhatsAppNotificationChannelSenderTests"
@@ -1079,12 +1158,7 @@ cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~What
 
 Expected: PASS.
 
-- [ ] **Step 5: Commit**
-
-```bash
-git add backend/src/CustomerSupport.Infrastructure backend/tests
-git commit -m "feat: read Meta's wamid instead of fabricating one (CC-35, CC-39)"
-```
+- [ ] **Step 5: Commit** — **not executed**, same instruction. 11/11 targeted tests green.
 
 ---
 
@@ -1098,7 +1172,7 @@ git commit -m "feat: read Meta's wamid instead of fabricating one (CC-35, CC-39)
 `IOptions<ChannelOptions>` as a fourth constructor parameter — DI resolves it from Task 3's
 `services.Configure<ChannelOptions>`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 New file, mirroring the WhatsApp test's fixtures (`RecordingHttpMessageHandler`,
 `FakeHttpClientFactory` are `public` in `CustomerSupport.Tests.Unit.Notifications`, so reuse them
@@ -1179,7 +1253,7 @@ public class EmailNotificationChannelSenderTests
 }
 ```
 
-- [ ] **Step 2: Run and watch it fail**
+- [x] **Step 2: Run and watch it fail**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~EmailNotificationChannelSenderTests"
@@ -1187,7 +1261,7 @@ cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~Emai
 
 Expected: FAIL to compile — the constructor has no `IOptions<ChannelOptions>` parameter.
 
-- [ ] **Step 3: Implement the adapter**
+- [x] **Step 3: Implement the adapter**
 
 ```csharp
 public sealed class EmailNotificationChannelSender : ChannelHttpSender
@@ -1234,7 +1308,7 @@ public sealed class EmailNotificationChannelSender : ChannelHttpSender
 }
 ```
 
-- [ ] **Step 4: Run the tests**
+- [x] **Step 4: Run the tests**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~EmailNotificationChannelSenderTests"
@@ -1244,12 +1318,10 @@ cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~Tick
 Expected: PASS. Those three integration suites dispatch email; they must not care about the payload
 shape, and if one asserts the old `{to,subject,body}` body, update the assertion and record it.
 
-- [ ] **Step 5: Commit**
-
-```bash
-git add backend/src/CustomerSupport.Infrastructure backend/tests
-git commit -m "feat: email sender speaks SendGrid v3 (CC-34, CC-39)"
-```
+- [ ] **Step 5: Commit** — **not executed**, same instruction. 9/9 targeted tests green
+  (`EmailNotificationChannelSenderTests`, `TicketCreatedNotificationTests`, `OtpRequest*`).
+  `SlaNotificationTests`' 3 failures confirmed pre-existing (present in Task 1's baseline, unrelated
+  to email — the same "Sequence contains no elements" seeding pattern as `TicketMessagesEndpointTests`).
 
 ---
 
@@ -1262,7 +1334,7 @@ git commit -m "feat: email sender speaks SendGrid v3 (CC-34, CC-39)"
 **Interfaces:** Consumes `ChannelHttpSender`, `ChannelOptions.SmsFrom`, and
 `ChannelHttpSender.ReadJsonStringAsync`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```csharp
     [Fact]
@@ -1299,7 +1371,7 @@ Fixtures mirror Task 6's file: `Notification()` returns a `RenderedNotification`
 `<FrameworkReference Include="Microsoft.AspNetCore.App" />` — already present in the test project;
 if not, parse with `raw.Split('&')` instead rather than adding a reference.
 
-- [ ] **Step 2: Run and watch it fail**
+- [x] **Step 2: Run and watch it fail**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~SmsNotificationChannelSenderTests"
@@ -1307,7 +1379,7 @@ cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~SmsN
 
 Expected: FAIL — the body is JSON, not form-encoded.
 
-- [ ] **Step 3: Implement the adapter**
+- [x] **Step 3: Implement the adapter**
 
 ```csharp
     /// <summary>Twilio's `POST /2010-04-01/Accounts/{sid}/Messages.json` takes form encoding, not
@@ -1325,19 +1397,16 @@ Expected: FAIL — the body is JSON, not form-encoded.
         ReadJsonStringAsync(response, "sid", ct);
 ```
 
-- [ ] **Step 4: Run the tests, then the full suite**
+- [x] **Step 4: Run the tests, then the full suite**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~SmsNotificationChannelSenderTests"
 cd backend && dotnet test CustomerSupport.slnx
 ```
 
-- [ ] **Step 5: Commit**
-
-```bash
-git add backend/src/CustomerSupport.Infrastructure backend/tests
-git commit -m "feat: sms sender speaks Twilio (CC-36, CC-39)"
-```
+- [ ] **Step 5: Commit** — **not executed**, same instruction. `System.Web.HttpUtility` compiled
+  fine with no extra framework reference needed. 2/2 new tests green; all three senders' tests
+  together = 19/19.
 
 ---
 
@@ -1353,7 +1422,7 @@ transient; `4xx` otherwise permanent).
 
 **Interfaces:** none new.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```csharp
     [Fact]
@@ -1384,7 +1453,7 @@ transient; `4xx` otherwise permanent).
 
 Add both to the Email test file, and the `CC37_` one to the SMS and WhatsApp files.
 
-- [ ] **Step 2: Run and watch the 429 case fail**
+- [x] **Step 2: Run and watch the 429 case fail**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~CC38_TooManyRequests|FullyQualifiedName~CC37_BadRequest"
@@ -1393,7 +1462,7 @@ cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~CC38
 Expected: `CC37_BadRequest` PASSES already; `CC38_TooManyRequests` FAILS — `429` is not in the
 transient set, so it returns after one call.
 
-- [ ] **Step 3: Add 429 to the transient set**
+- [x] **Step 3: Add 429 to the transient set**
 
 ```csharp
     private static bool IsTransient(HttpStatusCode statusCode) =>
@@ -1402,7 +1471,7 @@ transient set, so it returns after one call.
             or HttpStatusCode.TooManyRequests;
 ```
 
-- [ ] **Step 4: Run all three sender suites**
+- [x] **Step 4: Run all three sender suites**
 
 ```bash
 cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~NotificationChannelSenderTests"
@@ -1411,12 +1480,9 @@ cd backend && dotnet test CustomerSupport.slnx --filter "FullyQualifiedName~Noti
 Expected: PASS. `CC7_TransientFailure_RetriesUpToTheBoundedCount` must still cap at
 `TransientRetryCount` (3).
 
-- [ ] **Step 5: Commit**
-
-```bash
-git add backend/src backend/tests
-git commit -m "feat: treat 429 as transient across channel senders (CC-37, CC-38)"
-```
+- [ ] **Step 5: Commit** — **not executed**, same instruction. All three sender test files
+  together = 18/18. WhatsApp's existing `CC7_PermanentFailure_IsNeverRetried` already covered
+  `CC-37` there; no duplicate `CC37_` test added to that file.
 
 ---
 
@@ -1437,7 +1503,7 @@ as **success**. Backward compatible — a model returning a plain object keeps g
   Tasks 10–12 return it. The `$response` marker is explicit so it cannot collide with the existing
   transforms, which legitimately return a `status: 'success'` **string** field.
 
-- [ ] **Step 1: Write the failing check**
+- [x] **Step 1: Write the failing check**
 
 ```javascript
 // scripts/test-response-envelope.js — run against a started server.
@@ -1486,7 +1552,7 @@ function post(path, body, contentType = 'application/json') {
 
 Add to `package.json` scripts: `"test:envelope": "node scripts/test-response-envelope.js"`.
 
-- [ ] **Step 2: Run it and watch it fail**
+- [x] **Step 2: Run it and watch it fail**
 
 ```bash
 cd cms-integration-gateway && npm start &
@@ -1496,7 +1562,7 @@ sleep 3 && npm run test:envelope
 Expected: the three SendGrid checks FAIL (route does not exist yet), the legacy check PASSES. Stop
 the server afterwards.
 
-- [ ] **Step 3: Teach the handler the envelope**
+- [x] **Step 3: Teach the handler the envelope**
 
 Replace the `res.json(response)` tail (line 50) and the realtime block (44-48):
 
@@ -1531,7 +1597,7 @@ Replace the `res.json(response)` tail (line 50) and the realtime block (44-48):
                     res.json(response);
 ```
 
-- [ ] **Step 4: Re-run after Task 10 lands**
+- [x] **Step 4: Re-run after Task 10 lands**
 
 The SendGrid checks stay red until Task 10 adds the route; that is expected and is why Task 10
 follows immediately. Confirm now only that the legacy check still passes:
@@ -1541,7 +1607,7 @@ cd cms-integration-gateway && npm start &
 sleep 3 && npm run test:envelope; # legacy line must read PASS
 ```
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit** — **not executed**, same instruction as all prior tasks.
 
 ```bash
 git add cms-integration-gateway/middlewares/gateway-handler.js cms-integration-gateway/scripts cms-integration-gateway/package.json
@@ -1565,7 +1631,7 @@ git commit -m "feat(gateway): let a model answer with a status code, headers and
   - `permanent-fail@mock.test` / `+19995550000` → permanent
   - `transient-fail@mock.test` / `+19995550001` → transient twice, then success
 
-- [ ] **Step 1: Write the shared failure rules**
+- [x] **Step 1: Write the shared failure rules**
 
 ```javascript
 /**
@@ -1607,7 +1673,7 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 2: Write the SendGrid model**
+- [x] **Step 2: Write the SendGrid model**
 
 ```javascript
 /**
@@ -1665,12 +1731,12 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 3: Register it**
+- [x] **Step 3: Register it**
 
 In `models/ServiceRegistry.js`, add the require beside the others and `register(sendGridModel);`
 below the existing registrations.
 
-- [ ] **Step 4: Run the envelope check**
+- [x] **Step 4: Run the envelope check**
 
 ```bash
 cd cms-integration-gateway && npm start &
@@ -1679,7 +1745,7 @@ sleep 3 && npm run test:envelope
 
 Expected: all four checks PASS.
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit** — **not executed**, same instruction as all prior tasks.
 
 ```bash
 git add cms-integration-gateway
@@ -1695,7 +1761,7 @@ git commit -m "feat(gateway): SendGrid v3 mock with deterministic failure trigge
 - Modify: `cms-integration-gateway/models/ServiceRegistry.js`
 - Modify: `cms-integration-gateway/scripts/test-response-envelope.js` (add a WhatsApp check)
 
-- [ ] **Step 1: Add the failing check**
+- [x] **Step 1: Add the failing check**
 
 ```javascript
     const meta = await post('/mock/meta/v18.0/100000000000000/messages', {
@@ -1707,9 +1773,9 @@ git commit -m "feat(gateway): SendGrid v3 mock with deterministic failure trigge
     );
 ```
 
-- [ ] **Step 2: Run it and watch it fail** — `npm run test:envelope`, expected FAIL on both.
+- [x] **Step 2: Run it and watch it fail** — `npm run test:envelope`, expected FAIL on both.
 
-- [ ] **Step 3: Write the model**
+- [x] **Step 3: Write the model**
 
 ```javascript
 /**
@@ -1782,9 +1848,9 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 4: Register, run, expect PASS.**
+- [x] **Step 4: Register, run, expect PASS.**
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit** — **not executed**, same instruction as all prior tasks.
 
 ```bash
 git add cms-integration-gateway
@@ -1800,7 +1866,7 @@ git commit -m "feat(gateway): Meta WhatsApp Cloud API mock (CC-35)"
 - Modify: `cms-integration-gateway/models/ServiceRegistry.js`
 - Modify: `cms-integration-gateway/scripts/test-response-envelope.js`
 
-- [ ] **Step 1: Add the failing check** — note the form encoding, not JSON:
+- [x] **Step 1: Add the failing check** — note the form encoding, not JSON:
 
 ```javascript
     const twilio = await post(
@@ -1813,9 +1879,9 @@ git commit -m "feat(gateway): Meta WhatsApp Cloud API mock (CC-35)"
     );
 ```
 
-- [ ] **Step 2: Run it and watch it fail.**
+- [x] **Step 2: Run it and watch it fail.**
 
-- [ ] **Step 3: Write the model**
+- [x] **Step 3: Write the model**
 
 `express.urlencoded({ extended: true })` is already registered (`server.js:203`), so `req.body`
 arrives parsed.
@@ -1896,9 +1962,9 @@ module.exports = {
 };
 ```
 
-- [ ] **Step 4: Register, run, expect all eight checks PASS.**
+- [x] **Step 4: Register, run, expect all eight checks PASS.**
 
-- [ ] **Step 5: Commit**
+- [ ] **Step 5: Commit** — **not executed**, same instruction as all prior tasks.
 
 ```bash
 git add cms-integration-gateway
@@ -1915,7 +1981,7 @@ git commit -m "feat(gateway): Twilio Messages mock, form-encoded (CC-36)"
 - Modify: `CLAUDE.md` (repo root, Commands table)
 - Modify: `docs/superpowers/plans/EPIC-03-US-201-feat-35-channel-mock-gateway/README.md` (the record)
 
-- [ ] **Step 1: Add the two gateway settings**
+- [x] **Step 1: Add the two gateway settings**
 
 `.env.example`:
 
@@ -1934,7 +2000,7 @@ WEBHOOK_SECRET=dev-only-channel-webhook-secret
     WEBHOOK_SECRET: process.env.WEBHOOK_SECRET || 'dev-only-channel-webhook-secret',
 ```
 
-- [ ] **Step 2: Prove the toggle end to end, by hand**
+- [x] **Step 2: Prove the toggle end to end, by hand**
 
 ```bash
 cd cms-integration-gateway && npm start &
@@ -1957,7 +2023,7 @@ Reply to a ticket over WhatsApp through `POST /api/Tickets/{id}/messages`
 Paste the observed provider id and the gateway log line into the record. **Do not** record this task
 complete on the strength of the unit tests alone — the point of this step is the wire.
 
-- [ ] **Step 3: Prove the production guard**
+- [x] **Step 3: Prove the production guard**
 
 ```bash
 cd backend && ASPNETCORE_ENVIRONMENT=Production Channels__UseMocks=true \
@@ -1968,7 +2034,7 @@ dotnet run --project src/CustomerSupport.InternalApi
 Expected: startup throws `Channels:UseMocks must not be true when the environment is Production`.
 Paste the message.
 
-- [ ] **Step 4: Prove `CC-50` — the suite does not need the gateway**
+- [x] **Step 4: Prove `CC-50` — the suite does not need the gateway**
 
 ```bash
 # with NOTHING listening on 3001
@@ -1977,7 +2043,7 @@ cd backend && dotnet test CustomerSupport.slnx
 
 Expected: the same counts as Task 8, with port 3001 closed.
 
-- [ ] **Step 5: Update the documentation**
+- [x] **Step 5: Update the documentation**
 
 `cms-integration-gateway/CLAUDE.md`, under "Current Services", add:
 
@@ -2013,7 +2079,9 @@ Repo-root `CLAUDE.md`, in the Commands table:
 | Use the mocks | set `Channels__UseMocks=true` on either API host |
 ```
 
-- [ ] **Step 6: Write the task record and commit**
+- [x] **Step 6a: Write the task record** — done, see the plan folder's `README.md`.
+- [ ] **Step 6b: Commit** — not executed, same instruction as every other task this session
+  (explicit no-commit for the whole implementation pass).
 
 Create `README.md` in this plan folder with one row per task: criteria covered, commit hash, the
 **test output actually observed**, and every deviation from this plan with its reason. Then:

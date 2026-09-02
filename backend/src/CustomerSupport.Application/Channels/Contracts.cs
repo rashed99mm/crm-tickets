@@ -6,7 +6,7 @@ namespace CustomerSupport.Application.Channels;
 /// downstream is channel-agnostic.
 /// </summary>
 public sealed record InboundChannelMessage(
-    string Channel,             // "WhatsApp" | "SMS" | "WebForm"
+    string Channel,             // one of CustomerSupport.Domain.Common.ChannelNames.Inbound (CC-48)
     string? CustomerName,
     string? CustomerPhone,
     string? CustomerEmail,

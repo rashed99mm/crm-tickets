@@ -1,113 +1,47 @@
-using CustomerSupport.Application.Errors;
-using CustomerSupport.Application.ExternalApis.DTOs;
+using CustomerSupport.Application.Common.Options;
 using CustomerSupport.Application.Interfaces;
 using CustomerSupport.Application.Notifications;
 using CustomerSupport.Domain.ValueObjects;
+using CustomerSupport.Infrastructure.Notifications.Channels;
 using Microsoft.Extensions.Logging;
-using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json;
+using Microsoft.Extensions.Options;
 
 namespace CustomerSupport.Infrastructure.Notifications;
 
 /// <summary>
-/// Delivers SMS through the configured <c>SmsGateway</c> integration URL. Credentials are restored
-/// only at the transport boundary via <see cref="ISecretProtector"/> and never logged.
+/// Delivers SMS through the configured <c>SmsGateway</c> integration URL, speaking Twilio's
+/// contract (CC-36). See <see cref="ChannelHttpSender"/> for the shared transport/retry/auth
+/// contract.
 /// </summary>
-public sealed class SmsNotificationChannelSender : INotificationChannelSender
+public sealed class SmsNotificationChannelSender : ChannelHttpSender
 {
-    private readonly IExternalApiConfigurationProvider _configProvider;
-    private readonly IHttpClientFactory _httpClientFactory;
-    private readonly ISecretProtector _secretProtector;
-    private readonly ILogger<SmsNotificationChannelSender> _logger;
+    private readonly ChannelOptions _options;
 
     public SmsNotificationChannelSender(
         IExternalApiConfigurationProvider configProvider,
         IHttpClientFactory httpClientFactory,
-        ISecretProtector secretProtector,
+        IOptions<ChannelOptions> options,
         ILogger<SmsNotificationChannelSender> logger)
+        : base(configProvider, httpClientFactory, logger)
     {
-        _configProvider = configProvider;
-        _httpClientFactory = httpClientFactory;
-        _secretProtector = secretProtector;
-        _logger = logger;
+        _options = options.Value;
     }
 
-    public NotificationChannel SupportedChannel => NotificationChannel.Sms;
+    public override NotificationChannel SupportedChannel => NotificationChannel.Sms;
 
-    public async Task<ChannelSendResult> SendAsync(RenderedNotification notification, CancellationToken ct = default)
-    {
-        var config = _configProvider.GetConfig(NotificationGatewayConstants.SmsGatewayConfigName);
-        if (config is null)
+    protected override string ConfigName => NotificationGatewayConstants.SmsGatewayConfigName;
+
+    /// <summary>Twilio's `POST /2010-04-01/Accounts/{sid}/Messages.json` takes form encoding, not
+    /// JSON — the one channel here that is not a JSON API.</summary>
+    protected override HttpContent BuildContent(RenderedNotification notification) =>
+        new FormUrlEncodedContent(new Dictionary<string, string>
         {
-            _logger.LogWarning("SMS gateway configuration '{Config}' is missing", NotificationGatewayConstants.SmsGatewayConfigName);
-            return new ChannelSendResult(NotificationChannel.Sms, false, ApplicationErrors.Notification.CONFIG_MISSING);
-        }
+            ["To"] = notification.PhoneNumber ?? string.Empty,
+            ["From"] = _options.SmsFrom,
+            ["Body"] = notification.Message,
+        });
 
-        var payload = new { to = notification.PhoneNumber, body = notification.Message };
-        using var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
-
-        using var client = _httpClientFactory.CreateClient();
-        client.Timeout = TimeSpan.FromSeconds(Math.Max(1, config.TimeoutSeconds));
-        ApplyAuth(client, config.Auth);
-
-        for (var attempt = 1; attempt <= NotificationGatewayConstants.TransientRetryCount; attempt++)
-        {
-            try
-            {
-                using var response = await client.PostAsync(config.BaseUrl, content, ct);
-                if (response.IsSuccessStatusCode)
-                    return new ChannelSendResult(NotificationChannel.Sms, true, ProviderMessageId: $"sms:{Guid.NewGuid():N}");
-
-                if (!IsTransient(response.StatusCode))
-                {
-                    _logger.LogWarning("SMS gateway returned {StatusCode} (non-transient)", (int)response.StatusCode);
-                    return new ChannelSendResult(NotificationChannel.Sms, false, ApplicationErrors.Notification.DELIVERY_FAILED);
-                }
-            }
-            catch (OperationCanceledException) when (ct.IsCancellationRequested)
-            {
-                throw;
-            }
-            catch (Exception ex) when (IsTransient(ex))
-            {
-                _logger.LogWarning(ex, "SMS gateway transient failure on attempt {Attempt}", attempt);
-            }
-
-            if (attempt < NotificationGatewayConstants.TransientRetryCount)
-                await Task.Delay(TimeSpan.FromMilliseconds(200 * attempt), ct);
-        }
-
-        return new ChannelSendResult(NotificationChannel.Sms, false, ApplicationErrors.Notification.DELIVERY_FAILED);
-    }
-
-    private void ApplyAuth(HttpClient client, ExternalApiAuthConfig auth)
-    {
-        switch (auth.Type)
-        {
-            case ExternalApiAuthType.ApiKey:
-                client.DefaultRequestHeaders.Remove(auth.KeyName);
-                client.DefaultRequestHeaders.Add(auth.KeyName, _secretProtector.Unprotect(auth.Value));
-                break;
-            case ExternalApiAuthType.Bearer:
-                client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", _secretProtector.Unprotect(auth.Token));
-                break;
-            case ExternalApiAuthType.Basic:
-                var basic = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{auth.ClientId}:{auth.ClientSecret}"));
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", basic);
-                break;
-            case ExternalApiAuthType.OAuth2:
-            case ExternalApiAuthType.None:
-            default:
-                break;
-        }
-    }
-
-    private static bool IsTransient(HttpStatusCode statusCode) =>
-        statusCode is >= HttpStatusCode.InternalServerError or HttpStatusCode.RequestTimeout;
-
-    private static bool IsTransient(Exception ex) =>
-        ex is TimeoutException or HttpRequestException or OperationCanceledException;
+    protected override Task<string?> ReadProviderMessageIdAsync(
+        HttpResponseMessage response, CancellationToken ct) =>
+        ReadJsonStringAsync(response, "sid", ct);
 }
