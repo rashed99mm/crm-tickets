@@ -355,11 +355,14 @@ questions in the spec's `A11` — so this is planning ahead of the business deci
 channels are ready to ship. Canonical spec:
 [`EPIC-03-US-201-communication-channels-whatsapp-livechat-webforms.md`](../superpowers/specs/EPIC-03-US-201-communication-channels-whatsapp-livechat-webforms.md);
 plan: [`EPIC-03-US-201-feat-24-communication-channels/`](../superpowers/plans/EPIC-03-US-201-feat-24-communication-channels/).
-**Not implemented** — no code, no migration, no test.
+**Partly implemented** — the "no code, no migration, no test" line above was wrong and was corrected
+on 2026-09-02 by reading the code; see the spec's amendment and the plan record for the verified
+per-criterion state.
 
 | Sprint | Name | Slice | FEAT | Stories | Points | Status |
 |---|---|---|---|---|---|---|
-| 16 | Communication channels — WhatsApp, SMS conversations, live chat, web forms | S5 (reopened) | `FEAT-24`–`FEAT-27` | US-230–US-240 (to be filed alongside the spec) | — | spec + backend plan + tasks written 2026-08-27; **not implemented**; blocked on the business decisions in the spec's `A11` (`OQ-CC-1..3`) before any production deployment |
+| 16 | Communication channels — WhatsApp, SMS conversations, live chat, web forms | S5 (reopened) | `FEAT-24`–`FEAT-27` | US-230–US-240 (to be filed alongside the spec) | — | spec + backend plan + tasks written 2026-08-27. **Verified 2026-09-02:** shared ingestion (`CC-1`–`CC-5`), all of WhatsApp (`CC-6`–`CC-10`) and the SMS/WhatsApp reply branch (`CC-13`) are **built and tested**; live chat is partial; **SMS inbound (`CC-11`/`CC-12`) and the web-form backend (`CC-20`–`CC-23`) are not built**. Production deployment still blocked on `A11` (`OQ-CC-1..3`) |
+| 22 | Mock provider gateway + mock/real toggle — one provider-faithful mock per channel, inbound email | EPIC-03 (cont.) | `FEAT-35` | `CC-30`–`CC-50` (spec amendment 2026-09-02) | — | spec amended and approved 2026-09-02 · plan pending · **not implemented**. Adds provider-faithful mocks (SendGrid/Meta/Twilio shapes) to `cms-integration-gateway`, a `Channels:UseMocks` flag that swaps mocks for real providers, inbound email, provider-faithful SMS inbound, live-chat and web-form simulators, and two consolidations (`CC-48` one channel allow-list, `CC-49` one sender base). `FEAT-35` because 34 was the highest number in use |
 
 ---
 

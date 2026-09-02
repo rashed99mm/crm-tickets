@@ -5,26 +5,39 @@
 **Frontend spec:** [`EPIC-10-US-203-communication-channels-frontend.md`](../../specs/EPIC-10-US-203-communication-channels-frontend.md)
 **Frontend plan:** [`frontend-implementation-plan.md`](frontend-implementation-plan.md)
 
-## Status: planning only — nothing implemented
+## Status: partly implemented — this record was stale until 2026-09-02
 
-This folder exists to satisfy the SDD gate ahead of implementation, at explicit instruction to stop
-after spec + plan + tasks. **No task below has been executed. No test has been run. No migration
-has been created.** The "Ships / doesn't ship" table exists so the next person picking this up
-starts from an honest state, not an assumed one.
+**Correction.** This file claimed "planning only — nothing implemented" and "All 29 `CC-n` criteria
+in the spec are unimplemented". Both were wrong, and had been wrong for some time: tasks 1–3 were
+executed and their tests exist, named after the criteria they cover. The state below was rebuilt by
+reading the code and the test suite, not by trusting this record or the spec header (which carried
+the same error). The original claim is left visible in this paragraph rather than deleted, because
+a record that quietly corrects itself teaches nobody anything.
+
+The lesson worth keeping: this drifted because the record was written at planning time and never
+touched again when the work landed. A task record is written **as the task completes**, per
+`.claude/skills/sdd-workflow/SKILL.md`.
 
 ## Criteria delivered
 
-None yet. All 29 `CC-n` criteria in the spec are unimplemented.
+Verified against the code on 2026-09-02.
 
 | Feature | Criteria | Task | Status |
 |---|---|---|---|
-| Shared ingestion | `CC-1`–`CC-5` | Task 1 | not started |
-| `FEAT-24` WhatsApp | `CC-6`–`CC-10` | Task 2 | not started |
-| `FEAT-25` SMS conversations | `CC-11`–`CC-13` | Task 3 | not started |
-| `FEAT-26` Live chat | `CC-14`–`CC-19` | Task 4 | not started |
-| `FEAT-27` Web forms | `CC-20`–`CC-23` | Task 5 | not started |
-| Frontend (`CC-24`–`CC-26`) | — | not tasked | blocked on backend landing first (SDD gate) |
-| Cross-cutting security | `CC-27`–`CC-29` | Task 6 | not started |
+| Shared ingestion | `CC-1`–`CC-5` | Task 1 | **done** — `IngestInboundChannelMessage*`, 8 integration tests (`CC1_`…`CC4_`) |
+| `FEAT-24` WhatsApp | `CC-6`–`CC-10` | Task 2 | **done** — sender, signed webhook, outbound reply; 13 tests (`CC5_`…`CC10_`) |
+| `FEAT-25` SMS conversations | `CC-11`–`CC-13` | Task 3 | **partial** — `CC-13` (outbound reply) done; `CC-11`/`CC-12` **not started**, no SMS webhook transport exists |
+| `FEAT-26` Live chat | `CC-14`–`CC-19` | Task 4 | **partial** — session/message entities, `ChatController` on both hosts, `ChatHub`; `CC-18` not started (and was impossible as specified — see spec `A18`) |
+| `FEAT-27` Web forms | `CC-20`–`CC-23` | Task 5 | **not started** on the backend — the anonymous endpoint does not exist, though the frontend widget (task 11) is complete |
+| Frontend (`CC-24`–`CC-26`) | — | tasks 07–11 | recorded complete |
+| Cross-cutting security | `CC-27`–`CC-29` | Task 6 | **partial** — enforced on the WhatsApp path only, since it is the only inbound transport that exists |
+
+### Added 2026-09-02 by the spec amendment (`FEAT-35`)
+
+`CC-30`–`CC-50` — mock provider gateway in `cms-integration-gateway`, the `Channels:UseMocks`
+toggle, inbound email, provider-faithful SMS inbound, the two client simulators, and the two
+consolidations (`CC-48` one channel allow-list, `CC-49` one sender base). **Not started**; plan to
+be written next.
 
 ## Frontend Task Map
 

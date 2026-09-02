@@ -1,11 +1,15 @@
 # Communication channels — WhatsApp, live chat, web forms and SMS conversations
 
 **Epic:** [`EPIC-03` Communication channels](../../requirements/epics/EPIC-03-communication-channels.md)
-**Features:** `FEAT-24` WhatsApp · `FEAT-25` SMS conversations · `FEAT-26` Live chat · `FEAT-27` Web forms
-**Status:** Spec only — planning artifact. No implementation code exists for anything in this
-document; see [`docs/superpowers/plans/EPIC-03-US-201-feat-24-communication-channels/`](../plans/EPIC-03-US-201-feat-24-communication-channels/)
-for the backend task breakdown, and the note in [Reopening the deferral](#reopening-the-deferral)
-below.
+**Features:** `FEAT-24` WhatsApp · `FEAT-25` SMS conversations · `FEAT-26` Live chat · `FEAT-27` Web forms ·
+`FEAT-35` Mock provider gateway and the mock/real toggle
+**Status:** Partly implemented. **The "no implementation code exists" claim this header carried until
+2026-09-02 was wrong** — `CC-1`–`CC-10` and `CC-13` are built and covered by tests named after those
+criteria. Corrected against the code, not against the plan record, which was also stale. See
+[Amendment — 2026-09-02](#amendment--2026-09-02-mock-provider-gateway-mockreal-toggle-and-email-inbound)
+for the verified build state, and
+[`docs/superpowers/plans/EPIC-03-US-201-feat-24-communication-channels/`](../plans/EPIC-03-US-201-feat-24-communication-channels/)
+for the task breakdown.
 
 ## Problem
 
@@ -24,6 +28,12 @@ Brief area 3 (Communication Channels) lists Email, WhatsApp, Live chat, SMS and 
 
 Nothing here is built. This spec exists so that when the deferral is lifted, work starts from a
 reviewed design instead of a blank page.
+
+> **Superseded 2026-09-02.** That last paragraph was true when written and is no longer: the shared
+> ingestion path, all of WhatsApp, and the SMS/WhatsApp reply branch are built. The
+> [amendment](#amendment--2026-09-02-mock-provider-gateway-mockreal-toggle-and-email-inbound)
+> carries the state verified against the code. The paragraph is left in place rather than rewritten
+> so the record shows what was believed when the design was approved.
 
 ## Reopening the deferral
 
@@ -373,3 +383,221 @@ every already-shipped channel sender (`Email`, `SMS` outbound, `InApp`) are used
 edit inside `FEAT-15`'s existing code is registering one new sender
 (`WhatsAppNotificationChannelSender`) and one new `NotificationChannel` value — exactly the extension
 point `NG-9` was designed to absorb.
+
+---
+
+## Amendment — 2026-09-02: mock provider gateway, mock/real toggle, and email inbound
+
+Written at explicit request. Three things are added to this feature: a **mock API per channel** in
+the `cms-integration-gateway` project, a **configuration toggle** that decides whether the platform
+talks to those mocks or to real providers, and **inbound email**, which the original pass left out.
+
+`CC-1`–`CC-29` and `A1`–`A12` above are unchanged. Criteria ids are permanent, so this amendment
+appends from `CC-30` and assumptions from `A13`.
+
+### Verified build state (read from the code on 2026-09-02, not from the plan record)
+
+Both the header of this spec and the plan's `README.md` claimed nothing was implemented. Both were
+wrong. What is actually there:
+
+| Criteria | Verified in code | State |
+|---|---|---|
+| `CC-1`–`CC-5` shared inbound ingestion | `Application/Features/Channels/Commands/IngestInboundChannelMessage/*`; 8 tests in `Integration/IngestInboundChannelMessageTests.cs` named `CC1_`…`CC4_` | **built** |
+| `CC-6`–`CC-7` WhatsApp outbound | `Infrastructure/Notifications/WhatsAppNotificationChannelSender.cs`; 7 tests named `CC6_`/`CC7_` | **built** |
+| `CC-8`–`CC-9` WhatsApp inbound | `ExternalApi/Controllers/WhatsAppWebhookController.cs`, `Infrastructure/Channels/MetaSignatureVerifier.cs`; `Integration/WhatsAppWebhookTests.cs` | **built** |
+| `CC-10` WhatsApp reply | the `is "WhatsApp" or "SMS"` branch in `RecordTicketMessageCommandHandler.cs:72`; `Integration/WhatsAppOutboundReplyTests.cs` | **built** |
+| `CC-13` SMS reply | same branch | **built** |
+| `CC-14`–`CC-17`, `CC-19` live chat | `Domain/Entities/Channels/LiveChatSession.cs`, `LiveChatMessage.cs`, `ChatController` on both hosts, `ChatHub`; frontend tasks 07–11 recorded complete | **partly built** |
+| `CC-18` abandoned-session timeout | nothing found | **missing** |
+| `CC-11`–`CC-12` SMS inbound | no SMS webhook controller exists | **missing** |
+| `CC-20`–`CC-23` web-form backend | frontend widget complete; no anonymous backend endpoint exists | **missing** |
+
+`"SMS"` and `"WebForm"` sit in the inbound allow-list with no transport that can reach them — they
+are reachable only by sending the command in-process, which is what the integration tests do.
+
+### Assumptions
+
+- **A13.** The `cms-integration-gateway` (Node/Express + json-server, port 3001, model-driven via
+  `models/*Model.js` → `ServiceRegistry.js` → `behaviors/*-rules.js` → `mocks/{group}/{name}.json`)
+  is a **development and demonstration surface only**. It is never deployed, it has no
+  authentication by its own design, and **it is not a test dependency** — the backend suite must
+  pass with port 3001 closed (`CC-50`). Its existing `email` and `sms` mocks use a house shape
+  (`POST /integrationgateway/{svc}/send`) which nothing in the backend actually calls today; the
+  new provider-faithful routes are added alongside them rather than replacing them, so nothing that
+  currently consumes the house routes breaks.
+- **A14.** SendGrid, Meta Cloud API and Twilio are impersonated as **contract references, not
+  procurement decisions**. Choosing their shapes commits the project to nothing; `OQ-CC-2` (which
+  WhatsApp provider is actually purchased and verified) stays open exactly as `A11` left it. The
+  adapter seam in `CC-49` is what keeps the real choice a configuration change — which is the whole
+  reason to impersonate a real contract instead of inventing one.
+- **A15.** The toggle is a **single global boolean**. Per-channel mock flags (real email, mocked
+  WhatsApp) are deliberately not built; the configuration shape can grow into a dictionary later
+  without breaking the flag.
+- **A16.** Live chat and web forms have **no third party to impersonate** — live chat's transport is
+  this platform's own SignalR hub and a web form is an anonymous HTML POST to this platform's own
+  endpoint. Their gateway-side artifact is therefore a **client simulator** (a scripted visitor, a
+  scripted form poster), not a served provider API. Calling those "provider mocks" would model a
+  system that does not exist.
+- **A17.** Inbound email matches the customer **by email address**, resolving for email the same
+  question `A5` resolved for the other channels and `OQ-11` left open. Threading follows `A6`
+  unchanged — `Ticket.Source = "Email"`, one open ticket per `(CustomerId, Channel)`.
+- **A18 — resolving a contradiction already in this spec.** `A3` states that "no abandoned-session
+  cleanup job" is in scope, while `CC-18` requires that a `Waiting` session past a configured
+  timeout **is** marked `Abandoned`. Nothing can satisfy `CC-18` without something running on a
+  timer, so the two cannot both hold. Resolved in favour of `CC-18`, narrowly: a job marks the
+  session `Abandoned` and does nothing else — no ticket conversion (`CC-18` forbids it), no
+  customer notification, no requeue. `A3`'s exclusions of auto-promotion and skills-based routing
+  stand. This is a defect in the approved spec found while amending it, recorded rather than
+  quietly patched, because `CC-18` was counted as "specified" in the plan while being impossible to
+  implement as written.
+
+### Acceptance criteria
+
+#### The toggle (`FEAT-35`)
+
+**CC-30.** Given `Channels:UseMocks` is absent or `false`, when any channel gateway configuration is
+resolved, then it resolves from the database exactly as it does today and no mock route is contacted.
+
+**CC-31.** Given `Channels:UseMocks` is `true`, when `EmailGateway`, `SmsGateway` or
+`WhatsAppGateway` is resolved, then the resolved configuration carries the mock base URL and the
+dev credential; and when any other named configuration is resolved (`WeatherApi`, `PaymentGateway`,
+the ERP client), then it still resolves from the database unchanged.
+
+**CC-32.** Given `Channels:UseMocks` is `true` and the environment is `Production`, when the host
+starts, then startup fails with a message naming the flag, and no request is served.
+
+**CC-33.** Given mocks are active and no `EmailGateway`/`SmsGateway`/`WhatsAppGateway` row exists in
+the database, when a dispatch is attempted, then it succeeds — the flag, not a hand-created row, is
+what a fresh clone needs. (Today all three senders return `CONFIG_MISSING`, and no such row is
+created anywhere in `src`; only `Integration/GatewayTestData.cs` seeds one.)
+
+#### Provider-faithful outbound (`FEAT-35`)
+
+**CC-34.** Given mocks are active, when an email is dispatched, then the request is SendGrid v3's
+contract — `POST /mock/sendgrid/v3/mail/send` with a `personalizations`/`from`/`subject`/`content`
+body — and the provider message id is read from the `X-Message-Id` response header of a `202` with
+an empty body.
+
+**CC-35.** Given mocks are active, when a WhatsApp message is dispatched, then the request is Meta
+Cloud API's contract unchanged from what `WhatsAppNotificationChannelSender` already emits, and the
+provider message id is read from `messages[0].id`.
+
+**CC-36.** Given mocks are active, when an SMS is dispatched, then the request is Twilio's contract —
+form-encoded `To`/`From`/`Body` to `POST /mock/twilio/2010-04-01/Accounts/{sid}/Messages.json` — and
+the provider message id is read from `sid`.
+
+**CC-37.** Given a recipient that the channel's behaviour rule maps to a permanent failure, when
+dispatch is attempted, then the send fails and is **never** retried (`NG-4`), and the failure is
+recorded against the delivery row.
+
+**CC-38.** Given a recipient that the behaviour rule maps to transient failures, when dispatch is
+attempted, then the bounded retry policy applies (`NG-3`) with no more than
+`NotificationGatewayConstants.TransientRetryCount` attempts, and a subsequent success is recorded.
+
+**CC-39.** Given each channel's outbound adapter, when its payload is built, then it matches that
+provider's documented schema field-for-field — asserted directly against the adapter, so the mock
+and a real provider cannot drift apart silently.
+
+#### Inbound SMS, provider-faithful (`FEAT-25`, completing `CC-11`–`CC-12`)
+
+**CC-40.** Given a Twilio-shaped inbound SMS webhook with a valid `X-Twilio-Signature`, when it is
+received at the SMS inbound endpoint, then the shared ingestion path (`CC-1`–`CC-4`) runs with
+`Channel = SMS`. Twilio signs **HMAC-SHA1 over the request URL plus alphabetically-sorted POST
+params**, not SHA256 over the raw body as Meta does — which is why
+`IWebhookSignatureVerifier.Verify` already carries the `requestUrl` parameter Meta ignores.
+
+**CC-41.** Given an absent or wrong `X-Twilio-Signature`, when the request is received, then it is
+refused before any database write and the payload is not logged in full (`CC-27`, `CC-29`).
+
+#### Inbound email (`FEAT-35`, new scope)
+
+**CC-42.** Given a verified inbound email payload in SendGrid Inbound Parse's shape
+(`multipart/form-data` carrying `from`, `subject`, `text`, `envelope`), when it is received at the
+email inbound endpoint, then the shared ingestion path runs with `Channel = Email`, matching the
+customer by email address per `A17`.
+
+**CC-43.** Given the same inbound email delivered twice with the same provider message id, when both
+are received, then exactly one `TicketMessage` exists — inheriting the existing unique filtered
+index on `(Channel, ProviderMessageId)`.
+
+**CC-44.** Given an agent replies to a ticket whose `Source` is `Email`, when the reply is sent, then
+it dispatches through `INotificationGateway` with `Channels=[Email]` and is recorded as an outbound
+`TicketMessage`. (Today `RecordTicketMessageCommandHandler:72` dispatches only for `WhatsApp` and
+`SMS`; an email-sourced ticket's reply reaches nobody.)
+
+#### Simulators for the two channels with no provider (`FEAT-26`, `FEAT-27`)
+
+**CC-45.** Given the gateway's live-chat visitor simulator, when it runs, then it opens an anonymous
+session, exchanges messages over that session's group, and an agent claim → message → close cycle
+completes without any authenticated visitor credential (`CC-14`–`CC-17`, `CC-19` unchanged).
+
+**CC-46.** Given a `Waiting` session older than the configured timeout, when the timeout job runs,
+then the session is marked `Abandoned` and is not converted to a ticket — closing `CC-18`, which is
+specified above but unimplemented.
+
+**CC-47.** Given the gateway's web-form poster, when it submits a valid form, a honeypot-filled form
+and a rate-limited burst, then the valid one creates a ticket and returns `201` with the reference
+only, and the other two return responses **indistinguishable** from the valid one while creating
+nothing (`CC-20`–`CC-23` unchanged; this criterion is that a caller outside the process cannot tell
+the defence fired).
+
+#### Consolidation this feature requires (`FEAT-35`)
+
+**CC-48.** Given the permitted channel names, when a new channel is added, then exactly one list is
+edited. Today there are four divergent copies — `TicketMessage.cs:17` permits seven values,
+`RecordTicketMessageCommandValidator.cs:9` six (missing `Portal`),
+`IngestInboundChannelMessageCommandValidator.cs:8` three, and `CreateTicketCommandValidator.cs:54`
+a sixth set for `Ticket.Source` — and they disagree today. They resolve from one `Domain` source of
+truth, and the reconciliation includes `Email` becoming a legal inbound channel. All five names fit
+the `Channel` column's 20-character limit.
+
+**CC-49.** Given the three HTTP channel senders, when a fourth provider adapter is added, then the
+shared transport concerns are written once. `ApplyAuth` and both `IsTransient` overloads are
+currently verbatim copies across `EmailNotificationChannelSender.cs:85-112`,
+`SmsNotificationChannelSender.cs:85-112` and `WhatsAppNotificationChannelSender.cs:93-120`; they
+move to one base, leaving each adapter owning only its payload shape and its id/error mapping.
+
+**CC-50.** Given the backend test suite, when it runs with the mock gateway not started, then every
+test passes — no test depends on port 3001. Integration tests continue to use the in-process
+`Integration/StubGatewayServer.cs`.
+
+### Design
+
+**The toggle is a decorator, not a branch.** `ServiceCollectionExtensions.cs:68` is the single
+registration behind `IExternalApiConfigurationProvider`, and the three HTTP senders plus
+`MetaSignatureVerifier.cs:39` read their base URL and credential exclusively through that port. A
+`MockRoutingExternalApiConfigurationProvider` wrapping `DatabaseExternalApiProvider` is therefore the
+entire mechanism: one new class, one changed registration, and **no change to any sender or handler**.
+Configuration keys: `Channels:UseMocks` (bool, default `false`), `Channels:MockBaseUrl` (default
+`http://localhost:3001`), `Channels:MockWebhookSecret`.
+
+**Signature verification stays real in mock mode.** Because the verifier reads its secret from the
+same configuration the decorator supplies, the mock can sign its outbound webhooks with the same dev
+secret, so inbound HMAC verification actually executes — `CC-5`/`CC-27`/`CC-41` are exercised rather
+than bypassed. Verification also stops being single-provider: `MetaSignatureVerifier.cs:23` currently
+hard-gates `if (provider != "WhatsApp") return false`, and only one implementation is registered, so
+per-provider resolution (Meta SHA256-over-raw-body, Twilio SHA1-over-URL-plus-params) replaces it.
+
+**Gateway side.** One model per provider, following the project's own documented recipe: create
+`models/{Name}GatewayModel.js`, `register(...)` it in `models/ServiceRegistry.js`, add
+`behaviors/{name}-rules.js` for the deterministic failure triggers, and seed `mocks/{group}/*.json`.
+Two new `.env` entries read through `config.js` — `CALLBACK_BASE_URL` (where inbound webhooks are
+posted) and `WEBHOOK_SECRET` (what they are signed with). The two simulators are scripts under the
+existing `scripts/` directory, exposed through `npm run` like the current `test:sms`/`test:email`.
+
+**Failure triggers are deterministic, not random.** The existing `behaviors/*-rules.js` contract is
+`check(payload) → {code, message} | null`; the new rules key off reserved recipients so a test can
+force a permanent failure or a transient-then-success sequence on demand. `CC-37`/`CC-38` are only
+provable end-to-end because of this — the current SMS mock's random status progression could not
+support them.
+
+### Out of scope (additions)
+
+- Deploying the gateway anywhere, or adding authentication to it (`A13` — dev-only by design).
+- Procuring or verifying any real provider account (`OQ-CC-2` unchanged), and CAPTCHA (`OQ-CC-1`
+  unchanged).
+- Per-channel mock toggles (`A15`).
+- Making the Node gateway a dependency of the automated test suite (`CC-50` is the opposite).
+- Replacing the gateway's existing house-shaped `email`/`sms` routes, or migrating whatever else
+  consumes them.
+- Voice/phone, unchanged from the original out-of-scope list.
