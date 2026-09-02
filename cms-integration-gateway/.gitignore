@@ -361,3 +361,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Runtime message log. The mock server appends every message it handles, so this file changes
+# on every run and carried captured localhost password-reset tokens for @support.local fixtures.
+# The server recreates it on start; it is state, not source.
+mocks/_realtime-messages.json
