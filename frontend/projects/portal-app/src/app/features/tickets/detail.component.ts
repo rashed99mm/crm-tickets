@@ -3,6 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { RouterLink } from '@angular/router';
 import {
   ApiError,
+  toLocalizedApiError,
   AsyncState,
   CsAttachmentList,
   CsBadge,
@@ -95,7 +96,7 @@ export default class PortalTicketDetailComponent {
       next: (detail) => this.state.set(loaded(detail)),
       error: (error: unknown) =>
         this.state.set(
-          failed(error instanceof ApiError ? error : new ApiError('ERR_UNKNOWN', 'Something went wrong', [], '', 0)),
+          failed(toLocalizedApiError(error, this.locale)),
         ),
     });
   }
@@ -124,9 +125,7 @@ export default class PortalTicketDetailComponent {
       error: (failure: unknown) => {
         this.replyBusy.set(false);
         this.replyError.set(
-          failure instanceof ApiError
-            ? failure
-            : new ApiError('ERR_UNKNOWN', 'Something went wrong', [], '', 0),
+          toLocalizedApiError(failure, this.locale),
         );
       },
     });
@@ -181,9 +180,7 @@ export default class PortalTicketDetailComponent {
         error: (failure: unknown) => {
           this.surveyBusy.set(false);
           this.surveyError.set(
-            failure instanceof ApiError
-              ? failure
-              : new ApiError('ERR_UNKNOWN', 'Something went wrong', [], '', 0),
+            toLocalizedApiError(failure, this.locale),
           );
         },
       });

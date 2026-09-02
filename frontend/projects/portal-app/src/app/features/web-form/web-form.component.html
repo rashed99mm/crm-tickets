@@ -1,7 +1,22 @@
 <main class="mx-auto flex w-full max-w-2xl flex-col gap-6 p-4 md:p-8">
-  <header>
-    <h1 class="font-display text-headline-lg text-on-surface">{{ 'portal.webForm.title' | t }}</h1>
-    <p class="text-body-md text-on-surface-variant">{{ 'portal.webForm.subtitle' | t }}</p>
+  <!-- Same header shape as the live-chat page: icon badge, title, subtitle, one hint chip. The two
+       are siblings in the public "how do I reach support" set and used to look unrelated. -->
+  <header class="cs-page-heading">
+    <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-start">
+      <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+        <cs-icon name="contact_mail" [size]="24" />
+      </span>
+      <div class="flex min-w-0 flex-col gap-1.5">
+        <h1 class="font-display text-headline-lg font-semibold text-on-surface">
+          {{ 'portal.webForm.title' | t }}
+        </h1>
+        <p class="text-body-md text-on-surface-variant">{{ 'portal.webForm.subtitle' | t }}</p>
+        <p class="mt-1 inline-flex w-fit items-center gap-1.5 rounded-full bg-surface-container-low px-3 py-1 text-label-md font-medium text-on-surface-variant">
+          <cs-icon name="mark_email_read" [size]="15" class="text-primary" />
+          {{ 'portal.webForm.headerHint' | t }}
+        </p>
+      </div>
+    </div>
   </header>
 
   @if (submittedReference(); as ref) {
@@ -52,8 +67,17 @@
             id="web-form-description"
             rows="5"
             [formControl]="form.controls.description"
-            class="w-full rounded-md border border-outline-variant bg-surface px-3 py-2 text-body-md text-on-surface outline-none focus:border-primary focus:ring-1 focus:ring-primary"
+            [attr.aria-invalid]="descriptionInvalid() ? 'true' : null"
+            class="w-full rounded-md border bg-surface px-3 py-2 text-body-md text-on-surface outline-none transition focus:ring-1 focus:ring-primary"
+            [class.border-error]="descriptionInvalid()"
+            [class.border-outline-variant]="!descriptionInvalid()"
+            [class.focus:border-primary]="!descriptionInvalid()"
           ></textarea>
+          <!-- cs-input-field renders its own message; a bare textarea has to say it itself, or the
+               only required field with no feedback is the one people actually type into. -->
+          @if (descriptionInvalid()) {
+            <p role="alert" class="text-body-sm text-error">{{ 'validation.required' | t }}</p>
+          }
         </div>
 
         <!-- Non-visible honeypot field -->
@@ -73,8 +97,11 @@
           }
         }
 
+        <!-- Not disabled on form.invalid: a dimmed button that never says what is missing reads as
+             broken. Submitting an incomplete form marks the fields touched, so each one explains
+             itself. -->
         <div class="flex justify-end pt-2">
-          <cs-button type="submit" [busy]="submitting()" [disabled]="form.invalid">
+          <cs-button type="submit" [busy]="submitting()">
             {{ 'portal.webForm.submit' | t }}
           </cs-button>
         </div>

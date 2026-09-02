@@ -2,7 +2,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { envelopeInterceptor } from '../api/envelope.interceptor';
-import { PERMITTED_TRANSITIONS, TicketApi, TICKET_STATUSES } from './ticket.api';
+import { derivePriority, PERMITTED_TRANSITIONS, TicketApi, TICKET_STATUSES } from './ticket.api';
 
 describe('TicketApi', () => {
   let api: TicketApi;
@@ -27,7 +27,8 @@ describe('TicketApi', () => {
       description: 'The portal rejects my password.',
       customerId: 'c-1',
       categoryId: 'cat-1',
-      priority: 'Normal',
+      impact: 'Medium',
+      urgency: 'Medium',
     }).subscribe();
 
     const request = http.expectOne('/api/Tickets');
@@ -37,7 +38,8 @@ describe('TicketApi', () => {
       description: 'The portal rejects my password.',
       customerId: 'c-1',
       categoryId: 'cat-1',
-      priority: 'Normal',
+      impact: 'Medium',
+      urgency: 'Medium',
     });
     request.flush({ success: true, code: 'CON035', message: 'OK', data: { id: 't-1' }, errors: [] });
   });
@@ -187,7 +189,8 @@ describe('TicketApi', () => {
       description: 'The portal rejects my password.',
       customerId: 'c-1',
       categoryId: 'cat-1',
-      priority: 'Normal',
+      impact: 'Medium',
+      urgency: 'Medium',
     }).subscribe();
 
     const request = http.expectOne('/api/Tickets');
@@ -197,7 +200,8 @@ describe('TicketApi', () => {
       description: 'The portal rejects my password.',
       customerId: 'c-1',
       categoryId: 'cat-1',
-      priority: 'Normal',
+      impact: 'Medium',
+      urgency: 'Medium',
     });
     request.flush({ success: true, code: 'CON035', message: 'OK', data: { id: 't-1' }, errors: [] });
   });
@@ -285,5 +289,87 @@ describe('TicketApi', () => {
     });
 
     expect(received).toBe(42);
+  });
+
+  it('changeStatus sends the resolution fields when resolving', () => {
+    api.changeStatus('t-1', 'Resolved', 'AAA=', 'Fixed', 'Reset the password.').subscribe();
+
+    const req = http.expectOne('/api/Tickets/t-1/status');
+    expect(req.request.body).toEqual({
+      status: 'Resolved',
+      rowVersion: 'AAA=',
+      resolutionCode: 'Fixed',
+      resolutionNotes: 'Reset the password.',
+    });
+    req.flush({ success: true, code: 'CON035', message: 'OK', data: {}, errors: [] });
+  });
+
+  it('changeStatus omits resolution fields for a non-resolving transition', () => {
+    api.changeStatus('t-1', 'Open', 'AAA=').subscribe();
+
+    const req = http.expectOne('/api/Tickets/t-1/status');
+    expect(req.request.body).toEqual({ status: 'Open', rowVersion: 'AAA=' });
+    req.flush({ success: true, code: 'CON035', message: 'OK', data: {}, errors: [] });
+  });
+
+  it('derivePriority matches every cell of the spec matrix', () => {
+    expect(derivePriority('Low', 'Low')).toBe('Low');
+    expect(derivePriority('Low', 'Medium')).toBe('Low');
+    expect(derivePriority('Low', 'High')).toBe('Normal');
+    expect(derivePriority('Medium', 'Low')).toBe('Low');
+    expect(derivePriority('Medium', 'Medium')).toBe('Normal');
+    expect(derivePriority('Medium', 'High')).toBe('High');
+    expect(derivePriority('High', 'Low')).toBe('Normal');
+    expect(derivePriority('High', 'Medium')).toBe('High');
+    expect(derivePriority('High', 'High')).toBe('Urgent');
+  });
+
+  it('reclassify sends impact, urgency and rowVersion', () => {
+    api.reclassify('t-1', 'High', 'High', 'AAA=').subscribe();
+
+    const req = http.expectOne('/api/Tickets/t-1/classification');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ impact: 'High', urgency: 'High', rowVersion: 'AAA=' });
+    req.flush({ success: true, code: 'CON035', message: 'OK', data: { id: 't-1' }, errors: [] });
+  });
+
+  it('addTag posts the raw value', () => {
+    api.addTag('t-1', 'Billing Issue').subscribe();
+
+    const req = http.expectOne('/api/Tickets/t-1/tags');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ value: 'Billing Issue' });
+    req.flush({ success: true, code: 'CON035', message: 'OK', data: {}, errors: [] });
+  });
+
+  it('removeTag deletes by the normalized value in the route', () => {
+    api.removeTag('t-1', 'billing').subscribe();
+
+    const req = http.expectOne('/api/Tickets/t-1/tags/billing');
+    expect(req.request.method).toBe('DELETE');
+    req.flush({ success: true, code: 'CON035', message: 'OK', data: {}, errors: [] });
+  });
+
+  it('list sends the tag filter only when set', () => {
+    api.list({ tag: 'billing' }).subscribe();
+    http.expectOne((r) => r.url === '/api/Tickets' && r.params.get('tag') === 'billing')
+      .flush({ success: true, code: 'CON035', message: 'OK', data: { items: [], pageIndex: 1, pageSize: 10, totalCount: 0 }, errors: [] });
+  });
+
+  it('addLink posts linkType and targetReference', () => {
+    api.addLink('t-1', 'RelatedTo', 'TKT-002000').subscribe();
+
+    const req = http.expectOne('/api/Tickets/t-1/links');
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ linkType: 'RelatedTo', targetReference: 'TKT-002000' });
+    req.flush({ success: true, code: 'CON035', message: 'OK', data: {}, errors: [] });
+  });
+
+  it('removeLink deletes by link id', () => {
+    api.removeLink('t-1', 'link-1').subscribe();
+
+    const req = http.expectOne('/api/Tickets/t-1/links/link-1');
+    expect(req.request.method).toBe('DELETE');
+    req.flush({ success: true, code: 'CON035', message: 'OK', data: {}, errors: [] });
   });
 });

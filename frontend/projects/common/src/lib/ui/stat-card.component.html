@@ -36,6 +36,13 @@
     <p class="text-label-md uppercase tracking-wider text-on-surface-variant">
       {{ label() }}
     </p>
-    <p class="text-display text-on-surface">{{ value() }}</p>
+    @if (loading()) {
+      <div class="mt-1 h-9 w-20 animate-pulse rounded bg-surface-container-low" role="status"></div>
+    } @else {
+      <p class="text-display text-on-surface">{{ value() }}</p>
+    }
+    @if (hint(); as caption) {
+      <p class="mt-1 text-body-sm text-on-surface-variant">{{ caption }}</p>
+    }
   </div>
 </ng-template>

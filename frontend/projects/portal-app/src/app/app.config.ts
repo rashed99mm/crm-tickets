@@ -2,6 +2,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
+  acceptLanguageInterceptor,
   authInterceptor,
   envelopeInterceptor,
   REALTIME_HUB_PATH,
@@ -17,10 +18,16 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes, withComponentInputBinding()),
     // Refresh before auth so a 401 triggers a single-flight token refresh and
-    // retries with the fresh token; auth attaches the token; envelope unwraps
-    // the response. Same order as admin-app.
+    // retries with the fresh token; auth attaches the token; accept-language tells the server which
+    // language to answer in (and which language to prompt the AI in); envelope unwraps the
+    // response. Same order as admin-app.
     provideHttpClient(
-      withInterceptors([refreshInterceptor, authInterceptor, envelopeInterceptor]),
+      withInterceptors([
+        refreshInterceptor,
+        authInterceptor,
+        acceptLanguageInterceptor,
+        envelopeInterceptor,
+      ]),
     ),
   ],
 };

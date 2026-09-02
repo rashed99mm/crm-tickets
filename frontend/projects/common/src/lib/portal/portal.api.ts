@@ -33,12 +33,20 @@ export interface PortalTicketDetail {
   readonly surveySubmitted: boolean;
 }
 
-/** The portal create payload — no customerId; that comes from the signed-in session (PJ-8). */
+/**
+ * The portal create payload — no customerId; that comes from the signed-in session (PJ-8).
+ *
+ * And no priority. `PortalCreateTicketRequest` on the server (`PortalController.cs:273`) is
+ * `(Subject, Description, CategoryId)`, so a `priority` sent here was dropped as an unknown
+ * property and never reached a ticket. That is deliberate — US-923 / spec A2 has customer-origin
+ * tickets not self-classifying, with the server deriving priority from impact and urgency — so the
+ * field was removed rather than wired up. `PortalTicketDetail.priority` is unaffected: reading the
+ * priority the server assigned is a different question from letting the customer set it.
+ */
 export interface CreatePortalTicketRequest {
   readonly subject: string;
   readonly description: string;
   readonly categoryId: string;
-  readonly priority: TicketPriority;
 }
 
 /** One ticket attachment as the portal list/download routes return it (TA-4/TA-7). */

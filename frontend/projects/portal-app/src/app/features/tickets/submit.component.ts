@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { catchError, forkJoin, of } from 'rxjs';
 import {
   ApiError,
+  toLocalizedApiError,
   CategoryOption,
   CsAttachmentPicker,
   CsButton,
@@ -11,8 +12,6 @@ import {
   FieldError,
   LocaleStore,
   PortalApi,
-  TicketPriority,
-  TICKET_PRIORITIES,
   TranslatePipe,
 } from 'common';
 
@@ -36,7 +35,6 @@ export default class PortalSubmitComponent {
 
   readonly picker = viewChild(CsAttachmentPicker);
 
-  readonly priorities = TICKET_PRIORITIES;
 
   readonly categories = signal<readonly CategoryOption[]>([]);
   readonly optionsLoading = signal(false);
@@ -50,7 +48,6 @@ export default class PortalSubmitComponent {
       nonNullable: true,
       validators: [Validators.required],
     }),
-    priority: new FormControl<TicketPriority>('Normal', { nonNullable: true }),
     description: new FormControl('', {
       nonNullable: true,
       validators: [Validators.required],
@@ -103,13 +100,14 @@ export default class PortalSubmitComponent {
     this.busy.set(true);
     this.apiError.set(null);
 
-    const { subject, categoryId, priority, description } = this.form.getRawValue();
+    const { subject, categoryId, description } = this.form.getRawValue();
 
+    // No priority: the server derives it from impact and urgency (US-923 / spec A2). The field it
+    // used to be sent in does not exist on PortalCreateTicketRequest and was silently dropped.
     const payload = {
       subject,
       description,
       categoryId,
-      priority,
     };
 
     this.api.submitTicket(payload).subscribe({
@@ -163,9 +161,7 @@ export default class PortalSubmitComponent {
   }
 
   private toApiError(failure: unknown): ApiError {
-    return failure instanceof ApiError
-      ? failure
-      : new ApiError('ERR_UNKNOWN', 'Something went wrong', [], '', 0);
+    return toLocalizedApiError(failure, this.locale);
   }
 
   clearServerError(control: string): void {

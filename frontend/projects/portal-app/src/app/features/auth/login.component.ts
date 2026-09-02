@@ -3,6 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   ApiError,
+  toLocalizedApiError,
   AuthApi,
   CsButton,
   CsCard,
@@ -80,9 +81,7 @@ export default class PortalLoginComponent {
       error: (failure: unknown) => {
         this.busy.set(false);
         this.error.set(
-          failure instanceof ApiError
-            ? failure
-            : new ApiError('ERR_UNKNOWN', 'Something went wrong', [], '', 0),
+          toLocalizedApiError(failure, this.locale),
         );
       },
     });

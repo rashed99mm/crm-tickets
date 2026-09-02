@@ -74,7 +74,6 @@ describe('PortalSubmitComponent', () => {
     fixture.componentInstance.form.setValue({
       subject: 'Cannot log in',
       categoryId: 'c1',
-      priority: 'Normal',
       description: 'Help',
     });
     fixture.componentInstance.submit();
@@ -84,10 +83,11 @@ describe('PortalSubmitComponent', () => {
     expect(req.request.body).toEqual({
       subject: 'Cannot log in',
       categoryId: 'c1',
-      priority: 'Normal',
       description: 'Help',
     });
     expect(req.request.body).not.toHaveProperty('customerId');
+    // US-923 / spec A2 — the customer does not self-classify; the server derives priority.
+    expect(req.request.body).not.toHaveProperty('priority');
     req.flush({ success: true, code: 'CON032', message: 'OK', data: { id: 't1' }, errors: [] });
     fixture.detectChanges();
   });

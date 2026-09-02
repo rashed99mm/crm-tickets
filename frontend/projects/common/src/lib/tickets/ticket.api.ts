@@ -7,6 +7,27 @@ import { PagedResult } from '../api/api-response';
 export const TICKET_PRIORITIES = ['Low', 'Normal', 'High', 'Urgent'] as const;
 export type TicketPriority = (typeof TICKET_PRIORITIES)[number];
 
+/** US-923. The matrix inputs — priority is derived from these, never set directly. */
+export const TICKET_IMPACTS = ['Low', 'Medium', 'High'] as const;
+export type TicketImpact = (typeof TICKET_IMPACTS)[number];
+export const TICKET_URGENCIES = ['Low', 'Medium', 'High'] as const;
+export type TicketUrgency = (typeof TICKET_URGENCIES)[number];
+
+/**
+ * A client-side **preview** of the server's matrix (spec decision 2026-08-31: matrix-only
+ * priority). Display only — the create/reclassify response carries the authoritative value, and
+ * this must never be sent back to the server as if it were an input.
+ */
+const PRIORITY_MATRIX: Readonly<Record<TicketImpact, Readonly<Record<TicketUrgency, TicketPriority>>>> = {
+  Low: { Low: 'Low', Medium: 'Low', High: 'Normal' },
+  Medium: { Low: 'Low', Medium: 'Normal', High: 'High' },
+  High: { Low: 'Normal', Medium: 'High', High: 'Urgent' },
+};
+
+export function derivePriority(impact: TicketImpact, urgency: TicketUrgency): TicketPriority {
+  return PRIORITY_MATRIX[impact][urgency];
+}
+
 /** The eight lifecycle states. The transitions between them are a server concern (AC-501). */
 export const TICKET_STATUSES = ['New', 'Open', 'Assigned', 'In Progress', 'Waiting for Customer', 'Waiting for Internal Team', 'Resolved', 'Closed'] as const;
 export type TicketStatus = (typeof TICKET_STATUSES)[number];
@@ -32,6 +53,8 @@ export interface TicketListItem {
   readonly resolutionDueAt?: string | null;
   /** FEAT-17 second slice addendum, AC-158. None/Warning/Level1/Level2/Level3 (BR-32). */
   readonly escalationState: string;
+  /** US-924 / AC-924.4. Normalized values, alphabetical; empty when untagged. */
+  readonly tags: readonly string[];
 }
 
 export interface TicketFilters {
@@ -41,6 +64,8 @@ export interface TicketFilters {
   readonly mine?: boolean;
   /** Tickets with no assignee. `AC-82`, and a backend filter flag rather than a magic guid. */
   readonly unassigned?: boolean;
+  /** US-924 / AC-924.4. Only tickets carrying this tag. */
+  readonly tag?: string | null;
 }
 
 export interface CreateTicketRequest {
@@ -48,7 +73,8 @@ export interface CreateTicketRequest {
   readonly description: string;
   readonly customerId: string;
   readonly categoryId: string;
-  readonly priority: TicketPriority;
+  readonly impact: TicketImpact;
+  readonly urgency: TicketUrgency;
 }
 
 /**
@@ -138,6 +164,20 @@ export interface TicketHistoryEntry {
   readonly occurredAt: string;
 }
 
+/**
+ * One edge of the link graph as seen from this ticket (US-925, AC-925.5). `direction` is
+ * `'Outbound'` when this ticket is the source ("duplicate of ..."), `'Inbound'` when it is the
+ * target ("duplicated by ...").
+ */
+export interface TicketLink {
+  readonly id: string;
+  readonly linkType: 'RelatedTo' | 'DuplicateOf';
+  readonly direction: 'Outbound' | 'Inbound';
+  readonly otherTicketId: string;
+  readonly otherReference: string;
+  readonly otherSubject: string;
+}
+
 /** Matches the backend's `TicketDetailDto`. */
 export interface TicketDetail {
   readonly id: string;
@@ -165,7 +205,22 @@ export interface TicketDetail {
   readonly closedAt: string | null;
   readonly escalationAssigneeId: string | null;
   readonly escalationAssigneeName: string | null;
+  /** US-922 / AC-922.6. Null / 0 until the ticket has been resolved / reopened. */
+  readonly resolutionCode: string | null;
+  readonly resolutionNotes: string | null;
+  readonly reopenCount: number;
+  /** US-923 / AC-923.6. Null on tickets created before FEAT-32 (spec A1). */
+  readonly impact: string | null;
+  readonly urgency: string | null;
+  /** US-924. Normalized values, alphabetical. */
+  readonly tags: readonly string[];
+  /** US-925. */
+  readonly links: readonly TicketLink[];
 }
+
+/** US-922. Kept in step with the backend's `TicketResolutionCode` value object. */
+export const RESOLUTION_CODES = ['Fixed', 'Workaround', 'Duplicate', 'CannotReproduce', 'NoResponse'] as const;
+export type ResolutionCode = (typeof RESOLUTION_CODES)[number];
 
 /**
  * The transitions the server permits from each status.
@@ -215,6 +270,10 @@ export class TicketApi {
     // absent. `false` means "do not filter", which is expressed by not sending the parameter.
     if (filters.unassigned) {
       params = params.set('unassigned', 'true');
+    }
+
+    if (filters.tag) {
+      params = params.set('tag', filters.tag);
     }
 
     return this.http.get<PagedResult<TicketListItem>>('/api/Tickets', { params });
@@ -282,13 +341,35 @@ export class TicketApi {
   /**
    * Moves the ticket along its lifecycle. `rowVersion` is the value read from `get` — the server
    * compares it to detect a lost update (AC-41), so it must be echoed, not invented.
+   *
+   * `resolutionCode`/`resolutionNotes` are required by the server only when `status` is
+   * `'Resolved'` (AC-922.1); every other transition ignores them if present, so callers simply
+   * omit them (US-922).
    */
-  changeStatus(id: string, status: TicketStatus, rowVersion: string): Observable<unknown> {
-    return this.http.post(`/api/Tickets/${id}/status`, { status, rowVersion });
+  changeStatus(
+    id: string,
+    status: TicketStatus,
+    rowVersion: string,
+    resolutionCode?: string,
+    resolutionNotes?: string,
+  ): Observable<unknown> {
+    return this.http.post(`/api/Tickets/${id}/status`, {
+      status,
+      rowVersion,
+      ...(resolutionCode !== undefined ? { resolutionCode, resolutionNotes } : {}),
+    });
   }
 
   assign(id: string, assigneeId: string, rowVersion: string): Observable<unknown> {
     return this.http.post(`/api/Tickets/${id}/assignee`, { assigneeId, rowVersion });
+  }
+
+  /**
+   * US-923 / AC-923.2. Sets the matrix inputs; the server re-derives priority. There is no
+   * endpoint that sets priority directly — this is the only mutation path it has post-creation.
+   */
+  reclassify(id: string, impact: TicketImpact, urgency: TicketUrgency, rowVersion: string): Observable<unknown> {
+    return this.http.post(`/api/Tickets/${id}/classification`, { impact, urgency, rowVersion });
   }
 
   takeEscalation(id: string, assigneeId: string, rowVersion: string): Observable<unknown> {
@@ -308,5 +389,25 @@ export class TicketApi {
   /** AC-101 — logs a message against a ticket. The sender is never sent; it comes from the token. */
   recordMessage(id: string, request: RecordTicketMessageRequest): Observable<{ id: string }> {
     return this.http.post<{ id: string }>(`/api/Tickets/${id}/messages`, request);
+  }
+
+  /** US-924 / AC-924.1. The server normalizes and validates (charset, length, duplicate, limit). */
+  addTag(id: string, value: string): Observable<unknown> {
+    return this.http.post(`/api/Tickets/${id}/tags`, { value });
+  }
+
+  /** US-924. `value` should be the already-normalized tag as rendered — the route carries it raw. */
+  removeTag(id: string, value: string): Observable<unknown> {
+    return this.http.delete(`/api/Tickets/${id}/tags/${encodeURIComponent(value)}`);
+  }
+
+  /** US-925 / AC-925.1. `targetReference` is the other ticket's TKT-nnnnnn reference. */
+  addLink(id: string, linkType: 'RelatedTo' | 'DuplicateOf', targetReference: string): Observable<unknown> {
+    return this.http.post(`/api/Tickets/${id}/links`, { linkType, targetReference });
+  }
+
+  /** US-925 / AC-925.4. */
+  removeLink(id: string, linkId: string): Observable<unknown> {
+    return this.http.delete(`/api/Tickets/${id}/links/${linkId}`);
   }
 }

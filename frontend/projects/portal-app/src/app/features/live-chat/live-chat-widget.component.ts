@@ -40,6 +40,14 @@ export default class LiveChatWidgetComponent implements OnDestroy {
   readonly messages = signal<readonly ChatMessageDto[]>([]);
   readonly isClosed = signal(false);
 
+  /**
+   * Both start and send used to swallow their failures into `starting`/`sending` returning to
+   * false, so a failed request looked exactly like a button that does nothing. The page was
+   * reported as "not clickable" for that reason.
+   */
+  readonly startError = signal(false);
+  readonly sendError = signal(false);
+
   /** FB-5 — connection states: connecting / connected / reconnecting / disconnected. */
   readonly connectionState = this.realtime.state;
 
@@ -88,12 +96,26 @@ export default class LiveChatWidgetComponent implements OnDestroy {
     }),
   });
 
+  /** The bare textarea has no cs-input-field to render its own error, so the template asks here. */
+  initialMessageInvalid(): boolean {
+    const control = this.startForm.controls.initialMessage;
+    return control.invalid && (control.touched || control.dirty);
+  }
+
   startChat(): void {
-    if (this.startForm.invalid || this.starting()) {
+    if (this.starting()) {
+      return;
+    }
+
+    // The button is never disabled, so pressing it on an empty form is how a visitor learns which
+    // of the three required fields is missing. Marking touched is what surfaces those messages.
+    if (this.startForm.invalid) {
+      this.startForm.markAllAsTouched();
       return;
     }
 
     this.starting.set(true);
+    this.startError.set(false);
     const formValue = this.startForm.getRawValue();
 
     this.api.startAnonymousSession(formValue).subscribe({
@@ -119,6 +141,7 @@ export default class LiveChatWidgetComponent implements OnDestroy {
       },
       error: () => {
         this.starting.set(false);
+        this.startError.set(true);
       },
     });
   }
@@ -131,6 +154,7 @@ export default class LiveChatWidgetComponent implements OnDestroy {
 
     const { body } = this.messageForm.getRawValue();
     this.sending.set(true);
+    this.sendError.set(false);
 
     this.api.sendAnonymousMessage(token, body).subscribe({
       next: (sent) => {
@@ -140,6 +164,8 @@ export default class LiveChatWidgetComponent implements OnDestroy {
       },
       error: () => {
         this.sending.set(false);
+        // The text is left in the box on purpose: clearing it would lose what they typed.
+        this.sendError.set(true);
       },
     });
   }

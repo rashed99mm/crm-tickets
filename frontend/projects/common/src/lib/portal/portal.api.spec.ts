@@ -41,7 +41,6 @@ describe('PortalApi', () => {
         subject: 'Cannot sign in',
         description: 'The portal rejects my password.',
         categoryId: 'cat-1',
-        priority: 'Normal',
       })
       .subscribe();
 
@@ -51,7 +50,6 @@ describe('PortalApi', () => {
       subject: 'Cannot sign in',
       description: 'The portal rejects my password.',
       categoryId: 'cat-1',
-      priority: 'Normal',
     });
     expect(request.request.body).not.toHaveProperty('customerId');
     request.flush({ success: true, code: 'CON032', message: 'OK', data: { id: 't-1' }, errors: [] });

@@ -1,12 +1,21 @@
 <main class="mx-auto flex min-h-full w-full max-w-4xl flex-col gap-6 p-4 md:p-8">
+  <!-- Title and subtitle were the wrong way round: the eyebrow carried the page's title while the
+       h1 was the supporting sentence, so the heading read as prose and the page had no name. -->
   <header class="cs-page-heading">
-    <div class="relative z-10">
-      <p class="mb-sm text-label-md font-bold uppercase tracking-[0.14em] text-primary">
-        {{ 'portal.liveChat.title' | t }}
-      </p>
-      <h1 class="font-display text-headline-lg font-semibold text-on-surface">
-        {{ 'portal.liveChat.subtitle' | t }}
-      </h1>
+    <div class="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-start">
+      <span class="grid size-12 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary">
+        <cs-icon name="forum" [size]="24" />
+      </span>
+      <div class="flex min-w-0 flex-col gap-1.5">
+        <h1 class="font-display text-headline-lg font-semibold text-on-surface">
+          {{ 'portal.liveChat.title' | t }}
+        </h1>
+        <p class="text-body-md text-on-surface-variant">{{ 'portal.liveChat.subtitle' | t }}</p>
+        <p class="mt-1 inline-flex w-fit items-center gap-1.5 rounded-full bg-surface-container-low px-3 py-1 text-label-md font-medium text-on-surface-variant">
+          <cs-icon name="schedule" [size]="15" class="text-primary" />
+          {{ 'portal.liveChat.headerHint' | t }}
+        </p>
+      </div>
     </div>
   </header>
 
@@ -35,12 +44,26 @@
             id="initial-message"
             rows="4"
             [formControl]="startForm.controls.initialMessage"
-            class="min-h-[112px] w-full resize-y rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-3 text-body-md text-on-surface outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+            [attr.aria-invalid]="initialMessageInvalid() ? 'true' : null"
+            class="min-h-[112px] w-full resize-y rounded-lg border bg-surface-container-lowest px-3 py-3 text-body-md text-on-surface outline-none transition focus:ring-2 focus:ring-primary/20"
+            [class.border-error]="initialMessageInvalid()"
+            [class.border-outline-variant]="!initialMessageInvalid()"
+            [class.focus:border-primary]="!initialMessageInvalid()"
           ></textarea>
+          @if (initialMessageInvalid()) {
+            <p role="alert" class="text-body-sm text-error">{{ 'validation.required' | t }}</p>
+          }
         </div>
 
+        @if (startError()) {
+          <p role="alert" class="text-body-md text-error">{{ 'portal.liveChat.startFailed' | t }}</p>
+        }
+
+        <!-- Never disabled on startForm.invalid. A dimmed button that will not say which of the
+             three required fields is empty is indistinguishable from a broken page — which is
+             exactly how this one was reported. -->
         <div class="flex justify-end pt-2">
-          <cs-button type="submit" [busy]="starting()" [disabled]="startForm.invalid">
+          <cs-button type="submit" [busy]="starting()">
             {{ 'portal.liveChat.start' | t }}
           </cs-button>
         </div>
@@ -113,6 +136,11 @@
             (ngSubmit)="send()"
             class="border-t border-outline-variant bg-surface-container-lowest p-4 md:p-5"
           >
+            @if (sendError()) {
+              <p role="alert" class="mb-2 text-body-sm text-error">
+                {{ 'portal.liveChat.sendFailed' | t }}
+              </p>
+            }
             <div class="flex items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-lowest p-2 transition focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
               <label for="live-chat-input" class="sr-only">{{ 'chat.session.placeholder' | t }}</label>
               <input

@@ -8,6 +8,7 @@
 export * from './lib/api/api-response';
 export * from './lib/api/api-error';
 export * from './lib/api/envelope.interceptor';
+export * from './lib/api/unexpected-error';
 
 // Auth — session signals derived from the token, plus route guards.
 export * from './lib/auth/token-storage';
@@ -19,6 +20,7 @@ export * from './lib/auth/refresh.interceptor';
 export * from './lib/auth/guards';
 
 // i18n — one locale signal drives text, document lang and direction.
+export * from './lib/i18n/accept-language.interceptor';
 export * from './lib/i18n/locale.store';
 export * from './lib/i18n/localize.pipe';
 export * from './lib/i18n/translations';

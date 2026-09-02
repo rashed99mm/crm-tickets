@@ -21,6 +21,21 @@
   --color-primary: #00288e;
   --color-on-primary: #ffffff;
   --color-primary-container: #1e40af;
+
+  /* The pair for primary-container, and it MUST live in `@theme` rather than
+     only in a `[data-design-system]` block: Tailwind generates utilities from
+     this block alone, so while this was defined for `proton` only, the class
+     `text-on-primary-container` did not exist in the command-center build at
+     all. Eighteen call sites asked for it on top of #1e40af, silently got no
+     rule, and inherited near-black `on-surface` — dark navy glyphs and pill
+     text on a dark blue fill, across both apps.
+
+     White rather than the mockup's #a8b8ff: several of those call sites are
+     small bold label text and icon glyphs, where #a8b8ff on #1e40af is ~4.3:1
+     and fails AA. Same reasoning that flattened `on-secondary-container`
+     below. */
+  --color-on-primary-container: #ffffff;
+
   --color-secondary: #4b41e1;
 
   /* The active nav pill. Command Center's secondary-container, and the one
@@ -156,6 +171,9 @@
 
   --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.02);
   --shadow-popover: 0 12px 24px rgba(0, 0, 0, 0.08);
+
+  /* The `.cs-select` chevron, as a mask so its colour comes from a token rather than the SVG. */
+  --cs-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 
   --container-xs: 20rem;
   --container-sm: 24rem;
@@ -307,6 +325,13 @@
     box-shadow: 0 8px 24px rgba(11, 28, 48, 0.04);
   }
 
+  /* Keep every Command Center page title aligned with the Live Queue's display face. */
+  [data-design-system='command-center'] h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
+
   @media (max-width: 640px) {
     .cs-page-heading,
     [data-design-system='command-center'] header:has(> h1),
@@ -350,6 +375,89 @@
   .cs-data-select select:focus {
     border-color: var(--color-primary);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+  }
+
+  /*
+   * A select that looks like one.
+   *
+   * `appearance: none` is what the portal's category and priority fields already used, and it
+   * removes the native chevron — leaving a control indistinguishable from a text input, which is
+   * how those two fields shipped. This restores the affordance deliberately:
+   *
+   * - the chevron is a `mask-image` tinted by a theme token, not a baked-in grey `background-image`
+   *   that would wash out in one of the two themes;
+   * - it is placed with `inset-inline-end` on a wrapper, so Arabic gets it on the left with no RTL
+   *   override at all — `background-position` has no logical form and would have needed one;
+   * - `padding-inline` reserves the room, so long option text never runs under the chevron.
+   */
+  .cs-select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    min-height: 2.75rem;
+    border: 1px solid var(--color-outline-variant);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface-lowest);
+    color: var(--color-on-surface);
+    padding-inline: 1rem 2.5rem;
+    padding-block: 0.625rem;
+    cursor: pointer;
+    transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+  }
+
+  /*
+   * The chevron sits on a wrapper rather than on the select, so it can use `inset-inline-end` —
+   * which *is* logical and therefore needs no RTL override, unlike `background-position`.
+   */
+  .cs-select-wrap {
+    position: relative;
+    display: block;
+  }
+
+  .cs-select-wrap > .cs-select-icon {
+    position: absolute;
+    inset-block-start: 50%;
+    inset-inline-end: 0.875rem;
+    display: block;
+    width: 1.125rem;
+    height: 1.125rem;
+    transform: translateY(-50%);
+    pointer-events: none;
+    background-color: var(--color-on-surface-variant);
+    transition: background-color 150ms ease;
+    -webkit-mask: var(--cs-chevron-down) center / contain no-repeat;
+    mask: var(--cs-chevron-down) center / contain no-repeat;
+  }
+
+  .cs-select-wrap:hover > .cs-select-icon,
+  .cs-select-wrap:focus-within > .cs-select-icon {
+    background-color: var(--color-primary);
+  }
+
+  .cs-select:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 40%, var(--color-outline-variant));
+    background-color: var(--color-surface-bright);
+  }
+
+  .cs-select:focus,
+  .cs-select:focus-visible {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 18%, transparent);
+  }
+
+  .cs-select[aria-invalid='true'] {
+    border-color: var(--color-error);
+  }
+
+  .cs-select:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  /* The placeholder option reads as a prompt, not as a chosen value. */
+  .cs-select:has(option[value='']:checked) {
+    color: var(--color-on-surface-variant);
   }
 
   .cs-data-select {

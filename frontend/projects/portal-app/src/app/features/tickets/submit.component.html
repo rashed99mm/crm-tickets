@@ -49,25 +49,34 @@
             }
           </div>
 
-          <!-- Category & Priority Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!--
+            Category only. A priority picker used to sit beside it, and it was dead UI: the portal
+            posted `priority` and `PortalCreateTicketRequest` (PortalController.cs:273) has no such
+            field, so ASP.NET dropped it and the choice never reached a ticket. That is by design —
+            US-923 / spec A2 decided customer-origin tickets are not asked to self-classify, and the
+            server derives priority from impact and urgency instead. Removed rather than wired up,
+            because wiring it up would contradict the spec. The portal still *shows* priority on a
+            ticket's detail page; it just no longer pretends the customer sets it.
+          -->
+          <div class="grid grid-cols-1 gap-6">
             <!-- Category -->
             <div class="flex flex-col gap-1.5">
               <label class="font-label-md text-label-md text-on-surface" for="category">{{ 'field.category' | t }}</label>
-              <select
-                id="category"
-                formControlName="categoryId"
-                (change)="clearServerError('categoryId')"
-                [attr.aria-invalid]="(fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))) ? 'true' : null"
-                class="w-full bg-surface-lowest border border-outline-variant rounded-md px-4 py-2.5 font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors"
-                [class.border-error]="fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))"
-                [class.border-outline-variant]="!fieldError('categoryId') && !(form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))"
-              >
-                <option value="" disabled>{{ 'portal.submit.pickCategory' | t }}</option>
-                @for (c of categories(); track c.id) {
-                  <option [value]="c.id">{{ c.name }}</option>
-                }
-              </select>
+              <span class="cs-select-wrap">
+                <select
+                  id="category"
+                  formControlName="categoryId"
+                  (change)="clearServerError('categoryId')"
+                  [attr.aria-invalid]="(fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))) ? 'true' : null"
+                  class="cs-select font-body-md text-body-md"
+                >
+                  <option value="" disabled>{{ 'portal.submit.pickCategory' | t }}</option>
+                  @for (c of categories(); track c.id) {
+                    <option [value]="c.id">{{ c.name }}</option>
+                  }
+                </select>
+                <span class="cs-select-icon" aria-hidden="true"></span>
+              </span>
               @if (fieldError('categoryId')) {
                 <p role="alert" class="text-body-sm text-error">{{ fieldError('categoryId') }}</p>
               } @else if (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty)) {
@@ -75,19 +84,6 @@
               }
             </div>
 
-            <!-- Priority -->
-            <div class="flex flex-col gap-1.5">
-              <label class="font-label-md text-label-md text-on-surface" for="priority">{{ 'field.priority' | t }}</label>
-              <select
-                id="priority"
-                formControlName="priority"
-                class="w-full bg-surface-lowest border border-outline-variant rounded-md px-4 py-2.5 font-body-md text-body-md text-on-surface appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors border-outline-variant"
-              >
-                @for (p of priorities; track p) {
-                  <option [value]="p">{{ p }}</option>
-                }
-              </select>
-            </div>
           </div>
 
           <!-- Description -->

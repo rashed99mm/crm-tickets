@@ -1,9 +1,20 @@
 @if (heading()) {
+  <!--
+    A flat tinted strip and a hairline, not the old three-stop gradient with a 4px solid bar down
+    the edge: on a page of five stacked cards that chrome competed with the content it was framing.
+    The accent survives as a small rounded pill beside the title — enough to anchor the heading,
+    quiet enough to disappear when you are reading the body.
+  -->
   <div
-    class="relative flex items-center justify-between gap-4 border-b border-outline-variant/60 bg-gradient-to-r from-surface-bright via-surface-lowest to-surface-bright px-5 py-4 before:absolute before:inset-y-0 before:start-0 before:w-1 before:bg-primary"
+    class="flex items-center justify-between gap-4 border-b border-outline-variant/40 bg-surface-bright/70 px-5 py-4"
   >
-    <h2 class="flex items-center gap-2 text-headline-md text-on-surface">
-      {{ heading() }}
+    <h2 class="flex min-w-0 items-center gap-3 text-headline-md text-on-surface">
+      <!-- Vertical gradient only — a horizontal one would need mirroring under `dir="rtl"`. -->
+      <span
+        class="h-5 w-[3px] shrink-0 rounded-full bg-gradient-to-b from-primary to-secondary"
+        aria-hidden="true"
+      ></span>
+      <span class="truncate">{{ heading() }}</span>
     </h2>
     <ng-content select="[action], action" />
   </div>

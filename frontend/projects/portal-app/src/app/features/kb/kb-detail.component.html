@@ -40,7 +40,8 @@
             <div class="mb-6 flex items-center gap-3 border-b border-border-subtle pb-6 text-body-sm text-on-surface-variant">
               <span class="grid size-9 place-items-center rounded-full bg-primary text-on-primary"><cs-icon name="person" [size]="18" /></span>
               <span>{{ 'portal.kb.byAuthor' | t }}</span>
-              @if (article.categoryName || article.category) { <span class="text-outline">•</span><span>{{ article.categoryName || article.category }}</span> }
+              <!-- A drawn separator rather than a `•` literal, so AC-63's sweep stays clean. -->
+              @if (article.categoryName || article.category) { <span class="size-1 shrink-0 rounded-full bg-outline-variant" aria-hidden="true"></span><span>{{ article.categoryName || article.category }}</span> }
             </div>
             @if (article.categoryName || article.category) {
               <p class="mb-1 text-body-sm font-medium text-primary">

@@ -32,7 +32,8 @@ describe('WebFormApi', () => {
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual(payload);
 
-    req.flush({ reference: 'TICK-999', success: true });
-    expect(received?.reference).toBe('TICK-999');
+    // TKT-nnnnnn is the real reference format (TicketReferenceGenerator.cs:49).
+    req.flush({ reference: 'TKT-000999', success: true });
+    expect(received?.reference).toBe('TKT-000999');
   });
 });

@@ -3,6 +3,8 @@ import { RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   ApiError,
+  toLocalizedApiError,
+  LocaleStore,
   AsyncState,
   CsCard,
   CsButton,
@@ -42,6 +44,7 @@ import {
 export default class PortalProfileComponent implements OnInit {
   protected readonly session = inject(SessionStore);
   private readonly api = inject(PortalApi);
+  private readonly locale = inject(LocaleStore);
 
   readonly activeTab = signal<'info' | 'history'>('info');
   readonly profile = signal<StaffProfile | null>(null);
@@ -86,7 +89,7 @@ export default class PortalProfileComponent implements OnInit {
       },
       error: (error: unknown) => {
         this.profileLoading.set(false);
-        this.profileError.set(error instanceof ApiError ? error : new ApiError('ERR_UNKNOWN', 'Unable to load profile', [], '', 0));
+        this.profileError.set(toLocalizedApiError(error, this.locale));
       },
     });
   }
@@ -103,7 +106,7 @@ export default class PortalProfileComponent implements OnInit {
       },
       error: (error: unknown) => {
         this.profileBusy.set(false);
-        this.profileError.set(error instanceof ApiError ? error : new ApiError('ERR_UNKNOWN', 'Unable to save profile', [], '', 0));
+        this.profileError.set(toLocalizedApiError(error, this.locale));
       },
     });
   }
@@ -149,13 +152,7 @@ export default class PortalProfileComponent implements OnInit {
     this.api.listTickets().subscribe({
       next: (tickets) => this.history.set(tickets.length === 0 ? empty() : loaded(tickets)),
       error: (error: unknown) =>
-        this.history.set(
-          failed(
-            error instanceof ApiError
-              ? error
-              : new ApiError('ERR_UNKNOWN', 'Unable to load history', [], '', 0),
-          ),
-        ),
+        this.history.set(failed(toLocalizedApiError(error, this.locale))),
     });
   }
 }

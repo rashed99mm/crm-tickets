@@ -36,8 +36,25 @@ export class CsStatCard {
   /** Extra classes for the icon chip, e.g. `bg-error-container/30 text-on-error-container`. */
   readonly iconTone = input('bg-surface-high text-primary');
 
+  /**
+   * Optional line under the value, saying what the number counts — "waiting for owner",
+   * "across 4 agents". Report screens need it (a bare `12` under "UNASSIGNED" is ambiguous);
+   * the dashboard's tiles omit it, which is why it is optional rather than required.
+   */
+  readonly hint = input<string | null>(null);
+
   /** Optional trend badge, top-right. */
   readonly delta = input<StatDelta>();
+
+  /**
+   * Renders a skeleton where the value goes, for a tile whose figure is still in flight.
+   *
+   * Report screens were each hand-rolling this, which is how four tiles on one screen ended up
+   * with four different boxes. It matters that it exists at all: a pending figure and a figure
+   * that came back empty are different facts, and showing an em dash for both says the data
+   * arrived and was nothing.
+   */
+  readonly loading = input(false);
 
   /** When set, the whole card becomes a link. */
   readonly href = input<string>();

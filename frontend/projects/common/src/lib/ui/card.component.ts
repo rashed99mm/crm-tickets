@@ -26,8 +26,11 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   selector: 'cs-card',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
+    // A layered, low-opacity shadow rather than one soft blur, and no hover lift: five of these
+    // stacked in a column made the whole page twitch on mouse-over, which reads cheap. The card
+    // now settles — only the border and shadow depth respond.
     class:
-      'group flex flex-col overflow-hidden rounded-2xl border border-outline-variant/70 bg-surface-lowest shadow-card transition-[box-shadow,transform,border-color] duration-200 hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-[0_14px_35px_rgba(11,28,48,0.08)]',
+      'group flex flex-col overflow-hidden rounded-2xl border border-outline-variant/50 bg-surface-lowest shadow-[0_1px_2px_rgba(11,28,48,0.04),0_10px_28px_-14px_rgba(11,28,48,0.10)] transition-[box-shadow,border-color] duration-300 hover:border-primary/25 hover:shadow-[0_1px_2px_rgba(11,28,48,0.05),0_18px_44px_-18px_rgba(11,28,48,0.16)]',
   },
   templateUrl: './card.component.html',
 })

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   ApiError,
+  toLocalizedApiError,
   CsButton,
   CsCard,
   CsIcon,
@@ -47,28 +48,43 @@ export default class WebFormComponent {
     website: new FormControl('', { nonNullable: true }),
   });
 
+  /** The bare textarea has no cs-input-field to render its own error, so the template asks here. */
+  descriptionInvalid(): boolean {
+    const control = this.form.controls.description;
+    return control.invalid && (control.touched || control.dirty);
+  }
+
   submit(): void {
-    if (this.form.invalid || this.submitting()) {
+    if (this.submitting()) {
+      return;
+    }
+
+    // The submit button is deliberately never disabled: pressing it on an incomplete form is how a
+    // visitor finds out which field is missing. Marking everything touched is what makes each
+    // cs-input-field (and the textarea above) show its own message.
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
       return;
     }
 
     const { name, email, subject, description, website } = this.form.getRawValue();
-
-    // If honeypot is populated by a bot, fake immediate success (FB-7 / CC-22)
-    if (website.trim().length > 0) {
-      this.submittedReference.set(`TICK-${Math.floor(100000 + Math.random() * 900000)}`);
-      return;
-    }
+    const honeypot = website.trim();
 
     this.submitting.set(true);
     this.error.set(null);
 
+    // The honeypot is sent, not judged here (CC-22/CC-47). Deciding locally used to fake a
+    // reference and skip the request entirely, which meant a browser autofilling the hidden input
+    // silently discarded a real customer's ticket — and it never protected anything, because a bot
+    // posts straight to the endpoint and never runs this code. The server answers a honeypot-filled
+    // or rate-limited submission indistinguishably from a real one, so there is nothing to branch on.
     this.api
       .submit({
         name,
         email,
         subject,
         description,
+        ...(honeypot.length > 0 ? { honeypot } : {}),
       })
       .subscribe({
         next: (res) => {
@@ -78,9 +94,7 @@ export default class WebFormComponent {
         error: (failure: unknown) => {
           this.submitting.set(false);
           this.error.set(
-            failure instanceof ApiError
-              ? failure
-              : new ApiError('ERR_SUBMIT', 'Submission failed', [], '', 0),
+            toLocalizedApiError(failure, this.locale),
           );
         },
       });

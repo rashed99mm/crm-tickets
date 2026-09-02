@@ -4,7 +4,6 @@ import {
   ApiError,
   AsyncState,
   ContentsApi,
-  CsCard,
   CsEmptyState,
   CsErrorState,
   CsIcon,
@@ -32,7 +31,6 @@ const FALLBACK_CATEGORIES: readonly KbCategoryNode[] = [
   selector: 'portal-kb-list',
   imports: [
     RouterLink,
-    CsCard,
     CsIcon,
     CsLoadingState,
     CsEmptyState,

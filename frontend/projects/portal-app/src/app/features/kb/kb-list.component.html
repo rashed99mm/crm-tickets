@@ -35,7 +35,12 @@
     </div>
   </div>
 
-  <div class="max-w-7xl mx-auto px-8 w-full space-y-16">
+  <!--
+    `space-y-16` put 4rem of nothing between every band, which reads as unrelated pages stacked
+    rather than one page; 2.5rem holds them together while still separating them. `px-8` was also
+    unconditional, so the hero and the content below it were inset differently on a phone.
+  -->
+  <div class="mx-auto w-full max-w-7xl space-y-10 px-4 py-10 sm:px-6 lg:px-8">
 
     <!-- Category Grid — wired to real data -->
     @if (!categoryId()) {
@@ -54,7 +59,8 @@
                 (click)="selectCategory(cat)"
                 class="group relative flex min-h-44 cursor-pointer flex-col overflow-hidden rounded-xl border border-border-subtle bg-surface-container-lowest p-6 text-start transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-card"
               >
-                <span class="absolute -right-10 -top-10 size-28 rounded-full bg-primary-fixed opacity-60 transition-transform group-hover:scale-125"></span>
+                <!-- `-end-10`, not the physical equivalent: in Arabic this flourish has to sit in the mirrored corner (AC-404/AC-419). -->
+                <span class="absolute -end-10 -top-10 size-28 rounded-full bg-primary-fixed opacity-60 transition-transform group-hover:scale-125"></span>
                 <div class="relative mb-5 flex size-12 items-center justify-center text-primary transition-transform group-hover:scale-105">
                   <cs-icon [name]="cat.id === rootCategories()[0]?.id ? 'rocket_launch' : cat.id === rootCategories()[1]?.id ? 'manage_accounts' : cat.id === rootCategories()[2]?.id ? 'credit_card' : cat.id === rootCategories()[3]?.id ? 'terminal' : 'folder'" [filled]="true" [size]="23" />
                 </div>
@@ -87,17 +93,25 @@
               }
             </div>
           </section>
+          <!--
+            One on- role for the whole dark fill, not three. This card was mixing
+            `text-on-primary-container`, `text-on-primary` and `text-inverse-primary` on the same
+            #1e40af ground — and the first of those did not resolve to anything at all until the
+            token was added to `@theme`, so the body copy inherited near-black on dark blue. The
+            icon now sits in a translucent chip so it reads as a deliberate element rather than a
+            glyph floating in the fill.
+          -->
           <section class="rounded-xl bg-primary-container p-6 text-center text-on-primary-container shadow-card">
-            <span class="mx-auto mb-4 grid size-16 place-items-center text-on-primary">
+            <span class="mx-auto mb-4 grid size-14 place-items-center rounded-2xl bg-on-primary-container/15 text-on-primary-container">
               <cs-icon name="support_agent" [filled]="true" [size]="26" />
             </span>
-            <h2 class="text-headline-md font-semibold text-on-primary">{{ 'portal.kb.stillNeedHelp' | t }}</h2>
-            <p class="mt-2 text-body-md text-inverse-primary">{{ 'portal.kb.stillNeedHelpDesc' | t }}</p>
+            <h2 class="text-headline-md font-semibold">{{ 'portal.kb.stillNeedHelp' | t }}</h2>
+            <p class="mt-2 text-body-md text-on-primary-container/80">{{ 'portal.kb.stillNeedHelpDesc' | t }}</p>
             <a routerLink="/app/tickets/new" class="mt-5 block rounded-lg bg-surface-lowest px-4 py-3 text-label-lg font-semibold text-primary transition-colors hover:bg-surface-highest">
               {{ 'portal.kb.openTicket' | t }}
             </a>
           </section>
-          <section class="rounded-xl border border-border-subtle bg-surface-container-lowest p-4 shadow-xs">
+          <section class="rounded-xl border border-border-subtle bg-surface-container-lowest p-5 shadow-xs">
             <div class="flex items-center justify-between gap-3">
               <div class="flex items-center gap-2">
                 <span class="relative flex size-3 rounded-full bg-success"><span class="absolute inset-0 animate-ping rounded-full bg-success opacity-75"></span></span>
@@ -142,7 +156,8 @@
           <h2 class="flex items-center gap-2 font-headline-lg text-headline-lg text-on-surface"><cs-icon name="forum" class="text-primary" [size]="24" />{{ 'portal.kb.faqTitle' | t }}</h2>
           <a routerLink="/faq" class="text-primary font-label-lg text-label-lg hover:underline">{{ 'portal.kb.viewAll' | t }} <cs-icon name="arrow_forward" [size]="15" /></a>
         </div>
-        <div class="max-w-3xl space-y-2">
+        <!-- Full container width, like the grid below it: a 3xl column under a 7xl heading read as a mistake. -->
+        <div class="space-y-2">
           @for (item of faq(); track item.id) {
             <div class="overflow-hidden rounded-xl border border-border-subtle bg-surface-container-lowest transition-shadow hover:shadow-xs">
               <button type="button" class="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-label-lg font-semibold text-on-surface" [attr.aria-expanded]="expandedFaqId() === item.id" (click)="toggleFaq(item.id)">
@@ -161,19 +176,26 @@
       </section>
     }
 
-    <!-- Article List — with optional active filter banner -->
-    <cs-card>
+    <!--
+      Article list — a plain section, NOT a `cs-card`.
+
+      Every `<li>` below is already a card (border, radius, shadow, hover). Wrapping them in
+      another card put a card grid inside a card, so each tile carried two borders and two radii
+      and the whole grid was inset by the outer card's chrome for no reason. The filter banner and
+      the pagination bar keep their own edges instead.
+    -->
+    <section>
       @if (categoryId()) {
-        <div class="px-4 py-3 bg-surface-container-low border-b border-border-subtle flex items-center justify-between">
+        <div class="mb-5 flex items-center justify-between gap-4 rounded-xl border border-border-subtle bg-surface-container-low px-5 py-3">
           <div class="text-body-sm text-on-surface-variant">
             {{ 'portal.kb.categoryResults' | t: currentCategory()!.name : totalCount() }}
           </div>
           <button
             type="button"
             (click)="clearCategory()"
-            class="text-primary font-label-md text-label-md hover:text-primary-container transition-colors cursor-pointer flex items-center gap-1"
+            class="flex shrink-0 cursor-pointer items-center gap-1 font-label-md text-label-md text-primary transition-colors hover:text-primary-container"
           >
-                <cs-icon name="close" [size]="16" />
+            <cs-icon name="close" [size]="16" />
             {{ 'portal.kb.clearCategory' | t }}
           </button>
         </div>
@@ -196,9 +218,10 @@
         }
         @default {
           @if (state().status === 'loaded') {
-            <ul class="grid gap-5 p-4 sm:grid-cols-2 xl:grid-cols-3">
+            <ul class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               @for (article of articles(); track article.id) {
-                <li class="group overflow-hidden rounded-2xl border border-border-subtle bg-surface-lowest shadow-sm transition-all hover:-translate-y-1 hover:border-primary/40 hover:shadow-card">
+                <!-- A half-unit lift, not a full one: a 1rem jump on a nine-tile grid is restless. -->
+                <li class="group overflow-hidden rounded-2xl border border-border-subtle bg-surface-lowest shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-card">
                   <a
                     [routerLink]="['/kb', article.id]"
                     class="flex h-full flex-col transition-colors hover:bg-surface-bright"
@@ -224,22 +247,26 @@
 
             <!-- Pagination controls -->
             @if (totalCount() > 0) {
-              <div class="flex flex-col sm:flex-row items-center justify-between gap-3 px-4 py-3 border-t border-border-subtle">
+              <div class="mt-5 flex flex-col items-center justify-between gap-3 rounded-xl border border-border-subtle bg-surface-container-lowest px-5 py-3 sm:flex-row">
                 <div class="text-body-sm text-on-surface-variant">
                   {{ 'pagination.summary' | t: ((page() - 1) * pageSize() + 1) : (min(page() * pageSize(), totalCount())) : totalCount() }}
                 </div>
                 <div class="flex items-center gap-2">
                   <label class="text-body-sm text-on-surface-variant flex items-center gap-1">
                     {{ 'pagination.pageSize' | t }}
-                    <select
-                      class="h-8 rounded-lg border border-border-subtle bg-surface-lowest px-2 text-body-sm text-on-surface"
-                      [value]="pageSize()"
-                      (change)="changePageSize($event)"
-                    >
-                      @for (size of pageSizeOptions; track size) {
-                      <option [value]="size">{{ size }}</option>
-                    }
-                    </select>
+                    <span class="cs-select-wrap">
+                      <select
+                        class="cs-select !min-h-8 !py-1 !ps-3 !pe-8 text-body-sm"
+                        [value]="pageSize()"
+                        (change)="changePageSize($event)"
+                        [attr.aria-label]="'pagination.pageSize' | t"
+                      >
+                        @for (size of pageSizeOptions; track size) {
+                          <option [value]="size">{{ size }}</option>
+                        }
+                      </select>
+                      <span class="cs-select-icon !size-3.5 !end-2.5" aria-hidden="true"></span>
+                    </span>
                   </label>
                   <button
                     type="button"
@@ -266,7 +293,7 @@
           }
         }
       }
-    </cs-card>
+    </section>
 
   </div>
 

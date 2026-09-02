@@ -44,15 +44,19 @@ describe('WebFormComponent', () => {
     const req = http.expectOne('/api/external/webform/submit');
     expect(req.request.method).toBe('POST');
     expect(req.request.body.name).toBe('Diana Prince');
-    req.flush(envelope({ reference: 'TICK-AMZ-100', success: true }));
+    // The real generator issues TKT-nnnnnn (TicketReferenceGenerator.cs:49).
+    req.flush(envelope({ reference: 'TKT-000123', success: true }));
     fixture.detectChanges();
 
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.textContent).toContain('TICK-AMZ-100');
-    expect(fixture.componentInstance.submittedReference()).toBe('TICK-AMZ-100');
+    expect(el.textContent).toContain('TKT-000123');
+    expect(fixture.componentInstance.submittedReference()).toBe('TKT-000123');
   });
 
-  it('fakes success for bot when honeypot is filled without hitting API', () => {
+  it('sends the honeypot value to the backend instead of deciding locally (CC-22/CC-47)', () => {
+    // The honeypot defence belongs to the server: a bot posts directly and never runs this code,
+    // and deciding here silently discarded a real submission whenever a browser autofilled the
+    // hidden input. The component now always posts and shows whatever reference comes back.
     const fixture = render();
     fixture.componentInstance.form.setValue({
       name: 'Spam Bot',
@@ -63,9 +67,33 @@ describe('WebFormComponent', () => {
     });
 
     fixture.componentInstance.submit();
-    http.expectNone('/api/external/webform/submit');
+
+    const req = http.expectOne('/api/external/webform/submit');
+    expect(req.request.body.honeypot).toBe('http://spam.ru');
+
+    // The backend answers a bot with a response indistinguishable from a real one (CC-47), so the
+    // component has nothing special to render.
+    req.flush(envelope({ reference: 'TKT-000999', success: true }));
     fixture.detectChanges();
 
-    expect(fixture.componentInstance.submittedReference()).not.toBeNull();
+    expect(fixture.componentInstance.submittedReference()).toBe('TKT-000999');
+  });
+
+  it('omits the honeypot field when the hidden input is untouched', () => {
+    const fixture = render();
+    fixture.componentInstance.form.setValue({
+      name: 'Real Person',
+      email: 'real@example.com',
+      subject: 'Cannot sign in',
+      description: 'The page rejects my password.',
+      website: '',
+    });
+
+    fixture.componentInstance.submit();
+
+    const req = http.expectOne('/api/external/webform/submit');
+    expect(req.request.body.honeypot).toBeUndefined();
+
+    req.flush(envelope({ reference: 'TKT-000124', success: true }));
   });
 });
