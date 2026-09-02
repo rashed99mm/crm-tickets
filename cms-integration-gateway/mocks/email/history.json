@@ -4,8 +4,8 @@
     "status": "delivered",
     "to": "user@example.com",
     "from": "noreply@ccecarbon.com",
-    "subject": "Welcome to CCE Carbon",
-    "html": "<h1>Welcome to CCE Carbon!</h1><p>Your account has been created successfully. Start sharing your sustainability journey today.</p>",
+    "subject": "Welcome to CommandCenter CMS",
+    "html": "<h1>Welcome to CommandCenter CMS!</h1><p>Your account has been created successfully. Start sharing your sustainability journey today.</p>",
     "sentAt": "2024-01-15T10:30:00Z",
     "deliveredAt": "2024-01-15T10:30:10Z"
   },
@@ -27,7 +27,7 @@
     "to": "another@example.com",
     "from": "noreply@ccecarbon.com",
     "subject": "Your blog post is trending!",
-    "html": "<h1>Trending Alert!</h1><p>Your blog post has received over 1,000 views on CCE Carbon.</p>",
+    "html": "<h1>Trending Alert!</h1><p>Your blog post has received over 1,000 views on CommandCenter CMS.</p>",
     "sentAt": "2024-01-15T12:00:00Z"
   }
 ]

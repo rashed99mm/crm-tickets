@@ -5,7 +5,7 @@
       "firstName": "Ahmed",
       "lastName": "Hassan",
       "displayName": "Ahmed Hassan",
-      "groups": ["CCE-Admins", "CCE-Reviewers"],
+      "groups": ["Support-Admins", "Support-Reviewers"],
       "enabled": true
     },
     "reviewer@company.com": {
@@ -13,7 +13,7 @@
       "firstName": "Sarah",
       "lastName": "Khan",
       "displayName": "Sarah Khan",
-      "groups": ["CCE-Reviewers"],
+      "groups": ["Support-Reviewers"],
       "enabled": true
     },
     "disabled@company.com": {
@@ -29,23 +29,23 @@
       "firstName": "Mohammed",
       "lastName": "Ali",
       "displayName": "Mohammed Ali",
-      "groups": ["CCE-Users"],
+      "groups": ["Support-Users"],
       "enabled": true
     },
-    "superadmin@cce.local": {
+    "superadmin@support.local": {
       "password": "SuperAdminPass123!",
       "firstName": "Super",
       "lastName": "Admin",
       "displayName": "Super Admin",
-      "groups": ["cce-super-admin"],
+      "groups": ["support-super-admin"],
       "enabled": true
     },
-    "admin@cce.local": {
+    "admin@support.local": {
       "password": "AdminPass123!",
       "firstName": "System",
       "lastName": "Administrator",
       "displayName": "System Administrator",
-      "groups": ["cce-admin"],
+      "groups": ["support-admin"],
       "enabled": true
     }
   }

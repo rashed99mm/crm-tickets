@@ -107,20 +107,6 @@ cms-integration-gateway/
 | `GET` | `/integrationgateway/email/status/:messageId` | Check delivery status |
 | `GET` | `/integrationgateway/email/templates` | List email templates |
 
-### KAPSARC Gateway (Circular Carbon Economy Index)
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `GET` | `/integrationgateway/kapsarc/classification` | One country's index reading (`countryCode`, `countryName`, optional `year`) |
-| `GET` | `/integrationgateway/kapsarc/classifications` | Full index for one edition (optional `year`) — catalog, countries, facts and readings |
-
-Serves the published CCE Index: 125 countries × 5 editions (2021–2025), a 46-node indicator tree
-and 28,888 readings. One edition is ~680 KB; the response carries `availableYears` so a consumer
-refreshing everything can loop the remaining editions without a separate discovery call.
-
-Data files under `mocks/kapsarc/` are **generated** — regenerate with
-`python backend/docs/data/kapsarc/extract.py --emit-mock <this repo>/mocks/kapsarc`.
-
 ### CMS ERP Gateway
 
 | Method | Endpoint | Description |
@@ -216,7 +202,7 @@ CORS_ENABLED=true
 ```bash
 curl -X POST http://localhost:3001/integrationgateway/sms/send \
   -H "Content-Type: application/json" \
-  -d '{"to":"+966501234567","from":"CCE-Carbon","body":"Hello from CCE Carbon!"}'
+  -d '{"to":"+966501234567","from":"CommandCenter","body":"Hello from CommandCenter CMS!"}'
 ```
 
 ### Send SMS (Failure - Invalid Number)
@@ -230,7 +216,7 @@ curl -X POST http://localhost:3001/integrationgateway/sms/send \
 ```bash
 curl -X POST http://localhost:3001/integrationgateway/email/send \
   -H "Content-Type: application/json" \
-  -d '{"to":"user@example.com","subject":"Welcome","html":"<h1>Welcome to CCE Carbon</h1>"}'
+  -d '{"to":"user@example.com","subject":"Welcome","html":"<h1>Welcome to CommandCenter CMS</h1>"}'
 ```
 
 ### Get Templates
@@ -241,4 +227,4 @@ curl http://localhost:3001/integrationgateway/email/templates
 
 ## License
 
-Internal use only — CCE Carbon.
+Internal use only — CommandCenter CMS.

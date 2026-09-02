@@ -1,6 +1,6 @@
 # CLAUDE.md - CommandCenter CMS Integration Gateway Mock Server
 
-This file provides guidance to Claude Code when working with the CCE Integration Gateway Mock Server project.
+This file provides guidance to Claude Code when working with the CommandCenter CMS Integration Gateway Mock Server project.
 
 ## Project Overview
 
@@ -154,36 +154,6 @@ No server restart required!
 - `POST /integrationgateway/email/send` — Send email
 - `GET /integrationgateway/email/status/:messageId` — Check status
 - `GET /integrationgateway/email/templates` — List templates
-
-### KAPSARC Gateway (Circular Carbon Economy Index)
-- `GET /integrationgateway/kapsarc/classification?countryCode=&countryName=&year=` — One country's reading
-- `GET /integrationgateway/kapsarc/classifications?year=` — The full index for one edition (~680 KB)
-
-Serves the **published** CCE Index: 125 countries × 5 editions (2021–2025), a 46-node indicator
-tree, and every per-country/per-indicator reading. `classifications` also returns `availableYears`,
-so a consumer refreshing everything discovers the other editions from its first call rather than
-needing a separate lookup.
-
-`classification` is returned as `null` on purpose — KAPSARC publishes numeric scores only, and the
-backend derives the band from its own configured thresholds. Emitting a label here would silently
-override that.
-
-**Data files are generated, not hand-edited.** Regenerate all four from the backend repo:
-
-```bash
-python backend/docs/data/kapsarc/extract.py \
-  --emit-mock /path/to/cce-integration-gateway-mocks/mocks/kapsarc
-```
-
-| File | Rows |
-|------|------|
-| `mocks/kapsarc/indicators.json` | 46 indicator-tree nodes |
-| `mocks/kapsarc/country-facts.json` | 126 countries — demographics and groupings |
-| `mocks/kapsarc/index-editions.json` | 628 country-editions — scores and ranks |
-| `mocks/kapsarc/indicator-readings.json` | 28,888 readings |
-
-`mocks/kapsarc/classifications.json` is a **different dataset** — the curated 22-country CCE set,
-whose `totalIndex` is a 1–22 standing rather than a 0–100 score. Nothing above replaces it.
 
 ### Provider-faithful channel mocks (FEAT-35)
 

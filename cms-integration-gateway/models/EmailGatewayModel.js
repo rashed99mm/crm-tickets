@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 module.exports = {
     name: 'email-gateway',
     group: 'integrationgateway',
-    description: 'Mock Email provider gateway for CCE Carbon social media & business platform',
+    description: 'Mock Email provider gateway for CommandCenter CMS social media & business platform',
     endpoints: [
         {
             path: '/integrationgateway/email/send',
@@ -39,10 +39,10 @@ module.exports = {
              *                 example: "noreply@azm.sa"
              *               subject:
              *                 type: string
-              *                 example: "Welcome to CCE Carbon"
+              *                 example: "Welcome to CommandCenter CMS"
               *               html:
               *                 type: string
-              *                 example: "<h1>Welcome to CCE Carbon</h1><p>Join our sustainability community today!</p>"
+              *                 example: "<h1>Welcome to CommandCenter CMS</h1><p>Join our sustainability community today!</p>"
               *               templateId:
               *                 type: string
               *                 example: "welcome-email"

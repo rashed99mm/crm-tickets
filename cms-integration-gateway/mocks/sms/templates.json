@@ -10,7 +10,7 @@
     "id": "otp-en",
     "name": "OTP English",
     "language": "en",
-    "body": "Your CCE Carbon verification code is: {{code}}",
+    "body": "Your CommandCenter CMS verification code is: {{code}}",
     "variables": ["code"]
   },
   {
@@ -24,7 +24,7 @@
     "id": "blog-published",
     "name": "Blog Published",
     "language": "en",
-    "body": "Your blog post '{{postTitle}}' has been published on CCE Carbon.",
+    "body": "Your blog post '{{postTitle}}' has been published on CommandCenter CMS.",
     "variables": ["postTitle"]
   },
   {
@@ -38,14 +38,14 @@
     "id": "business-verified",
     "name": "Business Verified",
     "language": "en",
-    "body": "Congratulations! Your business page '{{businessName}}' is now verified on CCE Carbon.",
+    "body": "Congratulations! Your business page '{{businessName}}' is now verified on CommandCenter CMS.",
     "variables": ["businessName"]
   },
   {
     "id": "carbon-offset-alert",
     "name": "Carbon Offset Alert",
     "language": "en",
-    "body": "You have offset {{amount}} kg of CO2 this month through CCE Carbon partnerships!",
+    "body": "You have offset {{amount}} kg of CO2 this month through CommandCenter CMS partnerships!",
     "variables": ["amount"]
   }
 ]

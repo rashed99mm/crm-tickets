@@ -2,36 +2,36 @@
   {
     "id": "welcome-email",
     "name": "Welcome Email",
-    "subject": "Welcome to CCE Carbon",
-    "html": "<h1>Welcome {{name}}!</h1><p>Your CCE Carbon account has been created successfully. Join the community driving sustainability forward.</p>",
+    "subject": "Welcome to CommandCenter CMS",
+    "html": "<h1>Welcome {{name}}!</h1><p>Your CommandCenter CMS account has been created successfully. Join the community driving sustainability forward.</p>",
     "variables": ["name"]
   },
   {
     "id": "blog-published",
     "name": "Blog Published",
     "subject": "Your blog '{{postTitle}}' is now live",
-    "html": "<h1>Blog Published!</h1><p>Your article <strong>{{postTitle}}</strong> has been published on CCE Carbon.</p><p>Share it with your network to maximize impact!</p>",
+    "html": "<h1>Blog Published!</h1><p>Your article <strong>{{postTitle}}</strong> has been published on CommandCenter CMS.</p><p>Share it with your network to maximize impact!</p>",
     "variables": ["postTitle"]
   },
   {
     "id": "weekly-digest",
     "name": "Weekly Carbon Digest",
     "subject": "Your Weekly Carbon Digest - {{week}}",
-    "html": "<h1>Weekly Digest</h1><p>Here's what happened in your CCE Carbon network this week:</p><ul><li>{{newPosts}} new blog posts</li><li>{{newFollowers}} new followers</li><li>Your content reached {{reach}} people</li></ul>",
+    "html": "<h1>Weekly Digest</h1><p>Here's what happened in your CommandCenter CMS network this week:</p><ul><li>{{newPosts}} new blog posts</li><li>{{newFollowers}} new followers</li><li>Your content reached {{reach}} people</li></ul>",
     "variables": ["week", "newPosts", "newFollowers", "reach"]
   },
   {
     "id": "business-verified",
     "name": "Business Verified",
-    "subject": "{{businessName}} is now verified on CCE Carbon",
+    "subject": "{{businessName}} is now verified on CommandCenter CMS",
     "html": "<h1>Verification Complete!</h1><p>Dear <strong>{{businessName}}</strong>, your business page has been verified. You now have access to analytics and promotional tools.</p>",
     "variables": ["businessName"]
   },
   {
     "id": "new-follower",
     "name": "New Follower",
-    "subject": "{{username}} started following you on CCE Carbon",
-    "html": "<h1>New Follower!</h1><p><strong>{{username}}</strong> is now following your updates on CCE Carbon.</p><p>Check out their profile and say hello!</p>",
+    "subject": "{{username}} started following you on CommandCenter CMS",
+    "html": "<h1>New Follower!</h1><p><strong>{{username}}</strong> is now following your updates on CommandCenter CMS.</p><p>Check out their profile and say hello!</p>",
     "variables": ["username"]
   },
   {
@@ -45,7 +45,7 @@
     "id": "carbon-milestone",
     "name": "Carbon Milestone",
     "subject": "You reached a carbon offset milestone!",
-    "html": "<h1>Milestone Reached!</h1><p>Congratulations! You have offset <strong>{{amount}} kg</strong> of CO2 through CCE Carbon.</p><p>Share this achievement with your community!</p>",
+    "html": "<h1>Milestone Reached!</h1><p>Congratulations! You have offset <strong>{{amount}} kg</strong> of CO2 through CommandCenter CMS.</p><p>Share this achievement with your community!</p>",
     "variables": ["amount"]
   }
 ]

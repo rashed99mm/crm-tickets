@@ -32,9 +32,9 @@ module.exports = function gatewayHandler(mocks, options = {}) {
                     
                     let response;
                     if (endpoint.responseTransform) {
-                        // The whole mock set is passed as a fourth argument for endpoints that
-                        // compose several files — the KAPSARC bulk lookup joins four. Existing
-                        // transforms take three parameters and are unaffected.
+                        // The whole mock set is passed as a fourth argument for endpoints that need
+                        // to compose several files rather than just their own. Existing transforms
+                        // take three parameters and are unaffected.
                         response = endpoint.responseTransform(req, mockData, rules, mocks);
                     } else {
                         response = mockData || { success: true };

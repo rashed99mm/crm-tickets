@@ -10,7 +10,7 @@ const { v4: uuidv4 } = require('uuid');
 module.exports = {
     name: 'sms-gateway',
     group: 'integrationgateway',
-    description: 'Mock SMS provider gateway for CCE Carbon social media & business platform',
+    description: 'Mock SMS provider gateway for CommandCenter CMS social media & business platform',
     endpoints: [
         {
             path: '/integrationgateway/sms/send',
@@ -36,10 +36,10 @@ module.exports = {
              *                 example: "+966501234567"
              *               from:
              *                 type: string
-              *                 example: "CCE-Carbon"
+              *                 example: "CommandCenter"
               *               body:
               *                 type: string
-              *                 example: "Welcome to CCE Carbon! Your OTP is 123456"
+              *                 example: "Welcome to CommandCenter CMS! Your OTP is 123456"
               *               templateId:
               *                 type: string
               *                 example: "otp-en"
@@ -73,7 +73,7 @@ module.exports = {
                         message: 'SMS sent successfully',
                         messageId: `SMS-${uuidv4()}`,
                         to: payload.to,
-                        from: payload.from || 'CCE-Carbon',
+                        from: payload.from || 'CommandCenter',
                         body: payload.body || null,
                         timestamp: new Date().toISOString()
                     };
