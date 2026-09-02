@@ -254,9 +254,8 @@
                 <div class="flex items-center gap-2">
                   <label class="text-body-sm text-on-surface-variant flex items-center gap-1">
                     {{ 'pagination.pageSize' | t }}
-                    <span class="cs-select-wrap">
                       <select
-                        class="cs-select !min-h-8 !py-1 !ps-3 !pe-8 text-body-sm"
+                        class="cs-select !min-h-8 !py-1 text-body-sm"
                         [value]="pageSize()"
                         (change)="changePageSize($event)"
                         [attr.aria-label]="'pagination.pageSize' | t"
@@ -265,8 +264,6 @@
                           <option [value]="size">{{ size }}</option>
                         }
                       </select>
-                      <span class="cs-select-icon !size-3.5 !end-2.5" aria-hidden="true"></span>
-                    </span>
                   </label>
                   <button
                     type="button"

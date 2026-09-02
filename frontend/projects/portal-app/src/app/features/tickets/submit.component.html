@@ -62,7 +62,6 @@
             <!-- Category -->
             <div class="flex flex-col gap-1.5">
               <label class="font-label-md text-label-md text-on-surface" for="category">{{ 'field.category' | t }}</label>
-              <span class="cs-select-wrap">
                 <select
                   id="category"
                   formControlName="categoryId"
@@ -75,8 +74,6 @@
                     <option [value]="c.id">{{ c.name }}</option>
                   }
                 </select>
-                <span class="cs-select-icon" aria-hidden="true"></span>
-              </span>
               @if (fieldError('categoryId')) {
                 <p role="alert" class="text-body-sm text-error">{{ fieldError('categoryId') }}</p>
               } @else if (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty)) {

@@ -17,7 +17,7 @@
         <select
           id="message-direction"
           (change)="setDirection($any($event.target).value)"
-          class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          class="cs-select text-body-md"
         >
           @for (option of directions; track option) {
             <option [value]="option" [selected]="option === direction()">
@@ -34,7 +34,7 @@
         <select
           id="message-channel"
           (change)="setChannel($any($event.target).value)"
-          class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          class="cs-select text-body-md"
         >
           @for (option of channels; track option) {
             <option [value]="option" [selected]="option === channel()">

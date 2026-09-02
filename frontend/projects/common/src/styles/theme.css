@@ -172,8 +172,9 @@
   --shadow-card: 0 4px 12px rgba(0, 0, 0, 0.02);
   --shadow-popover: 0 12px 24px rgba(0, 0, 0, 0.08);
 
-  /* The `.cs-select` chevron, as a mask so its colour comes from a token rather than the SVG. */
-  --cs-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  /* The `.cs-select` chevron. Drawn with the on-surface-variant colour, since a background-image
+     cannot inherit currentColor. */
+  --cs-chevron-down: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23444653' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
 
   --container-xs: 20rem;
   --container-sm: 24rem;
@@ -378,60 +379,47 @@
   }
 
   /*
-   * A select that looks like one.
+   * A select that looks like one — self-contained, no wrapper markup.
    *
    * `appearance: none` is what the portal's category and priority fields already used, and it
-   * removes the native chevron — leaving a control indistinguishable from a text input, which is
-   * how those two fields shipped. This restores the affordance deliberately:
+   * removes the native chevron, leaving a control indistinguishable from a text input. That is how
+   * those fields shipped. This restores the affordance:
    *
-   * - the chevron is a `mask-image` tinted by a theme token, not a baked-in grey `background-image`
-   *   that would wash out in one of the two themes;
-   * - it is placed with `inset-inline-end` on a wrapper, so Arabic gets it on the left with no RTL
-   *   override at all — `background-position` has no logical form and would have needed one;
-   * - `padding-inline` reserves the room, so long option text never runs under the chevron.
+   * - the chevron is drawn on the select itself, so applying this class is the whole change at a
+   *   call site — no wrapper span, which is what makes it viable across the 20-plus selects in the
+   *   admin app;
+   * - it REPLACES the border/padding/focus utilities those selects carried rather than sitting
+   *   beside them. That matters: Tailwind's `utilities` layer beats this `components` layer
+   *   whatever the specificity, so a leftover `px-3` would win and run text under the chevron;
+   * - `background-position` has no logical form, so RTL is handled by the one override below —
+   *   without it an Arabic page paints the chevron over the first character of the text.
+   *
+   * The chevron colour is baked into the SVG because a `background-image` cannot read
+   * `currentColor`. That is safe here: this design system has a single light palette
+   * (`--color-on-surface-variant`, #444653), and a mask-based version needing a wrapper element
+   * was the alternative it replaced.
    */
   .cs-select {
     appearance: none;
     -webkit-appearance: none;
     width: 100%;
-    min-height: 2.75rem;
+    min-height: 2.5rem;
     border: 1px solid var(--color-outline-variant);
     border-radius: var(--radius-lg);
     background-color: var(--color-surface-lowest);
+    background-image: var(--cs-chevron-down);
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1.05rem;
     color: var(--color-on-surface);
-    padding-inline: 1rem 2.5rem;
-    padding-block: 0.625rem;
+    padding-inline: 0.875rem 2.25rem;
+    padding-block: 0.5rem;
     cursor: pointer;
     transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
   }
 
-  /*
-   * The chevron sits on a wrapper rather than on the select, so it can use `inset-inline-end` —
-   * which *is* logical and therefore needs no RTL override, unlike `background-position`.
-   */
-  .cs-select-wrap {
-    position: relative;
-    display: block;
-  }
-
-  .cs-select-wrap > .cs-select-icon {
-    position: absolute;
-    inset-block-start: 50%;
-    inset-inline-end: 0.875rem;
-    display: block;
-    width: 1.125rem;
-    height: 1.125rem;
-    transform: translateY(-50%);
-    pointer-events: none;
-    background-color: var(--color-on-surface-variant);
-    transition: background-color 150ms ease;
-    -webkit-mask: var(--cs-chevron-down) center / contain no-repeat;
-    mask: var(--cs-chevron-down) center / contain no-repeat;
-  }
-
-  .cs-select-wrap:hover > .cs-select-icon,
-  .cs-select-wrap:focus-within > .cs-select-icon {
-    background-color: var(--color-primary);
+  [dir='rtl'] .cs-select {
+    background-position: left 0.75rem center;
   }
 
   .cs-select:hover {

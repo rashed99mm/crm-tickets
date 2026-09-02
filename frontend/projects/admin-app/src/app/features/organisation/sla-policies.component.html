@@ -83,7 +83,7 @@
         <select
           id="sla-priority"
           [formControl]="form.controls.priority"
-          class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          class="cs-select text-body-md"
         >
           @for (option of priorities; track option) {
             <option [value]="option">{{ option }}</option>
@@ -131,7 +131,7 @@
         <select
           id="sla-edit-priority"
           [formControl]="editForm.controls.priority"
-          class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          class="cs-select text-body-md"
         >
           @for (option of priorities; track option) {
             <option [value]="option">{{ option }}</option>
@@ -183,7 +183,7 @@
         <select
           id="business-hours-day"
           [formControl]="calendarForm.controls.dayOfWeek"
-          class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          class="cs-select text-body-md"
         >
           @for (day of ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']; track day) {
             <option [value]="day">{{ day }}</option>

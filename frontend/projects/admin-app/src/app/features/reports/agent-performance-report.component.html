@@ -19,7 +19,7 @@
       </label>
       <label class="flex h-10 items-center gap-2 rounded-lg border border-outline-variant bg-surface-container-lowest px-3 text-label-md font-semibold text-on-surface-variant">
         {{ 'reports.agentPerformance.sortBy' | t }}
-        <select class="bg-transparent text-body-sm text-on-surface outline-none" [value]="sortMode()" (change)="setSortMode($any($event.target).value)">
+        <select class="cs-select text-body-sm" [value]="sortMode()" (change)="setSortMode($any($event.target).value)">
           @for (option of sortOptions; track option.value) {
             <option [value]="option.value">{{ option.label | t }}</option>
           }

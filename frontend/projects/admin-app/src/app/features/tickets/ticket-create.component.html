@@ -49,7 +49,7 @@
             [attr.aria-invalid]="(fieldError('customerId') || (form.controls.customerId.invalid && (form.controls.customerId.touched || form.controls.customerId.dirty))) ? 'true' : null"
             [attr.aria-describedby]="(fieldError('customerId') || (form.controls.customerId.invalid && (form.controls.customerId.touched || form.controls.customerId.dirty))) ? 'ticket-customer-error' : null"
             (change)="clearServerError('customerId')"
-            class="h-10 rounded-lg border bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="cs-select text-body-md"
             [class.border-error]="fieldError('customerId') || (form.controls.customerId.invalid && (form.controls.customerId.touched || form.controls.customerId.dirty))"
             [class.border-outline-variant]="!fieldError('customerId') && !(form.controls.customerId.invalid && (form.controls.customerId.touched || form.controls.customerId.dirty))"
           >
@@ -79,7 +79,7 @@
             [attr.aria-invalid]="(fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))) ? 'true' : null"
             [attr.aria-describedby]="(fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))) ? 'ticket-category-error' : null"
             (change)="clearServerError('categoryId')"
-            class="h-10 rounded-lg border bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="cs-select text-body-md"
             [class.border-error]="fieldError('categoryId') || (form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))"
             [class.border-outline-variant]="!fieldError('categoryId') && !(form.controls.categoryId.invalid && (form.controls.categoryId.touched || form.controls.categoryId.dirty))"
           >
@@ -109,7 +109,7 @@
             [attr.aria-invalid]="fieldError('impact') ? 'true' : null"
             [attr.aria-describedby]="fieldError('impact') ? 'ticket-impact-error' : null"
             (change)="clearServerError('impact')"
-            class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="cs-select text-body-md"
           >
             @for (impact of impacts; track impact) {
               <option [value]="impact">{{ impact }}</option>
@@ -132,7 +132,7 @@
             [attr.aria-invalid]="fieldError('urgency') ? 'true' : null"
             [attr.aria-describedby]="fieldError('urgency') ? 'ticket-urgency-error' : null"
             (change)="clearServerError('urgency')"
-            class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+            class="cs-select text-body-md"
           >
             @for (urgency of urgencies; track urgency) {
               <option [value]="urgency">{{ urgency }}</option>

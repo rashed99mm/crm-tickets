@@ -87,7 +87,7 @@
                     id="detail-assignee"
                     [disabled]="busy()"
                     (change)="assign($any($event.target).value)"
-                    class="border-none bg-transparent p-0 pe-6 text-label-lg font-body-lg text-on-surface outline-none focus:ring-0 disabled:opacity-50"
+                    class="cs-select text-label-lg"
                   >
                     <option value="">{{ 'tickets.detail.selectAgent' | t }}</option>
                     @for (agent of agents(); track agent.id) {
@@ -108,7 +108,7 @@
                     id="detail-escalation-owner"
                     [disabled]="busy()"
                     (change)="takeEscalation($any($event.target).value)"
-                    class="border-none bg-transparent p-0 pe-6 text-label-lg font-body-lg text-on-surface outline-none focus:ring-0 disabled:opacity-50"
+                    class="cs-select text-label-lg"
                   >
                     <option value="">{{ 'tickets.detail.selectAgent' | t }}</option>
                     @for (agent of agents(); track agent.id) {
@@ -133,7 +133,7 @@
                   id="detail-status"
                   [disabled]="busy() || availableTransitions().length === 0"
                   (change)="selectStatus($any($event.target).value)"
-                  class="border-none bg-transparent p-0 pe-6 text-label-lg font-body-lg text-on-surface outline-none focus:ring-0"
+                  class="cs-select text-label-lg"
                 >
                   <!--
                     Only the transitions permitted from the CURRENT status. The server holds the
@@ -203,7 +203,7 @@
                 id="detail-impact"
                 #impactSelect
                 [disabled]="busy()"
-                class="h-8 rounded-lg border border-outline-variant bg-surface-lowest px-2 text-label-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                class="cs-select text-label-md"
               >
                 @for (impact of impacts; track impact) {
                   <option [value]="impact" [selected]="impact === t.impact">{{ impact }}</option>
@@ -214,7 +214,7 @@
                 id="detail-urgency"
                 #urgencySelect
                 [disabled]="busy()"
-                class="h-8 rounded-lg border border-outline-variant bg-surface-lowest px-2 text-label-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                class="cs-select text-label-md"
               >
                 @for (urgency of urgencies; track urgency) {
                   <option [value]="urgency" [selected]="urgency === t.urgency">{{ urgency }}</option>
@@ -311,7 +311,7 @@
                   <select
                     id="resolve-code"
                     #resolveCode
-                    class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    class="cs-select text-body-md"
                   >
                     <option value="">{{ 'tickets.detail.resolve.selectCode' | t }}</option>
                     @for (code of resolutionCodes; track code) {
@@ -623,7 +623,7 @@
                         id="new-link-type"
                         #linkTypeSelect
                         [attr.aria-label]="'tickets.detail.links.type' | t"
-                        class="h-7 rounded-full border border-outline-variant bg-surface-lowest px-2 text-label-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                        class="cs-select text-label-md"
                       >
                         <option value="RelatedTo">{{ 'tickets.detail.links.related' | t }}</option>
                         <option value="DuplicateOf">{{ 'tickets.detail.links.duplicateOf' | t }}</option>

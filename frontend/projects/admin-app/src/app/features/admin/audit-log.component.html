@@ -12,7 +12,7 @@
         <label for="audit-action" class="text-label-md text-on-surface-variant">{{ 'auditLog.filters.action' | t }}</label>
         <select
           id="audit-action"
-          class="h-10 w-48 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface"
+          class="cs-select w-48 text-body-md"
           [ngModel]="actionType()"
           (ngModelChange)="actionType.set($event)"
         >

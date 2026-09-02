@@ -82,7 +82,7 @@
           <label class="flex flex-col gap-1 text-label-md text-on-surface-variant">
             {{ 'kb.form.contentType' | t }}
             <select
-              class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface"
+              class="cs-select text-body-md"
               [ngModel]="authoringType()"
               (ngModelChange)="authoringType.set($event)"
             >
@@ -102,7 +102,7 @@
           <label class="flex flex-col gap-1 text-label-md text-on-surface-variant">
             {{ 'field.category' | t }}
             <select
-              class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface"
+              class="cs-select text-body-md"
               [ngModel]="selectedCategoryId()"
               (ngModelChange)="selectedCategoryId.set($event)"
             >

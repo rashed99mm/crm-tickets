@@ -34,7 +34,7 @@
                     id="group-by"
                     [value]="groupBy()"
                     (change)="setGroupBy($any($event.target).value)"
-                    class="h-10 rounded-lg border border-outline-variant bg-surface px-3 text-body-md text-on-surface shadow-sm outline-none ring-0 transition focus:border-primary"
+                    class="cs-select text-body-md"
                   >
                     @for (option of groupByOptions; track option) {
                       <option [value]="option">{{ groupByLabel(option) | t }}</option>
