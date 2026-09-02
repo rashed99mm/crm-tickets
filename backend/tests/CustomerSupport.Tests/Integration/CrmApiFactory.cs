@@ -72,6 +72,9 @@ public class CrmApiFactory : WebApplicationFactory<Program>
     /// <summary>Seeds the WhatsAppGateway configuration row the reply path's sender reads.</summary>
     public Task SeedWhatsAppGatewayAsync(string baseUrl) => GatewayTestData.SeedWhatsAppGatewayAsync(Services, baseUrl);
 
+    /// <summary>Seeds the EmailGateway configuration the outbound email sender dispatches through (CC-44).</summary>
+    public Task SeedEmailGatewayAsync(string baseUrl) => GatewayTestData.SeedEmailGatewayAsync(Services, baseUrl);
+
     /// <summary>
     /// A fresh user per test, created straight through Identity. Each test owning its own user is
     /// what lets the suite run against one shared database without ordering dependencies.

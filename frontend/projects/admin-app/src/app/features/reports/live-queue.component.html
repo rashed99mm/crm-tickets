@@ -1,5 +1,5 @@
-<section data-design-system="command-center" class="mx-auto flex min-h-full max-w-7xl flex-col gap-6 bg-surface px-4 py-6 sm:px-6 lg:px-8">
-  <header class="flex flex-col gap-4 border-b border-outline-variant pb-6 sm:flex-row sm:items-end sm:justify-between">
+<section data-design-system="command-center" class="mx-auto flex min-h-full max-w-7xl flex-col gap-6 bg-[radial-gradient(circle_at_top_right,rgba(30,64,175,0.08),transparent_32rem)] px-4 py-6 sm:px-6 lg:px-8">
+  <header class="cs-page-heading flex flex-col gap-4 border-b border-outline-variant pb-6 sm:flex-row sm:items-end sm:justify-between">
     <div>
       <div class="mb-2 inline-flex items-center gap-2 text-label-sm font-bold uppercase tracking-[0.16em] text-primary">
         <span class="size-2 rounded-full bg-success shadow-[0_0_0_4px] shadow-success/15"></span>
@@ -19,31 +19,34 @@
     </button>
   </header>
 
-  <div class="grid gap-3 sm:grid-cols-3">
-    <article class="rounded-xl border border-outline-variant bg-surface-lowest p-4 shadow-xs">
-      <div class="flex items-center justify-between text-on-surface-variant">
-        <span class="text-label-sm font-bold uppercase tracking-wide">{{ 'admin.liveQueue.unassignedMetric' | t }}</span>
-        <span class="grid size-9 place-items-center rounded-lg bg-primary-container text-primary"><cs-icon name="inbox" [size]="20" /></span>
-      </div>
-      <p class="mt-4 font-display text-display-sm font-bold text-on-surface">{{ unassigned().length }}</p>
-      <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'admin.liveQueue.waitingForOwner' | t }}</p>
-    </article>
-    <article class="rounded-xl border border-error/20 bg-error-container/20 p-4 shadow-xs">
-      <div class="flex items-center justify-between text-on-error-container">
-        <span class="text-label-sm font-bold uppercase tracking-wide">{{ 'admin.liveQueue.urgentMetric' | t }}</span>
-        <span class="grid size-9 place-items-center rounded-lg bg-error-container text-error"><cs-icon name="priority_high" [size]="20" /></span>
-      </div>
-      <p class="mt-4 font-display text-display-sm font-bold text-on-error-container">{{ urgentCount() }}</p>
-      <p class="mt-1 text-body-sm text-on-error-container/80">{{ 'admin.liveQueue.overThreshold' | t }}</p>
-    </article>
-    <article class="rounded-xl border border-outline-variant bg-surface-lowest p-4 shadow-xs">
-      <div class="flex items-center justify-between text-on-surface-variant">
-        <span class="text-label-sm font-bold uppercase tracking-wide">{{ 'admin.liveQueue.openWorkload' | t }}</span>
-        <span class="grid size-9 place-items-center rounded-lg bg-secondary-container text-on-secondary-container"><cs-icon name="speed" [size]="20" /></span>
-      </div>
-      <p class="mt-4 font-display text-display-sm font-bold text-on-surface">{{ openCount() }}</p>
-      <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'admin.liveQueue.acrossAgents' | t : activeAgents() }}</p>
-    </article>
+  <!--
+    The shared metric tile, not three hand-rolled `<article>`s. They had drifted from the
+    dashboard's tiles on every axis that matters — radius, shadow, the caption sitting above the
+    number instead of below the icon — so the same three numbers looked like a different product
+    one screen over. `hint` carries the descriptive line those tiles had.
+  -->
+  <div class="grid gap-4 sm:grid-cols-3">
+    <cs-stat-card
+      icon="inbox"
+      iconTone="bg-primary-container text-on-primary-container"
+      [label]="'admin.liveQueue.unassignedMetric' | t"
+      [value]="unassigned().length"
+      [hint]="'admin.liveQueue.waitingForOwner' | t"
+    />
+    <cs-stat-card
+      icon="priority_high"
+      iconTone="bg-error-container text-error"
+      [label]="'admin.liveQueue.urgentMetric' | t"
+      [value]="urgentCount()"
+      [hint]="'admin.liveQueue.overThreshold' | t"
+    />
+    <cs-stat-card
+      icon="speed"
+      iconTone="bg-secondary-container text-on-secondary-container"
+      [label]="'admin.liveQueue.openWorkload' | t"
+      [value]="openCount()"
+      [hint]="'admin.liveQueue.acrossAgents' | t : activeAgents()"
+    />
   </div>
 
   @if (error(); as failure) {
@@ -52,82 +55,95 @@
     <cs-loading-state [label]="'admin.liveQueue.loading' | t" />
   }
 
-  <!-- Unassigned queue: oldest first, urgent flagged -->
-  <cs-card class="overflow-hidden rounded-xl border border-outline-variant shadow-card">
-    <div class="flex items-center justify-between gap-4 border-b border-outline-variant pb-4">
-      <div>
-        <h2 class="text-headline-md font-bold text-on-surface">{{ 'admin.liveQueue.unassigned' | t }}</h2>
-        <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'admin.liveQueue.oldestFirst' | t }}</p>
-      </div>
-      <span class="rounded-full bg-primary-container px-3 py-1 text-label-sm font-bold text-on-primary-container">{{ 'admin.liveQueue.waitingCount' | t : unassigned().length }}</span>
-    </div>
+  <!--
+    Unassigned queue: oldest first, urgent flagged.
+
+    The title, its one-line description and the count pill go through `cs-card`'s own heading strip
+    and `action` slot rather than a hand-rolled header inside the body. The body is deliberately
+    unpadded (see `CsCard`), so a header built in there sat flush against all three card edges and
+    stacked a second border/radius/shadow on top of the card's own — which is what made this read
+    as mis-placed. Cell padding likewise belongs to `.cs-data-table` (0.75rem 1rem); the `py-2 pe-4`
+    that used to be on every cell fought it and left the columns unevenly spaced.
+  -->
+  <cs-card [heading]="'admin.liveQueue.unassigned' | t">
+    <span
+      action
+      class="shrink-0 rounded-full bg-primary-container px-3 py-1 text-label-sm font-bold text-on-primary-container"
+    >
+      {{ 'admin.liveQueue.waitingCount' | t : unassigned().length }}
+    </span>
+
+    <p class="px-5 pt-4 text-body-sm text-on-surface-variant">{{ 'admin.liveQueue.oldestFirst' | t }}</p>
+
     @if (hasUnassigned()) {
-      <div class="overflow-x-auto pt-3">
-      <table class="cs-data-table min-w-[700px]">
-        <thead class="text-label-sm uppercase text-on-surface-variant">
-          <tr>
-            <th class="py-2 pe-4">{{ 'admin.liveQueue.reference' | t }}</th>
-            <th class="py-2 pe-4">{{ 'admin.liveQueue.subject' | t }}</th>
-            <th class="py-2 pe-4">{{ 'admin.liveQueue.customer' | t }}</th>
-            <th class="py-2 pe-4">{{ 'admin.liveQueue.priority' | t }}</th>
-            <th class="py-2 pe-4">{{ 'admin.liveQueue.waiting' | t }}</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-border-subtle">
-          @for (row of unassigned(); track row.id) {
-            <tr [class.bg-error-container]="row.urgent" class="transition-colors">
-              <td class="py-2 pe-4 font-mono text-label-md">{{ row.reference }}</td>
-              <td class="py-2 pe-4">
-                <a class="text-primary hover:underline" [routerLink]="['/tickets', row.id]">{{ row.subject }}</a>
-              </td>
-              <td class="py-2 pe-4 text-on-surface-variant">{{ row.customerName }}</td>
-              <td class="py-2 pe-4">
-                <span
-                  class="rounded-full px-2 py-0.5 text-label-sm"
-                  [class.bg-error-container]="row.urgent"
-                  [class.text-on-error-container]="row.urgent"
-                >{{ row.priority }}</span>
-              </td>
-              <td class="py-2 pe-4" [class.text-error]="row.urgent">
-                {{ 'admin.liveQueue.minutes' | t : row.waitMinutes }}
-              </td>
+      <div class="mt-4 overflow-x-auto">
+        <table class="cs-data-table min-w-[700px]">
+          <thead>
+            <tr>
+              <th>{{ 'admin.liveQueue.reference' | t }}</th>
+              <th>{{ 'admin.liveQueue.subject' | t }}</th>
+              <th>{{ 'admin.liveQueue.customer' | t }}</th>
+              <th>{{ 'admin.liveQueue.priority' | t }}</th>
+              <th>{{ 'admin.liveQueue.waiting' | t }}</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (row of unassigned(); track row.id) {
+              <tr [class.bg-error-container]="row.urgent" class="transition-colors">
+                <td class="font-mono text-label-md">{{ row.reference }}</td>
+                <td>
+                  <a class="text-primary hover:underline" [routerLink]="['/tickets', row.id]">{{ row.subject }}</a>
+                </td>
+                <td class="text-on-surface-variant">{{ row.customerName }}</td>
+                <td>
+                  <span
+                    class="rounded-full px-2 py-0.5 text-label-sm"
+                    [class.bg-error-container]="row.urgent"
+                    [class.text-on-error-container]="row.urgent"
+                  >{{ row.priority }}</span>
+                </td>
+                <td [class.text-error]="row.urgent">
+                  {{ 'admin.liveQueue.minutes' | t : row.waitMinutes }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
     } @else {
       <cs-empty-state [message]="'admin.liveQueue.noUnassigned' | t" />
     }
   </cs-card>
 
-  <!-- Per-agent load -->
-  <cs-card class="overflow-hidden rounded-xl border border-outline-variant shadow-card">
-    <div class="flex items-center justify-between gap-4 border-b border-outline-variant pb-4">
-      <div>
-        <h2 class="text-headline-md font-bold text-on-surface">{{ 'admin.liveQueue.agentLoad' | t }}</h2>
-        <p class="mt-1 text-body-sm text-on-surface-variant">{{ 'admin.liveQueue.currentByAgent' | t }}</p>
-      </div>
-      <span class="rounded-full bg-success-container px-3 py-1 text-label-sm font-bold text-on-success-container">{{ 'admin.liveQueue.activeCount' | t : activeAgents() }}</span>
-    </div>
+  <!-- Per-agent load — same structure, same reasoning as the queue card above. -->
+  <cs-card [heading]="'admin.liveQueue.agentLoad' | t">
+    <span
+      action
+      class="shrink-0 rounded-full bg-success-container px-3 py-1 text-label-sm font-bold text-on-success-container"
+    >
+      {{ 'admin.liveQueue.activeCount' | t : activeAgents() }}
+    </span>
+
+    <p class="px-5 pt-4 text-body-sm text-on-surface-variant">{{ 'admin.liveQueue.currentByAgent' | t }}</p>
+
     @if (hasAgentLoad()) {
-      <div class="overflow-x-auto pt-3">
-      <table class="cs-data-table min-w-[420px]">
-        <thead class="text-label-sm uppercase text-on-surface-variant">
-          <tr>
-            <th class="py-2 pe-4">{{ 'admin.liveQueue.agent' | t }}</th>
-            <th class="py-2 pe-4">{{ 'admin.liveQueue.openTickets' | t }}</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-border-subtle">
-          @for (row of agentLoad(); track row.agentId) {
+      <div class="mt-4 overflow-x-auto">
+        <table class="cs-data-table min-w-[420px]">
+          <thead>
             <tr>
-              <td class="py-2 pe-4 text-on-surface">{{ row.name }}</td>
-              <td class="py-2 pe-4 font-mono text-label-md">{{ row.openCount }}</td>
+              <th>{{ 'admin.liveQueue.agent' | t }}</th>
+              <th>{{ 'admin.liveQueue.openTickets' | t }}</th>
             </tr>
-          }
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            @for (row of agentLoad(); track row.agentId) {
+              <tr>
+                <td class="text-on-surface">{{ row.name }}</td>
+                <td class="font-mono text-label-md">{{ row.openCount }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
       </div>
     } @else {
       <cs-empty-state [message]="'admin.liveQueue.noAgents' | t" />

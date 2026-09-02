@@ -254,7 +254,8 @@ public class StaffAdministrationTests : IAsyncLifetime
             description = "The sign-in page times out.",
             customerId,
             categoryId,
-            priority = "Normal",
+            impact = "Medium",
+            urgency = "Medium",
         });
         create.StatusCode.Should().Be(HttpStatusCode.Created);
         var ticketId = (await create.Content.ReadFromJsonAsync<Response<Guid>>())!.Data!;
@@ -318,7 +319,8 @@ public class StaffAdministrationTests : IAsyncLifetime
             description = "The office printer stopped responding.",
             customerId,
             categoryId,
-            priority = "Normal",
+            impact = "Medium",
+            urgency = "Medium",
         });
         create.StatusCode.Should().Be(HttpStatusCode.Created);
         var ticketId = (await create.Content.ReadFromJsonAsync<Response<Guid>>())!.Data!;

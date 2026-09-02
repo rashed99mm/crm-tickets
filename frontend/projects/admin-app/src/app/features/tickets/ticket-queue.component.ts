@@ -69,6 +69,7 @@ export default class TicketQueueComponent {
   readonly mine = signal(false);
   readonly page = signal(1);
   readonly search = signal('');
+  readonly tagFilter = signal('');
 
   readonly escalationSort = signal(false);
 
@@ -175,7 +176,13 @@ export default class TicketQueueComponent {
     this.state.set(loading());
 
     this.api
-      .list({ page: this.page(), pageSize: 10, status: this.status(), mine: this.mine() })
+      .list({
+        page: this.page(),
+        pageSize: 10,
+        status: this.status(),
+        mine: this.mine(),
+        tag: this.tagFilter() || null,
+      })
       .subscribe({
         // `empty` only ever describes a SUCCESSFUL request that returned nothing. An error can
         // never reach this branch, which is what keeps AC-58's two states distinct.
@@ -192,6 +199,12 @@ export default class TicketQueueComponent {
 
   toggleMine(): void {
     this.mine.set(!this.mine());
+    this.page.set(1);
+    this.load();
+  }
+
+  setTagFilter(value: string): void {
+    this.tagFilter.set(value);
     this.page.set(1);
     this.load();
   }

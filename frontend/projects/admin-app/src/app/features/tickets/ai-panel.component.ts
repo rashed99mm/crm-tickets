@@ -8,6 +8,7 @@ import {
   CsButton,
   CsErrorState,
   CsIcon,
+  CsLoadingState,
   failed,
   idle,
   loaded,
@@ -31,7 +32,7 @@ import {
  */
 @Component({
   selector: 'admin-ai-panel',
-  imports: [RouterLink, CsIcon, CsButton, CsErrorState, TranslatePipe],
+  imports: [RouterLink, CsIcon, CsButton, CsErrorState, CsLoadingState, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ai-panel.component.html',
 })

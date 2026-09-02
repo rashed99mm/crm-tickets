@@ -62,13 +62,15 @@ public sealed class ImportCmsErpTicketsCommandHandler(
                 await customers.AddAsync(customer, ct);
             }
 
+            var (impact, urgency) = MapPriorityToClassification(item.Priority);
             var ticket = Ticket.Create(
                 await references.NextAsync(ct),
                 $"{marker} {item.Subject}".Trim(),
                 item.Description,
                 customer.Id,
                 category.Id,
-                item.Priority,
+                impact,
+                urgency,
                 userContext.UserId);
             ticket.SetSource("CMS-ERP");
             await tickets.AddAsync(ticket, ct);
@@ -88,4 +90,20 @@ public sealed class ImportCmsErpTicketsCommandHandler(
         && !string.IsNullOrWhiteSpace(item.CustomerEmail)
         && !string.IsNullOrWhiteSpace(item.Subject)
         && !string.IsNullOrWhiteSpace(item.Description);
+
+    /// <summary>
+    /// US-923 / spec A10: the feed still carries a bare priority string, not the matrix inputs. The
+    /// import maps it onto the impact/urgency pair that re-derives the same value, so an imported
+    /// ticket's priority is unchanged; an unrecognised value falls back to Medium/Medium (Normal),
+    /// matching the customer-origin default rather than failing the whole import.
+    /// </summary>
+    private static (string Impact, string Urgency) MapPriorityToClassification(string? priority) =>
+        priority?.Trim() switch
+        {
+            "Low" => ("Low", "Low"),
+            "Normal" => ("Medium", "Medium"),
+            "High" => ("Medium", "High"),
+            "Urgent" => ("High", "High"),
+            _ => ("Medium", "Medium"),
+        };
 }

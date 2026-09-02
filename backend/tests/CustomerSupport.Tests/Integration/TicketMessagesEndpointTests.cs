@@ -54,7 +54,8 @@ public class TicketMessagesEndpointTests : IAsyncLifetime
             description = "Password reset link never arrives.",
             customerId,
             categoryId,
-            priority = "Normal",
+            impact = "Medium",
+            urgency = "Medium",
         });
 
         return (await ticket.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;

@@ -28,6 +28,7 @@ const TICKET = {
   assigneeId: null,
   createdAt: '2026-08-26T09:00:00Z',
   escalationState: 'None',
+  tags: [],
 };
 
 const ESCALATED_TICKET = { ...TICKET, id: 't-2', reference: 'TKT-001002', escalationState: 'Level1' };
@@ -279,5 +280,25 @@ describe('TicketQueueComponent', () => {
     const nextBtn = el.querySelector('button[aria-label="Next"]');
     expect(prevBtn).not.toBeNull();
     expect(nextBtn).not.toBeNull();
+  });
+
+  it('AC924_5: setting a tag filter re-queries with the tag parameter', () => {
+    const fixture = render();
+    flushList(fixture, page([TICKET]));
+
+    fixture.componentInstance.setTagFilter('billing');
+
+    const request = http.expectOne((r) => r.url === '/api/Tickets');
+    expect(request.request.params.get('tag')).toBe('billing');
+    request.flush(page([]));
+  });
+
+  it('AC924_5: renders tag chips on a tagged row', () => {
+    const fixture = render();
+    flushList(fixture, page([{ ...TICKET, tags: ['billing', 'vip'] }]));
+
+    const text = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(text).toContain('billing');
+    expect(text).toContain('vip');
   });
 });

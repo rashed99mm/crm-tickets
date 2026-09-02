@@ -74,7 +74,8 @@ public class AutoEscalationEndpointTests : IAsyncLifetime
             description = "Exercising multi-level automatic escalation.",
             customerId = _customerId,
             categoryId = _categoryId,
-            priority = "High",
+            impact = "High",
+            urgency = "Medium",
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;
@@ -251,8 +252,11 @@ public class AutoEscalationEndpointTests : IAsyncLifetime
             {
                 var rvResponse = await _admin.GetFromJsonAsync<Response<TicketRow>>($"/api/Tickets/{ticketId}");
                 var rv = rvResponse!.Data!.RowVersion;
-                var r = await _admin.PostAsJsonAsync($"/api/Tickets/{ticketId}/status",
-                    new { status = step, rowVersion = rv });
+                var r = step == "Resolved"
+                    ? await _admin.PostAsJsonAsync($"/api/Tickets/{ticketId}/status",
+                        new { status = step, rowVersion = rv, resolutionCode = "Fixed", resolutionNotes = "resolved in test" })
+                    : await _admin.PostAsJsonAsync($"/api/Tickets/{ticketId}/status",
+                        new { status = step, rowVersion = rv });
                 r.EnsureSuccessStatusCode();
             }
         }
@@ -262,8 +266,11 @@ public class AutoEscalationEndpointTests : IAsyncLifetime
             {
                 var rvResponse = await _admin.GetFromJsonAsync<Response<TicketRow>>($"/api/Tickets/{ticketId}");
                 var rv = rvResponse!.Data!.RowVersion;
-                var r = await _admin.PostAsJsonAsync($"/api/Tickets/{ticketId}/status",
-                    new { status = step, rowVersion = rv });
+                var r = step == "Resolved"
+                    ? await _admin.PostAsJsonAsync($"/api/Tickets/{ticketId}/status",
+                        new { status = step, rowVersion = rv, resolutionCode = "Fixed", resolutionNotes = "resolved in test" })
+                    : await _admin.PostAsJsonAsync($"/api/Tickets/{ticketId}/status",
+                        new { status = step, rowVersion = rv });
                 r.EnsureSuccessStatusCode();
             }
         }

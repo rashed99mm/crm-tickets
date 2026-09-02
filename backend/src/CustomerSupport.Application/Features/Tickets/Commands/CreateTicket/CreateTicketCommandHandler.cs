@@ -7,6 +7,7 @@ using CustomerSupport.Domain.Entities.Customers;
 using CustomerSupport.Domain.Entities.Sla;
 using CustomerSupport.Domain.Entities.Tickets;
 using CustomerSupport.Domain.Interfaces;
+using CustomerSupport.Domain.ValueObjects;
 
 namespace CustomerSupport.Application.Features.Tickets.Commands.CreateTicket;
 
@@ -51,7 +52,8 @@ public class CreateTicketCommandHandler(
             request.Description,
             request.CustomerId,
             request.CategoryId,
-            request.Priority,
+            request.Impact ?? TicketImpact.Medium.Value,
+            request.Urgency ?? TicketUrgency.Medium.Value,
             userContext.UserId);
 
         var actor = await identityUsers.FindByIdAsync(userContext.UserId, ct);

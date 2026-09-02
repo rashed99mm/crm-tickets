@@ -3,9 +3,14 @@ using CustomerSupport.Api.Shared.Extensions;
 using CustomerSupport.Application.Common.Options;
 using CustomerSupport.Application.Contracts;
 using CustomerSupport.Application.Features.Tickets.Commands.AddTicketAttachment;
+using CustomerSupport.Application.Features.Tickets.Commands.AddTicketTag;
+using CustomerSupport.Application.Features.Tickets.Commands.RemoveTicketTag;
+using CustomerSupport.Application.Features.Tickets.Commands.AddTicketLink;
+using CustomerSupport.Application.Features.Tickets.Commands.RemoveTicketLink;
 using CustomerSupport.Application.Features.Tickets.Commands.AssignTicket;
 using CustomerSupport.Application.Features.Tickets.Commands.ChangeTicketStatus;
 using CustomerSupport.Application.Features.Tickets.Commands.CreateTicket;
+using CustomerSupport.Application.Features.Tickets.Commands.ReclassifyTicket;
 using CustomerSupport.Application.Features.Tickets.Dtos;
 using CustomerSupport.Application.Features.Tickets.Commands.RecordTicketMessage;
 using CustomerSupport.Application.Features.Tickets.Commands.TakeEscalation;
@@ -56,6 +61,7 @@ public class TicketsController(IMediator mediator) : ControllerBase
     /// Only tickets nobody holds (AC-82). Distinct from omitting <paramref name="assigneeId"/>,
     /// which means "any assignee". Ignored when <paramref name="mine"/> is set.
     /// </param>
+    /// <param name="tag">Only tickets carrying this tag, normalized before matching (US-924, AC-924.4).</param>
     /// <param name="ct">Cancellation token.</param>
     [HttpGet]
     [ProducesResponseType(typeof(Response<PaginatedList<TicketListItemDto>>), StatusCodes.Status200OK)]
@@ -69,6 +75,7 @@ public class TicketsController(IMediator mediator) : ControllerBase
         [FromQuery] Guid? assigneeId = null,
         [FromQuery] bool mine = false,
         [FromQuery] bool unassigned = false,
+        [FromQuery] string? tag = null,
         CancellationToken ct = default)
     {
         var result = await mediator.Send(
@@ -82,6 +89,7 @@ public class TicketsController(IMediator mediator) : ControllerBase
                 AssigneeId = assigneeId,
                 Mine = mine,
                 Unassigned = unassigned,
+                Tag = tag,
             },
             ct);
 
@@ -119,7 +127,8 @@ public class TicketsController(IMediator mediator) : ControllerBase
                 request.Description,
                 request.CustomerId,
                 request.CategoryId,
-                request.Priority),
+                request.Impact,
+                request.Urgency),
             ct);
 
         if (!result.Success)
@@ -171,9 +180,81 @@ public class TicketsController(IMediator mediator) : ControllerBase
     public async Task<IActionResult> ChangeStatus(Guid id, [FromBody] ChangeTicketStatusRequest request, CancellationToken ct)
     {
         var result = await mediator.Send(
-            new ChangeTicketStatusCommand(id, request.Status, request.RowVersion),
+            new ChangeTicketStatusCommand(id, request.Status, request.RowVersion,
+                request.ResolutionCode, request.ResolutionNotes),
             ct);
 
+        return this.ToActionResult(result);
+    }
+
+    /// <summary>Sets a ticket's impact and urgency; priority is re-derived by the matrix (US-923).</summary>
+    /// <remarks>
+    /// Priority has no direct setter anywhere on the surface (spec decision: matrix-only). A
+    /// changed derivation writes a <c>Reprioritized</c> history row; an unchanged one does not.
+    /// </remarks>
+    /// <param name="id">The ticket identifier.</param>
+    /// <param name="request">Impact, urgency, and the <c>rowVersion</c> read from the detail endpoint.</param>
+    /// <param name="ct">Cancellation token.</param>
+    [HttpPost("{id:guid}/classification")]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Reclassify(Guid id, [FromBody] ReclassifyTicketRequest request, CancellationToken ct)
+    {
+        var result = await mediator.Send(
+            new ReclassifyTicketCommand(id, request.Impact, request.Urgency, request.RowVersion),
+            ct);
+
+        return this.ToActionResult(result);
+    }
+
+    /// <summary>Adds a tag to a ticket (US-924). Duplicates, an 11th tag, or a bad value are field-keyed 400s.</summary>
+    [HttpPost("{id:guid}/tags")]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> AddTag(Guid id, [FromBody] AddTicketTagRequest request, CancellationToken ct)
+    {
+        var result = await mediator.Send(new AddTicketTagCommand(id, request.Value), ct);
+        return this.ToActionResult(result);
+    }
+
+    /// <summary>Removes a tag by its normalized value (US-924).</summary>
+    [HttpDelete("{id:guid}/tags/{value}")]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveTag(Guid id, string value, CancellationToken ct)
+    {
+        var result = await mediator.Send(new RemoveTicketTagCommand(id, value), ct);
+        return this.ToActionResult(result);
+    }
+
+    /// <summary>Links this ticket to another by reference — RelatedTo or DuplicateOf (US-925).</summary>
+    /// <remarks>
+    /// An unknown reference is a 400 keyed to <c>targetReference</c>; the same link twice, or two
+    /// tickets each DuplicateOf the other, is a 409. Creating a link never resolves anything —
+    /// AC-925.3's rule runs on the status endpoint, at resolve time.
+    /// </remarks>
+    [HttpPost("{id:guid}/links")]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> AddLink(Guid id, [FromBody] AddTicketLinkRequest request, CancellationToken ct)
+    {
+        var result = await mediator.Send(new AddTicketLinkCommand(id, request.LinkType, request.TargetReference), ct);
+        return this.ToActionResult(result);
+    }
+
+    /// <summary>Removes a ticket link by id (US-925).</summary>
+    [HttpDelete("{id:guid}/links/{linkId:guid}")]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Response<Guid>), StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> RemoveLink(Guid id, Guid linkId, CancellationToken ct)
+    {
+        var result = await mediator.Send(new RemoveTicketLinkCommand(id, linkId), ct);
         return this.ToActionResult(result);
     }
 

@@ -58,7 +58,11 @@ public class SlaTrackingEndpointTests : IAsyncLifetime
             branchId,
         });
 
-    private async Task<Guid> CreateTicketAsync(string priority)
+    /// <summary>
+    /// US-923: priority is matrix-derived, not settable directly. Callers pass the impact/urgency
+    /// pair that derives the priority their SLA policy is keyed on.
+    /// </summary>
+    private async Task<Guid> CreateTicketAsync(string impact, string urgency)
     {
         var response = await _admin.PostAsJsonAsync("/api/Tickets", new
         {
@@ -66,7 +70,8 @@ public class SlaTrackingEndpointTests : IAsyncLifetime
             description = "Exercising SLA target computation.",
             customerId = _customerId,
             categoryId = _categoryId,
-            priority,
+            impact,
+            urgency,
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;
@@ -204,7 +209,7 @@ public class SlaTrackingEndpointTests : IAsyncLifetime
         (await CreatePolicyAsync(priority, 2, 24, categoryId: _categoryId)).StatusCode
             .Should().Be(HttpStatusCode.Created);
 
-        var ticketId = await CreateTicketAsync(priority);
+        var ticketId = await CreateTicketAsync("High", "Medium"); // derives High, matching `priority` above
         var ticket = await GetTicketAsync(ticketId);
 
         ticket.ResponseDueAt.Should().NotBeNull();
@@ -226,7 +231,8 @@ public class SlaTrackingEndpointTests : IAsyncLifetime
             description = "Nothing should match.",
             customerId = _customerId,
             categoryId = isolatedCategoryId,
-            priority = "Normal",
+            impact = "Medium",
+            urgency = "Medium",
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         var ticketId = (await response.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;
@@ -255,7 +261,9 @@ public class SlaTrackingEndpointTests : IAsyncLifetime
             description = "The category-specific policy applies.",
             customerId = _customerId,
             categoryId = scopedCategoryId,
-            priority,
+            // US-923: derives Low, matching the `priority` above the SLA policies are keyed on.
+            impact = "Low",
+            urgency = "Low",
         });
         var ticketId = (await response.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;
 
@@ -271,7 +279,7 @@ public class SlaTrackingEndpointTests : IAsyncLifetime
     [Trait("AC", "131")]
     public async Task AC131_OverdueOpenTicket_IsRecordedAsBreached()
     {
-        var ticketId = await CreateTicketAsync("Normal"); // no policy needed — due dates set directly below
+        var ticketId = await CreateTicketAsync("Medium", "Medium"); // no policy needed — due dates set directly below
 
         await SetDueDatesInThePastAsync(ticketId);
 
@@ -286,7 +294,7 @@ public class SlaTrackingEndpointTests : IAsyncLifetime
     [Trait("AC", "132")]
     public async Task AC132_RunningTwice_DoesNotDuplicateTheBreachEvent()
     {
-        var ticketId = await CreateTicketAsync("Normal");
+        var ticketId = await CreateTicketAsync("Medium", "Medium");
         await SetDueDatesInThePastAsync(ticketId);
 
         await RunScannerAsync();
@@ -300,7 +308,7 @@ public class SlaTrackingEndpointTests : IAsyncLifetime
     [Trait("AC", "133")]
     public async Task AC133_WaitingForCustomerTicket_IsNotEvaluated()
     {
-        var ticketId = await CreateTicketAsync("Normal");
+        var ticketId = await CreateTicketAsync("Medium", "Medium");
         await SetDueDatesInThePastAsync(ticketId);
 
         using (var scope = _factory.Services.CreateScope())

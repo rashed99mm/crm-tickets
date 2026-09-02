@@ -2,6 +2,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter, withComponentInputBinding } from '@angular/router';
 import {
+  acceptLanguageInterceptor,
   authInterceptor,
   envelopeInterceptor,
   REALTIME_CONFIG,
@@ -27,7 +28,12 @@ export const appConfig: ApplicationConfig = {
     // the chain at auth, so the retried request picks up the freshly
     // stored token rather than the stale one it started with.
     provideHttpClient(
-      withInterceptors([refreshInterceptor, authInterceptor, envelopeInterceptor]),
+      withInterceptors([
+        refreshInterceptor,
+        authInterceptor,
+        acceptLanguageInterceptor,
+        envelopeInterceptor,
+      ]),
     ),
   ],
 };

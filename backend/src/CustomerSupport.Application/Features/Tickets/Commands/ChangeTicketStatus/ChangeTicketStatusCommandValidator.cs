@@ -25,7 +25,24 @@ public class ChangeTicketStatusCommandValidator : AbstractValidator<ChangeTicket
         RuleFor(x => x.RowVersion)
             .NotEmpty().WithErrorCode(ApplicationErrors.Validation.ROW_VERSION_REQUIRED)
             .Must(BeBase64).WithErrorCode(ApplicationErrors.Validation.ROW_VERSION_REQUIRED);
+
+        // US-922 / AC-922.1: resolution is part of the request's *shape* when the target is
+        // Resolved — absent fields are a 400 the form can key to controls, before any state check.
+        When(x => IsResolvedTarget(x.Status), () =>
+        {
+            RuleFor(x => x.ResolutionCode)
+                .NotEmpty().WithErrorCode(ApplicationErrors.Validation.RESOLUTION_CODE_REQUIRED)
+                .Must(code => TicketResolutionCode.TryCreate(code, out _, out _))
+                .WithErrorCode(ApplicationErrors.Validation.RESOLUTION_CODE_INVALID);
+
+            RuleFor(x => x.ResolutionNotes)
+                .NotEmpty().WithErrorCode(ApplicationErrors.Validation.RESOLUTION_NOTES_REQUIRED)
+                .MaximumLength(2000).WithErrorCode(ApplicationErrors.Validation.RESOLUTION_NOTES_MAX_LENGTH);
+        });
     }
+
+    private static bool IsResolvedTarget(string? status) =>
+        string.Equals(status?.Trim(), "Resolved", StringComparison.Ordinal);
 
     /// <summary>
     /// Checked here rather than left to <c>Convert.FromBase64String</c> in the handler, where a

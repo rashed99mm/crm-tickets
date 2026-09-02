@@ -46,7 +46,8 @@ public class CreateTicketCommandHandlerTests
     }
 
     private static CreateTicketCommand Command(string? source = null) =>
-        new("Subject", "Description", Guid.NewGuid(), Guid.NewGuid(), "Low", source);
+        new("Subject", "Description", Guid.NewGuid(), Guid.NewGuid(),
+            Impact: source is null ? "Low" : null, Urgency: source is null ? "Low" : null, Source: source);
 
     [Fact]
     [Trait("AC", "404")]

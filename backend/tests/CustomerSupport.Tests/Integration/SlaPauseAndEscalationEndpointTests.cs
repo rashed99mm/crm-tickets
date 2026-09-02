@@ -64,7 +64,8 @@ public class SlaPauseAndEscalationEndpointTests : IAsyncLifetime
             description = "Exercising pause/resume and escalation.",
             customerId = _customerId,
             categoryId = _categoryId,
-            priority = "Normal",
+            impact = "Medium",
+            urgency = "Medium",
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;

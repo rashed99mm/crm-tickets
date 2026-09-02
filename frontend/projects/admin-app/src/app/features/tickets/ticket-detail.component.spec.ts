@@ -2,6 +2,7 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { vi } from 'vitest';
 import { envelopeInterceptor, SessionStore } from 'common';
 import TicketDetailComponent from './ticket-detail.component';
 
@@ -49,6 +50,13 @@ const TICKET = {
   responseDueAt: null,
   resolutionDueAt: null,
   escalationState: 'None',
+  resolutionCode: null,
+  resolutionNotes: null,
+  reopenCount: 0,
+  impact: null,
+  urgency: null,
+  tags: [],
+  links: [],
 };
 
 const CONFLICT = {
@@ -123,6 +131,8 @@ describe('TicketDetailComponent', () => {
     );
     expect(el.querySelector('[data-testid="status-action"]')).not.toBeNull();
 
+    fixture.componentInstance.setTab('history');
+    fixture.detectChanges();
     const timeline = el.querySelector('[data-testid="history-timeline"]');
     expect(timeline?.textContent).toContain('Created');
     expect(timeline?.textContent).toContain('StatusChanged');
@@ -168,18 +178,86 @@ describe('TicketDetailComponent', () => {
     expect(options).not.toContain('Closed');
   });
 
-  it('AC61: a status change echoes the rowVersion it read', async () => {
+  it('AC61: a non-resolving status change echoes the rowVersion it read', async () => {
     const fixture = await render(['Agent']);
 
-    fixture.componentInstance.changeStatus('Resolved');
+    fixture.componentInstance.selectStatus('Assigned');
 
     const request = http.expectOne('/api/Tickets/t-1/status');
     expect(request.request.method).toBe('POST');
-    expect(request.request.body).toEqual({ status: 'Resolved', rowVersion: 'AAAAAAABAdE=' });
+    expect(request.request.body).toEqual({ status: 'Assigned', rowVersion: 'AAAAAAABAdE=' });
     request.flush({ success: true, code: 'CON035', message: 'OK', data: { id: 't-1' }, errors: [] });
 
     // Success re-reads, so the screen never holds a superseded version.
     http.expectOne('/api/Tickets/t-1').flush({ success: true, code: 'CON035', message: 'OK', data: TICKET, errors: [] });
+  });
+
+  it('AC922_7: selecting Resolved opens the inline resolve form instead of committing bare', async () => {
+    const fixture = await render(['Agent']);
+
+    fixture.componentInstance.selectStatus('Resolved');
+    fixture.detectChanges();
+
+    // No request yet — the form is showing, not submitting.
+    http.expectNone('/api/Tickets/t-1/status');
+    expect(fixture.componentInstance.showResolveForm()).toBe(true);
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('[data-testid="resolve-form"]'),
+    ).not.toBeNull();
+  });
+
+  it('AC922_7: submitting the resolve form sends code, notes and rowVersion', async () => {
+    const fixture = await render(['Agent']);
+
+    fixture.componentInstance.selectStatus('Resolved');
+    fixture.detectChanges();
+    fixture.componentInstance.submitResolve('Fixed', 'Reset the password and confirmed sign-in.');
+
+    const request = http.expectOne('/api/Tickets/t-1/status');
+    expect(request.request.body).toEqual({
+      status: 'Resolved',
+      rowVersion: 'AAAAAAABAdE=',
+      resolutionCode: 'Fixed',
+      resolutionNotes: 'Reset the password and confirmed sign-in.',
+    });
+    request.flush({ success: true, code: 'CON035', message: 'OK', data: { id: 't-1' }, errors: [] });
+
+    http.expectOne('/api/Tickets/t-1').flush({
+      success: true,
+      code: 'CON035',
+      message: 'OK',
+      data: { ...TICKET, status: 'Resolved', resolutionCode: 'Fixed', resolutionNotes: 'Reset the password and confirmed sign-in.', reopenCount: 0 },
+      errors: [],
+    });
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.showResolveForm()).toBe(false);
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('[data-testid="resolution-banner"]')?.textContent,
+    ).toContain('Fixed');
+  });
+
+  it('AC922_7: a resolved ticket shows its resolution and reopen count', async () => {
+    configure(['Agent']);
+    const fixture = TestBed.createComponent(TicketDetailComponent);
+    fixture.componentRef.setInput('id', 't-1');
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    http.expectOne('/api/Tickets/t-1').flush({
+      success: true,
+      code: 'CON035',
+      message: 'OK',
+      data: { ...TICKET, status: 'Resolved', resolutionCode: 'Workaround', resolutionNotes: 'Cleared the cache.', reopenCount: 2 },
+      errors: [],
+    });
+    fixture.detectChanges();
+
+    const el = fixture.nativeElement as HTMLElement;
+    const banner = el.querySelector('[data-testid="resolution-banner"]');
+    expect(banner?.textContent).toContain('Workaround');
+    expect(banner?.textContent).toContain('Cleared the cache.');
+    expect(el.querySelector('[data-testid="reopen-count"]')?.textContent).toContain('2');
   });
 
   it('AC61: assigning posts the agent id and the rowVersion', async () => {
@@ -192,6 +270,130 @@ describe('TicketDetailComponent', () => {
     request.flush({ success: true, code: 'CON035', message: 'OK', data: { id: 't-1' }, errors: [] });
 
     http.expectOne('/api/Tickets/t-1').flush({ success: true, code: 'CON035', message: 'OK', data: TICKET, errors: [] });
+  });
+
+  it('AC923_7: reclassify posts impact, urgency and rowVersion', async () => {
+    const fixture = await render(['Agent']);
+
+    fixture.componentInstance.reclassify('High', 'High');
+
+    const request = http.expectOne('/api/Tickets/t-1/classification');
+    expect(request.request.body).toEqual({ impact: 'High', urgency: 'High', rowVersion: 'AAAAAAABAdE=' });
+    request.flush({ success: true, code: 'CON035', message: 'OK', data: { id: 't-1' }, errors: [] });
+
+    http.expectOne('/api/Tickets/t-1').flush({ success: true, code: 'CON035', message: 'OK', data: { ...TICKET, impact: 'High', urgency: 'High' }, errors: [] });
+  });
+
+  it('AC924_5: adding a tag posts the value and re-reads the ticket', async () => {
+    const fixture = await render(['Agent']);
+
+    fixture.componentInstance.newTagValue.set('billing');
+    fixture.componentInstance.addTag('billing');
+
+    const request = http.expectOne('/api/Tickets/t-1/tags');
+    expect(request.request.body).toEqual({ value: 'billing' });
+    request.flush({ success: true, code: 'CON035', message: 'OK', data: {}, errors: [] });
+
+    http.expectOne('/api/Tickets/t-1').flush({
+      success: true, code: 'CON035', message: 'OK', data: { ...TICKET, tags: ['billing'] }, errors: [],
+    });
+    fixture.detectChanges();
+
+    expect(fixture.componentInstance.newTagValue()).toBe('');
+    fixture.componentInstance.setTab('info');
+    fixture.detectChanges();
+    const chips = (fixture.nativeElement as HTMLElement).querySelectorAll('[data-testid="tag-chip"]');
+    expect(chips.length).toBe(1);
+    expect(chips[0].textContent).toContain('billing');
+  });
+
+  it('AC924_5: removing a tag deletes it', async () => {
+    configure(['Agent']);
+    const fixture = TestBed.createComponent(TicketDetailComponent);
+    fixture.componentRef.setInput('id', 't-1');
+    fixture.detectChanges();
+    await Promise.resolve();
+    http.expectOne('/api/Tickets/t-1').flush({
+      success: true, code: 'CON035', message: 'OK', data: { ...TICKET, tags: ['billing'] }, errors: [],
+    });
+    fixture.detectChanges();
+
+    fixture.componentInstance.removeTag('billing');
+
+    const request = http.expectOne('/api/Tickets/t-1/tags/billing');
+    expect(request.request.method).toBe('DELETE');
+    request.flush({ success: true, code: 'CON035', message: 'OK', data: {}, errors: [] });
+
+    http.expectOne('/api/Tickets/t-1').flush({
+      success: true, code: 'CON035', message: 'OK', data: { ...TICKET, tags: [] }, errors: [],
+    });
+  });
+
+  it('AC925_5: adding a link posts type and target reference', async () => {
+    const fixture = await render(['Agent']);
+
+    fixture.componentInstance.addLink('RelatedTo', 'TKT-002000');
+
+    const request = http.expectOne('/api/Tickets/t-1/links');
+    expect(request.request.body).toEqual({ linkType: 'RelatedTo', targetReference: 'TKT-002000' });
+    request.flush({ success: true, code: 'CON035', message: 'OK', data: {}, errors: [] });
+
+    http.expectOne('/api/Tickets/t-1').flush({
+      success: true, code: 'CON035', message: 'OK',
+      data: { ...TICKET, links: [{ id: 'l-1', linkType: 'RelatedTo', direction: 'Outbound', otherTicketId: 't-2', otherReference: 'TKT-002000', otherSubject: 'Billing question' }] },
+      errors: [],
+    });
+    fixture.detectChanges();
+
+    fixture.componentInstance.setTab('info');
+    fixture.detectChanges();
+    const el = fixture.nativeElement as HTMLElement;
+    expect(el.querySelector('[data-testid="link-row"]')?.textContent).toContain('TKT-002000');
+  });
+
+  it('AC925_5: a DuplicateOf link renders directionally', async () => {
+    configure(['Agent']);
+    const fixture = TestBed.createComponent(TicketDetailComponent);
+    fixture.componentRef.setInput('id', 't-1');
+    fixture.detectChanges();
+    await Promise.resolve();
+    http.expectOne('/api/Tickets/t-1').flush({
+      success: true, code: 'CON035', message: 'OK',
+      data: { ...TICKET, links: [{ id: 'l-1', linkType: 'DuplicateOf', direction: 'Inbound', otherTicketId: 't-2', otherReference: 'TKT-002000', otherSubject: 'Same issue' }] },
+      errors: [],
+    });
+    fixture.detectChanges();
+
+    fixture.componentInstance.setTab('info');
+    fixture.detectChanges();
+    const row = (fixture.nativeElement as HTMLElement).querySelector('[data-testid="link-row"]');
+    expect(row?.textContent).toContain('TKT-002000');
+    // Inbound DuplicateOf reads "duplicated by", not "duplicate of".
+    expect(row?.textContent?.toLowerCase()).toContain('duplicated by');
+  });
+
+  it('AC925_5: removing a link deletes by id', async () => {
+    configure(['Agent']);
+    const fixture = TestBed.createComponent(TicketDetailComponent);
+    fixture.componentRef.setInput('id', 't-1');
+    fixture.detectChanges();
+    await Promise.resolve();
+    http.expectOne('/api/Tickets/t-1').flush({
+      success: true, code: 'CON035', message: 'OK',
+      data: { ...TICKET, links: [{ id: 'l-1', linkType: 'RelatedTo', direction: 'Outbound', otherTicketId: 't-2', otherReference: 'TKT-002000', otherSubject: 'Billing question' }] },
+      errors: [],
+    });
+    fixture.detectChanges();
+
+    fixture.componentInstance.removeLink('l-1');
+
+    const request = http.expectOne('/api/Tickets/t-1/links/l-1');
+    expect(request.request.method).toBe('DELETE');
+    request.flush({ success: true, code: 'CON035', message: 'OK', data: {}, errors: [] });
+
+    http.expectOne('/api/Tickets/t-1').flush({
+      success: true, code: 'CON035', message: 'OK', data: { ...TICKET, links: [] }, errors: [],
+    });
   });
 
   it('AC506: supervisor can take ownership of an escalated ticket', async () => {
@@ -240,7 +442,7 @@ describe('TicketDetailComponent', () => {
   it('AC61: a conflict shows the server message and re-reads the ticket', async () => {
     const fixture = await render(['Agent']);
 
-    fixture.componentInstance.changeStatus('Resolved');
+    fixture.componentInstance.selectStatus('Assigned');
 
     http.expectOne('/api/Tickets/t-1/status').flush(CONFLICT, {
       status: 409,
@@ -278,6 +480,8 @@ describe('TicketDetailComponent', () => {
     });
     fixture.detectChanges();
 
+    fixture.componentInstance.setTab('info');
+    fixture.detectChanges();
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('Response due');
     expect(el.querySelector('[data-urgency]')).not.toBeNull();
@@ -318,7 +522,10 @@ describe('TicketDetailComponent', () => {
     http.expectOne('/api/Tickets/t-1').flush({ success: true, code: 'CON035', message: 'OK', data: TICKET, errors: [] });
     fixture.detectChanges();
 
-    // The message timeline child is only created once the ticket is loaded; it fires its own read.
+    fixture.componentInstance.setTab('messages');
+    fixture.detectChanges();
+
+    // The message timeline child is only created once the Messages tab is active; it fires its own read.
     await Promise.resolve();
     http
       .expectOne('/api/Tickets/t-1/messages')
@@ -353,6 +560,8 @@ describe('TicketDetailComponent', () => {
   it('AC409_DetailRendersTimelineMetadataAndAiRegions: renders timeline, metadata rail, and AI panel', async () => {
     const fixture = await render(['Agent']);
     const el = fixture.nativeElement as HTMLElement;
+    fixture.componentInstance.setTab('history');
+    fixture.detectChanges();
     expect(el.querySelector('[data-testid="history-timeline"]')).not.toBeNull();
     expect(el.querySelector('[data-testid="customer-summary"]')).not.toBeNull();
     expect(el.querySelector('admin-ai-panel')).not.toBeNull();
@@ -372,6 +581,31 @@ describe('TicketDetailComponent', () => {
     const fixture = await render(['Agent']);
     const el = fixture.nativeElement as HTMLElement;
     expect(el.textContent).toContain('Unassigned');
+  });
+
+  /**
+   * The header's reference chip is a copy button, not decoration — an agent pastes the reference
+   * into chats and call notes constantly. The chip only flips to "Copied" once the clipboard write
+   * actually resolves, so a refused permission cannot be reported as a successful copy.
+   */
+  it('AC61: the header reference chip copies the reference to the clipboard', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    vi.stubGlobal('navigator', { ...navigator, clipboard: { writeText } });
+
+    const fixture = await render(['Agent']);
+    const chip = (fixture.nativeElement as HTMLElement).querySelector<HTMLButtonElement>(
+      'button[title="Copy reference"]',
+    );
+    expect(chip).not.toBeNull();
+    expect(chip?.textContent).toContain('TKT-001001');
+
+    chip?.click();
+    await Promise.resolve();
+
+    expect(writeText).toHaveBeenCalledWith('TKT-001001');
+    expect(fixture.componentInstance.referenceCopied()).toBe(true);
+
+    vi.unstubAllGlobals();
   });
 
   it('AC418_TicketFormsAndActionsAreKeyboardAccessible: action selects have accessible labels', async () => {

@@ -2038,6 +2038,10 @@ namespace CustomerSupport.Infrastructure.Migrations
                     b.Property<DateTime?>("FirstResponseAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Impact")
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -2057,8 +2061,21 @@ namespace CustomerSupport.Infrastructure.Migrations
                         .HasMaxLength(16)
                         .HasColumnType("nvarchar(16)");
 
+                    b.Property<int>("ReopenCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0);
+
+                    b.Property<string>("ResolutionCode")
+                        .HasMaxLength(24)
+                        .HasColumnType("nvarchar(24)");
+
                     b.Property<DateTime?>("ResolutionDueAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("ResolutionNotes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
 
                     b.Property<DateTime?>("ResolvedAt")
                         .HasColumnType("datetime2");
@@ -2096,6 +2113,10 @@ namespace CustomerSupport.Infrastructure.Migrations
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Urgency")
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
 
                     b.HasKey("Id");
 
@@ -2221,6 +2242,53 @@ namespace CustomerSupport.Infrastructure.Migrations
                     b.ToTable("TicketHistory", (string)null);
                 });
 
+            modelBuilder.Entity("CustomerSupport.Domain.Entities.Tickets.TicketLink", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LinkType")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("nvarchar(16)");
+
+                    b.Property<Guid>("SourceTicketId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TargetTicketId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TargetTicketId")
+                        .HasDatabaseName("IX_TicketLinks_TargetTicketId");
+
+                    b.HasIndex("SourceTicketId", "TargetTicketId", "LinkType")
+                        .IsUnique()
+                        .HasDatabaseName("UX_TicketLinks_Source_Target_Type");
+
+                    b.ToTable("TicketLinks", (string)null);
+                });
+
             modelBuilder.Entity("CustomerSupport.Domain.Entities.Tickets.TicketMessage", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2330,6 +2398,47 @@ namespace CustomerSupport.Infrastructure.Migrations
                         .HasDatabaseName("IX_TicketNotes_Ticket_Internal");
 
                     b.ToTable("TicketNotes", (string)null);
+                });
+
+            modelBuilder.Entity("CustomerSupport.Domain.Entities.Tickets.TicketTag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("TicketId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TicketId", "Value")
+                        .IsUnique()
+                        .HasDatabaseName("UX_TicketTags_TicketId_Value");
+
+                    b.ToTable("TicketTags", (string)null);
                 });
 
             modelBuilder.Entity("CustomerSupport.Domain.Entities.Tickets.TicketTask", b =>
@@ -2887,6 +2996,21 @@ namespace CustomerSupport.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CustomerSupport.Domain.Entities.Tickets.TicketLink", b =>
+                {
+                    b.HasOne("CustomerSupport.Domain.Entities.Tickets.Ticket", null)
+                        .WithMany()
+                        .HasForeignKey("SourceTicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CustomerSupport.Domain.Entities.Tickets.Ticket", null)
+                        .WithMany()
+                        .HasForeignKey("TargetTicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CustomerSupport.Domain.Entities.Tickets.TicketMessage", b =>
                 {
                     b.HasOne("CustomerSupport.Domain.Entities.Tickets.Ticket", null)
@@ -2902,6 +3026,15 @@ namespace CustomerSupport.Infrastructure.Migrations
                         .WithMany()
                         .HasForeignKey("TicketId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("CustomerSupport.Domain.Entities.Tickets.TicketTag", b =>
+                {
+                    b.HasOne("CustomerSupport.Domain.Entities.Tickets.Ticket", null)
+                        .WithMany()
+                        .HasForeignKey("TicketId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 

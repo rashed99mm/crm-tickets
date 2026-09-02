@@ -62,7 +62,8 @@ public class SlaNotificationTests : IAsyncLifetime
             description = "A breach should page the assignee.",
             customerId = _customerId,
             categoryId = _categoryId,
-            priority = "High",
+            impact = "High",
+            urgency = "Medium",
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;

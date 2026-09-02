@@ -292,7 +292,8 @@ public class HandoffFromChatCommandHandler(
             Description: transcript,
             CustomerId: customerId!.Value,
             CategoryId: categoryId.Value,
-            Priority: "Medium"), ct);
+            Impact: "Medium",
+            Urgency: "Medium"), ct);
 
         if (!created.Success)
         {

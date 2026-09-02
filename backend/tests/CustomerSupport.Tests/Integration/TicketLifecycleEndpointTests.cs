@@ -78,7 +78,8 @@ public class TicketLifecycleEndpointTests : IAsyncLifetime
             description = "The portal rejects my password.",
             customerId = _customerId,
             categoryId = _categoryId,
-            priority = "Normal",
+            impact = "Medium",
+            urgency = "Medium",
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<Response<Guid>>())!.Data!;
@@ -90,10 +91,22 @@ public class TicketLifecycleEndpointTests : IAsyncLifetime
         return body!.Data!;
     }
 
-    private async Task<HttpResponseMessage> ChangeStatusAsync(HttpClient client, Guid id, string status, string? rowVersion = null)
+    private async Task<HttpResponseMessage> ChangeStatusAsync(
+        HttpClient client, Guid id, string status, string? rowVersion = null,
+        string? resolutionCode = null, string? resolutionNotes = null)
     {
         rowVersion ??= (await DetailAsync(_supervisor, id)).RowVersion;
-        return await client.PostAsJsonAsync($"/api/Tickets/{id}/status", new { status, rowVersion });
+
+        // AC-922.1: resolving requires code+notes. Every existing caller here that resolves a
+        // ticket without supplying them gets the standard test resolution, so the FEAT-32 guard
+        // does not change what these lifecycle tests were already asserting.
+        if (status == "Resolved" && resolutionCode is null)
+        {
+            resolutionCode = "Fixed";
+            resolutionNotes = "resolved in test";
+        }
+
+        return await client.PostAsJsonAsync($"/api/Tickets/{id}/status", new { status, rowVersion, resolutionCode, resolutionNotes });
     }
 
     private async Task<HttpResponseMessage> AssignAsync(HttpClient client, Guid id, Guid assigneeId, string? rowVersion = null)

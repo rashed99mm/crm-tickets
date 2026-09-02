@@ -79,7 +79,7 @@ public class TicketAdvanceEscalationTests
     [Trait("AC", "218.1")]
     public void AC2181_TicketAdvanceEscalation_RecordsPreviousAndNextLevel()
     {
-        var ticket = Ticket.Create("TKT-001001", "Subject", "body", Customer, Category, "High", Supervisor);
+        var ticket = Ticket.Create("TKT-001001", "Subject", "body", Customer, Category, "High", "Medium", Supervisor);
         var historyBefore = ticket.History.Count;
 
         ticket.AdvanceEscalation(ticket.EscalationState, "Level1", SystemEngine);
@@ -101,7 +101,7 @@ public class TicketAdvanceEscalationTests
     [Trait("AC", "218.3")]
     public void AC2183_EscalationTransition_RejectsDuplicateClaim()
     {
-        var ticket = Ticket.Create("TKT-001001", "Subject", "body", Customer, Category, "High", Supervisor);
+        var ticket = Ticket.Create("TKT-001001", "Subject", "body", Customer, Category, "High", "Medium", Supervisor);
         ticket.AdvanceEscalation("None", "Level1", SystemEngine);
         var historyBefore = ticket.History.Count;
 
@@ -117,7 +117,7 @@ public class TicketAdvanceEscalationTests
     [Trait("AC", "218.3")]
     public void AC2183_EscalationTransition_RejectsAdvancingToSameLevel()
     {
-        var ticket = Ticket.Create("TKT-001001", "Subject", "body", Customer, Category, "High", Supervisor);
+        var ticket = Ticket.Create("TKT-001001", "Subject", "body", Customer, Category, "High", "Medium", Supervisor);
         ticket.AdvanceEscalation(ticket.EscalationState, "Level1", SystemEngine);
         var historyBefore = ticket.History.Count;
 
@@ -130,7 +130,7 @@ public class TicketAdvanceEscalationTests
     [Fact]
     public void AdvanceEscalation_EmptySystemActor_Throws()
     {
-        var ticket = Ticket.Create("TKT-001001", "Subject", "body", Customer, Category, "High", Supervisor);
+        var ticket = Ticket.Create("TKT-001001", "Subject", "body", Customer, Category, "High", "Medium", Supervisor);
 
         var act = () => ticket.AdvanceEscalation(ticket.EscalationState, "Level1", ArgumentNull);
 

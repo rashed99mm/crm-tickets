@@ -14,21 +14,40 @@
     @default {
       @if (ticket(); as t) {
         <!--
-          `ticket_detail_chatbot`'s header band. Full-bleed for the same reason the customer
-          profile's is: the shell insets every screen by 6 units, and the mockup's band runs edge to
-          edge under the topbar. The inline-axis utilities are symmetric, so it mirrors under
-          `dir="rtl"` untouched.
+          `ai_ticket_management_workspace`'s ticket header, adapted: reference/title/status share
+          row one exactly as the mockup places them (status pill top-right of the title, not buried
+          in a meta grid below); row two folds in the facts the mockup's own meta strip carries
+          (Assignee, Category, a channel-style pill) plus the ones the mockup keeps elsewhere that
+          the user asked to fold in here too — customer identity, tags, and related-ticket links —
+          so the ticket-metadata column that used to hold them can be retired and the AI rail can
+          sit directly beside the conversation, the way the mockup's own two-panel layout does.
+          Full-bleed for the same reason the customer profile's band is: the shell insets every
+          screen by 6 units, and logical inline-axis utilities keep it mirroring correctly under
+          `dir="rtl"`.
         -->
         <div class="-mx-6 -mt-6 border-b border-border-subtle bg-surface-lowest px-6 py-6">
           <div class="flex flex-wrap items-start justify-between gap-4">
             <div class="min-w-0">
               <div class="mb-1 flex flex-wrap items-center gap-2">
-                <!-- The mockup's reference chip: mono, boxed, on the canvas tint rather than the card. -->
-                <span
-                  class="rounded border border-border-subtle bg-surface px-1.5 py-0.5 font-mono text-data-mono text-on-surface-variant"
+                <!--
+                  The mockup's reference chip: mono, boxed, on the canvas tint rather than the card
+                  — made a real button here, because the reference is the one string on this page
+                  an agent retypes into other systems all day.
+                -->
+                <button
+                  type="button"
+                  (click)="copyReference(t.reference)"
+                  [attr.aria-label]="'tickets.detail.copyReference' | t"
+                  [title]="'tickets.detail.copyReference' | t"
+                  class="inline-flex items-center gap-1.5 rounded border border-border-subtle bg-surface px-1.5 py-0.5 font-mono text-data-mono text-on-surface-variant transition-colors hover:border-primary/40 hover:bg-surface-high hover:text-on-surface"
                 >
                   {{ t.reference }}
-                </span>
+                  @if (referenceCopied()) {
+                    <cs-icon name="check" [size]="13" class="text-status-resolved" />
+                  } @else {
+                    <cs-icon name="content_copy" [size]="13" />
+                  }
+                </button>
                 <!-- AC-89 — priority is a badge here too, never the bare word. -->
                 <cs-badge kind="priority" [value]="t.priority" />
               </div>
@@ -49,139 +68,320 @@
               </p>
             </div>
 
+            <!--
+              The mockup draws exactly one control up here — the status pill — as a bordered,
+              shadowed pill holding an icon and a bare `<select>`. Assign and Escalation owner are
+              the other two decisions taken on sight of a ticket, so they get the same pill rather
+              than a card two clicks away; identical chrome keeps the cluster reading as one
+              toolbar instead of three unrelated widgets.
+            -->
+            <div class="flex flex-wrap items-center gap-2">
+              @if (canAssign()) {
+                <div
+                  data-testid="assign-action"
+                  class="flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-lowest px-3 py-1.5 shadow-sm"
+                >
+                  <cs-icon name="person_add" [size]="16" class="text-on-surface-variant" />
+                  <label for="detail-assignee" class="sr-only">{{ 'tickets.detail.assignTo' | t }}</label>
+                  <select
+                    id="detail-assignee"
+                    [disabled]="busy()"
+                    (change)="assign($any($event.target).value)"
+                    class="border-none bg-transparent p-0 pe-6 text-label-lg font-body-lg text-on-surface outline-none focus:ring-0 disabled:opacity-50"
+                  >
+                    <option value="">{{ 'tickets.detail.selectAgent' | t }}</option>
+                    @for (agent of agents(); track agent.id) {
+                      <option [value]="agent.id">{{ agent.name }}</option>
+                    }
+                  </select>
+                </div>
+              }
+
+              @if (canTakeEscalation()) {
+                <div
+                  data-testid="escalation-owner-action"
+                  class="flex items-center gap-2 rounded-lg border border-error/30 bg-error-container/40 px-3 py-1.5 shadow-sm"
+                >
+                  <cs-icon name="trending_up" [size]="16" class="text-on-error-container" />
+                  <label for="detail-escalation-owner" class="sr-only">{{ 'tickets.detail.escalationOwner' | t }}</label>
+                  <select
+                    id="detail-escalation-owner"
+                    [disabled]="busy()"
+                    (change)="takeEscalation($any($event.target).value)"
+                    class="border-none bg-transparent p-0 pe-6 text-label-lg font-body-lg text-on-surface outline-none focus:ring-0 disabled:opacity-50"
+                  >
+                    <option value="">{{ 'tickets.detail.selectAgent' | t }}</option>
+                    @for (agent of agents(); track agent.id) {
+                      <option [value]="agent.id">{{ agent.name }}</option>
+                    }
+                  </select>
+                </div>
+              }
+
+              <!--
+                The mockup's status pill: a status dot beside a real `<select>`, not a read-only
+                badge — this IS the status-change control (`selectStatus`), drawn where the mockup
+                draws it.
+              -->
+              <div
+                data-testid="status-action"
+                class="flex items-center gap-2 rounded-lg border border-border-subtle bg-surface-lowest px-3 py-1.5 shadow-sm"
+              >
+                <cs-badge kind="status" [value]="t.status" />
+                <label for="detail-status" class="sr-only">{{ 'tickets.detail.moveTo' | t }}</label>
+                <select
+                  id="detail-status"
+                  [disabled]="busy() || availableTransitions().length === 0"
+                  (change)="selectStatus($any($event.target).value)"
+                  class="border-none bg-transparent p-0 pe-6 text-label-lg font-body-lg text-on-surface outline-none focus:ring-0"
+                >
+                  <!--
+                    Only the transitions permitted from the CURRENT status. The server holds the
+                    same table and remains the authority; this stops the UI offering a move it
+                    knows will be refused.
+                  -->
+                  <option value="">{{ 'tickets.detail.selectStatus' | t }}</option>
+                  @for (option of availableTransitions(); track option) {
+                    <option [value]="option">{{ option }}</option>
+                  }
+                </select>
+              </div>
+            </div>
           </div>
 
           <!--
-            The mockup's meta strip: the three facts an agent checks before doing anything, ruled off
-            from the title above them.
+            Meta row — the mockup's own facts (Assignee, Category), dot-separated exactly as it
+            draws them, extended with a bare customer-name chip only because AC-61 / AC-409 read
+            it straight off the header regardless of which tab is active. Everything else that used
+            to live here (email/phone, SLA countdowns, lifecycle timestamps, escalation, tags,
+            related tickets) moved into the "Ticket info" tab below — a header that lists every fact
+            about a ticket is not "at a glance", it's a wall of text; the mockup itself keeps this
+            row to three items.
           -->
-          <dl class="mt-4 flex flex-wrap gap-8 border-t border-border-subtle pt-4">
-            <div>
-              <dt class="mb-1 text-label-md tracking-wider text-on-surface-variant uppercase">
-                {{ 'field.status' | t }}
-              </dt>
-              <dd><cs-badge kind="status" [value]="t.status" /></dd>
+          <div class="mt-4 flex flex-wrap items-center gap-3 border-t border-border-subtle pt-4 text-body-sm text-on-surface-variant">
+            <div class="flex items-center gap-1.5">
+              <cs-icon name="person" [size]="16" />
+              <!--
+                `TicketDetailDto` carries `assigneeId` and no assignee name, so an assigned ticket
+                shows the placeholder rather than a guid an agent cannot read (gap `G-10`). An
+                unassigned one is a fact this product does hold, and says so.
+              -->
+              @if (t.assigneeId) {
+                <span>{{ 'tickets.assignee' | t }}: <strong class="text-on-surface">{{ t.assigneeName || t.assigneeId }}</strong></span>
+              } @else {
+                <span>{{ 'tickets.assignee' | t }}: <span class="italic">{{ 'dashboard.unassigned' | t }}</span></span>
+              }
             </div>
+            <div class="size-1 rounded-full bg-outline-variant" aria-hidden="true"></div>
+            <div class="flex items-center gap-1.5">
+              <cs-icon name="folder" [size]="16" />
+              <span>{{ 'field.category' | t }}: <strong class="text-on-surface">{{ t.categoryName }}</strong></span>
+            </div>
+            <div class="size-1 rounded-full bg-outline-variant" aria-hidden="true"></div>
+            <!-- Customer identity — was its own `customer-summary` card; the id is kept on this span so the existing test coverage still finds it here. -->
+            <div class="flex items-center gap-1.5" data-testid="customer-summary">
+              <cs-icon name="account_circle" [size]="16" />
+              <span>{{ 'field.customer' | t }}: <strong class="text-on-surface">{{ t.customer.name }}</strong></span>
+            </div>
+            @if (t.escalationState !== 'None') {
+              <span class="rounded border border-error/20 bg-error-container px-2 py-1 text-label-md text-on-error-container">
+                {{ t.escalationState }}
+              </span>
+            }
+          </div>
 
-            <div>
-              <dt class="mb-1 text-label-md tracking-wider text-on-surface-variant uppercase">
-                {{ 'tickets.assignee' | t }}
-              </dt>
-              <dd class="flex items-center gap-2 text-body-md text-on-surface">
-                <!--
-                  `TicketDetailDto` carries `assigneeId` and no assignee name, so an assigned ticket
-                  shows the placeholder rather than a guid an agent cannot read (gap `G-10`). An
-                  unassigned one is a fact this product does hold, and says so.
-                -->
-                @if (t.assigneeId) {
-                  <span
-                    class="grid size-5 shrink-0 place-items-center rounded-full bg-surface-highest"
-                  >
-                    <cs-icon name="person" [size]="14" />
-                  </span>
-                  {{ t.assigneeName || t.assigneeId }}
-                } @else {
-                  <span class="text-on-surface-variant italic">
-                    {{ 'dashboard.unassigned' | t }}
-                  </span>
+          <!--
+            Actions row — Impact/Urgency (AC-923.7's only post-creation mutation path) and Tags,
+            both one-glance-and-act facts rather than read-once history, so they ride in the header
+            beside Status instead of a tab away.
+          -->
+          <div class="mt-3 flex flex-wrap items-center gap-3 border-t border-border-subtle pt-3 text-body-sm text-on-surface-variant">
+            <div class="flex items-center gap-2" data-testid="reclassify-action">
+              <cs-icon name="tune" [size]="16" />
+              <label for="detail-impact" class="sr-only">{{ 'tickets.detail.reclassify' | t }}</label>
+              <select
+                id="detail-impact"
+                #impactSelect
+                [disabled]="busy()"
+                class="h-8 rounded-lg border border-outline-variant bg-surface-lowest px-2 text-label-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+              >
+                @for (impact of impacts; track impact) {
+                  <option [value]="impact" [selected]="impact === t.impact">{{ impact }}</option>
                 }
-              </dd>
+              </select>
+              <label for="detail-urgency" class="sr-only">{{ 'tickets.detail.reclassify' | t }}</label>
+              <select
+                id="detail-urgency"
+                #urgencySelect
+                [disabled]="busy()"
+                class="h-8 rounded-lg border border-outline-variant bg-surface-lowest px-2 text-label-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+              >
+                @for (urgency of urgencies; track urgency) {
+                  <option [value]="urgency" [selected]="urgency === t.urgency">{{ urgency }}</option>
+                }
+              </select>
+              <button
+                type="button"
+                [disabled]="busy()"
+                (click)="reclassify(impactSelect.value, urgencySelect.value)"
+                class="inline-flex h-8 items-center rounded-lg border border-outline-variant px-2.5 text-label-md font-semibold text-on-surface transition-colors hover:bg-surface-high disabled:opacity-50"
+              >
+                {{ 'action.apply' | t }}
+              </button>
             </div>
 
-            <div>
-              <dt class="mb-1 text-label-md tracking-wider text-on-surface-variant uppercase">
-                {{ 'field.category' | t }}
-              </dt>
-              <dd class="text-body-md text-on-surface">{{ t.categoryName }}</dd>
+            <div class="size-1 rounded-full bg-outline-variant" aria-hidden="true"></div>
+
+            <div class="flex flex-wrap items-center gap-2">
+              <cs-icon name="sell" [size]="16" />
+              <div class="flex flex-wrap items-center gap-2" data-testid="tag-list">
+                @for (tag of t.tags; track tag) {
+                  <span
+                    data-testid="tag-chip"
+                    class="inline-flex items-center gap-1 rounded-full border border-outline-variant bg-surface-low px-2.5 py-1 text-label-md text-on-surface"
+                  >
+                    {{ tag }}
+                    <button
+                      type="button"
+                      [attr.aria-label]="'tickets.detail.removeTag' | t: tag"
+                      [disabled]="busy()"
+                      (click)="removeTag(tag)"
+                      class="grid size-4 place-items-center rounded-full text-on-surface-variant hover:bg-surface-highest hover:text-on-surface disabled:opacity-50"
+                    >
+                      <cs-icon name="close" [size]="12" />
+                    </button>
+                  </span>
+                } @empty {
+                  <span class="text-body-sm italic text-on-surface-variant">{{ 'tickets.detail.noTags' | t }}</span>
+                }
+              </div>
+              <input
+                type="text"
+                [value]="newTagValue()"
+                (input)="newTagValue.set($any($event.target).value)"
+                (keydown.enter)="$event.preventDefault(); addTag(newTagValue())"
+                [attr.aria-label]="'tickets.detail.addTag' | t"
+                [placeholder]="'tickets.detail.addTag' | t"
+                [disabled]="busy() || tagLimitReached()"
+                class="h-7 w-36 rounded-full border border-outline-variant bg-surface-lowest px-2.5 text-label-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+              />
+              <button
+                type="button"
+                [disabled]="busy() || !newTagValue().trim() || tagLimitReached()"
+                (click)="addTag(newTagValue())"
+                class="inline-flex h-7 items-center rounded-full border border-outline-variant px-2.5 text-label-md font-semibold text-on-surface transition-colors hover:bg-surface-high disabled:opacity-50"
+              >
+                {{ 'action.add' | t }}
+              </button>
+              @if (tagLimitReached()) {
+                <span class="text-label-md text-on-surface-variant">{{ 'tickets.detail.tagLimit' | t }}</span>
+              }
             </div>
-
-            <div>
-              <dt class="mb-1 text-label-md tracking-wider text-on-surface-variant uppercase">
-                {{ 'tickets.detail.opened' | t }}
-              </dt>
-              <dd class="font-mono text-data-mono text-on-surface">
-                <time [attr.datetime]="t.createdAt">{{ t.createdAt | csDate : 'datetime' }}</time>
-              </dd>
-            </div>
-
-            @if (t.responseDueAt) {
-              <div>
-                <cs-sla-countdown
-                  [dueAt]="t.responseDueAt"
-                  [createdAt]="t.createdAt"
-                  [label]="'tickets.detail.responseDue' | t"
-                />
-              </div>
-            }
-
-            @if (t.resolutionDueAt) {
-              <div>
-                <cs-sla-countdown
-                  [dueAt]="t.resolutionDueAt"
-                  [createdAt]="t.createdAt"
-                  [label]="'tickets.detail.resolutionDue' | t"
-                />
-              </div>
-            }
-
-            @if (t.firstResponseAt || t.lastResponseAt || t.resolvedAt || t.closedAt || t.escalationState !== 'None') {
-              <div>
-                <dt class="mb-1 text-label-md tracking-wider text-on-surface-variant uppercase">
-                  {{ 'tickets.detail.lifecycle' | t }}
-                </dt>
-                <dd class="flex flex-wrap gap-2 text-body-sm text-on-surface">
-                  @if (t.firstResponseAt) {
-                    <span class="rounded border border-border-subtle bg-surface px-2 py-1">
-                      {{ 'tickets.detail.firstResponse' | t }}:
-                      <time [attr.datetime]="t.firstResponseAt">{{ t.firstResponseAt | csDate : 'datetime' }}</time>
-                    </span>
-                  }
-                  @if (t.lastResponseAt) {
-                    <span class="rounded border border-border-subtle bg-surface px-2 py-1">
-                      {{ 'tickets.detail.lastResponse' | t }}:
-                      <time [attr.datetime]="t.lastResponseAt">{{ t.lastResponseAt | csDate : 'datetime' }}</time>
-                    </span>
-                  }
-                  @if (t.resolvedAt) {
-                    <span class="rounded border border-border-subtle bg-surface px-2 py-1">
-                      {{ 'tickets.detail.resolvedAt' | t }}:
-                      <time [attr.datetime]="t.resolvedAt">{{ t.resolvedAt | csDate : 'datetime' }}</time>
-                    </span>
-                  }
-                  @if (t.closedAt) {
-                    <span class="rounded border border-border-subtle bg-surface px-2 py-1">
-                      {{ 'tickets.detail.closedAt' | t }}:
-                      <time [attr.datetime]="t.closedAt">{{ t.closedAt | csDate : 'datetime' }}</time>
-                    </span>
-                  }
-                  @if (t.escalationState !== 'None') {
-                    <span class="rounded border border-error/20 bg-error-container px-2 py-1 text-on-error-container">
-                      {{ t.escalationState }}
-                      @if (t.escalationAssigneeName || t.escalationAssigneeId) {
-                        - {{ t.escalationAssigneeName || t.escalationAssigneeId }}
-                      }
-                    </span>
-                  }
-                </dd>
-              </div>
-            }
-          </dl>
+          </div>
         </div>
 
         <!--
-          The customer_360 two-column split: the work on the left, who and what it is about on the
-          right. One column below `lg`, because the right rail is context rather than navigation.
+          Two real columns from `lg` up, matching `ai_ticket_management_workspace`'s own layout
+          exactly: a flexible center for the conversation, directly beside a fixed-width AI rail —
+          no ticket-metadata column between them. That column used to hold Customer/Status/Tags/
+          Links (now folded into the header above) and Assign/Escalation/Reclassify (now the
+          "Ticket actions" card below), so `<admin-ai-panel>` no longer shares space it kept losing;
+          it is the sole second column. It stays `sticky` so it never scrolls out of view.
         -->
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
-          <div class="flex flex-col gap-6 lg:col-span-2">
-            <cs-card [heading]="'field.description' | t">
-              <p class="whitespace-pre-line p-4 text-body-md text-on-surface">
-                {{ t.description }}
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-start">
+          <div class="flex flex-col gap-6">
+            <!--
+              AC-922.7: `Resolved` is never a silent immediate-commit `<select>` — it opens this
+              inline form (posted by `submitResolve`), triggered from the status control now living
+              in the header above. Kept at the top of the main column, right under that control, so
+              choosing "Resolved" up there is immediately followed by the form it demands.
+            -->
+            @if (showResolveForm()) {
+              <div
+                data-testid="resolve-form"
+                class="flex flex-col gap-3 rounded-2xl border border-outline-variant bg-surface-lowest p-4 shadow-card"
+              >
+                <p class="text-label-lg font-semibold text-on-surface">
+                  {{ 'tickets.detail.resolve.title' | t }}
+                </p>
+                <div class="flex flex-col gap-1.5">
+                  <label for="resolve-code" class="text-label-md text-on-surface-variant">
+                    {{ 'tickets.detail.resolve.code' | t }}
+                  </label>
+                  <select
+                    id="resolve-code"
+                    #resolveCode
+                    class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  >
+                    <option value="">{{ 'tickets.detail.resolve.selectCode' | t }}</option>
+                    @for (code of resolutionCodes; track code) {
+                      <option [value]="code">{{ code }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="flex flex-col gap-1.5">
+                  <label for="resolve-notes" class="text-label-md text-on-surface-variant">
+                    {{ 'tickets.detail.resolve.notes' | t }}
+                  </label>
+                  <textarea
+                    id="resolve-notes"
+                    #resolveNotes
+                    rows="3"
+                    class="rounded-lg border border-outline-variant bg-surface-lowest p-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  ></textarea>
+                </div>
+                <div class="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    (click)="cancelResolve()"
+                    class="inline-flex h-9 items-center rounded-lg px-3 text-label-md font-semibold text-on-surface-variant transition-colors hover:bg-surface-high"
+                  >
+                    {{ 'action.cancel' | t }}
+                  </button>
+                  <button
+                    type="button"
+                    [disabled]="busy()"
+                    (click)="submitResolve(resolveCode.value, resolveNotes.value)"
+                    class="inline-flex h-9 items-center rounded-lg bg-primary px-3 text-label-md font-semibold text-on-primary transition-all hover:opacity-90 disabled:opacity-50"
+                  >
+                    {{ 'tickets.detail.resolve.submit' | t }}
+                  </button>
+                </div>
+              </div>
+            }
+
+            @if (t.resolutionCode) {
+              <div
+                data-testid="resolution-banner"
+                class="flex flex-col gap-1 rounded-2xl border border-status-resolved/20 bg-status-resolved/10 p-4"
+              >
+                <p class="text-label-md font-semibold text-status-resolved">{{ t.resolutionCode }}</p>
+                <p class="text-body-sm text-on-surface-variant">{{ t.resolutionNotes }}</p>
+                @if (t.reopenCount > 0) {
+                  <p data-testid="reopen-count" class="text-body-sm text-on-surface-variant">
+                    {{ 'tickets.detail.resolve.reopenCount' | t: t.reopenCount }}
+                  </p>
+                }
+              </div>
+            }
+
+            @if (actionError(); as failure) {
+              <p role="alert" class="text-body-md text-error">
+                {{ failure.message_ }}
               </p>
-            </cs-card>
+            }
 
             <div class="overflow-hidden rounded-2xl border border-outline-variant bg-surface-lowest shadow-card">
+              <!--
+                Info is the landing tab: the ticket's own narrative (Description) and the
+                occasional supervisor actions (Assign/Escalation owner) that used to be always-on
+                cards above this one now open the page, ahead of Messages/History/Attachments —
+                read the ticket before acting on it, not the other way round.
+              -->
               <nav class="flex overflow-x-auto border-b border-outline-variant bg-surface-bright p-2" aria-label="Ticket detail sections">
+                <button type="button" class="inline-flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-label-md font-semibold transition-colors" [class.bg-primary]="activeTab() === 'info'" [class.text-on-primary]="activeTab() === 'info'" [class.text-on-surface-variant]="activeTab() !== 'info'" (click)="setTab('info')">
+                  <cs-icon name="info" [size]="17" /> {{ 'tickets.detail.tab.info' | t }}
+                </button>
                 <button type="button" class="inline-flex shrink-0 items-center gap-2 rounded-lg px-4 py-2 text-label-md font-semibold transition-colors" [class.bg-primary]="activeTab() === 'messages'" [class.text-on-primary]="activeTab() === 'messages'" [class.text-on-surface-variant]="activeTab() !== 'messages'" (click)="setTab('messages')">
                   <cs-icon name="forum" [size]="17" /> {{ 'tickets.detail.tab.messages' | t }}
                 </button>
@@ -194,7 +394,8 @@
               </nav>
 
               @if (activeTab() === 'messages') {
-                <div class="mx-auto w-full max-w-4xl p-4 sm:p-6" data-testid="center-message-workspace">
+                <!-- Full width of the tab, like every other tab here — the old centered max-w-4xl left dead space on either side once the AI rail took the column down to one width. -->
+                <div class="p-4 sm:p-6" data-testid="center-message-workspace">
                   <admin-ticket-messages [ticketId]="t.id" />
                 </div>
               }
@@ -251,110 +452,215 @@
                 }
                 </ol>
               }
+
+              @if (activeTab() === 'info') {
+                <!--
+                  Ordered the way an agent actually triages: what happened, then who/how-urgent,
+                  then what to do about it, then classification and cross-references — not the
+                  order the fields happened to live in the old header. Every fact the header and
+                  the old ticket-metadata column used to carry is still here, each group its own
+                  `cs-card` — the same headed-panel shape Description uses and
+                  `customers/customer-detail` uses, so this reads as one design language rather
+                  than a bespoke layout per screen.
+                -->
+                <div class="flex flex-col gap-4 p-4 sm:p-6" data-testid="ticket-info-panel">
+                  <cs-card [heading]="'field.description' | t">
+                    <p class="whitespace-pre-line p-4 text-body-md text-on-surface">
+                      {{ t.description }}
+                    </p>
+                  </cs-card>
+
+                  <!--
+                    Customer and SLA/lifecycle are both compact fact-lists, not lists-of-many like
+                    Tags/Related tickets below — pairing them side by side on wide screens fills the
+                    column instead of stacking two half-empty cards, and keeps "who" beside "how
+                    urgent" since triage reads both together.
+                  -->
+                  <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <cs-card [heading]="'field.customer' | t">
+                      <a
+                        action
+                        [routerLink]="['/customers', t.customer.id]"
+                        class="flex items-center gap-1 text-label-md font-semibold text-primary hover:underline"
+                      >
+                        {{ 'tickets.detail.viewProfile' | t }}
+                        <cs-icon name="arrow_forward" [size]="14" />
+                      </a>
+                      <dl class="flex flex-col gap-3 p-4">
+                        <div class="flex items-start gap-2">
+                          <cs-icon name="account_circle" [size]="18" class="mt-0.5 text-on-surface-variant" />
+                          <div class="min-w-0">
+                            <dt class="text-label-md text-on-surface-variant">{{ 'field.customer' | t }}</dt>
+                            <dd class="text-body-sm text-on-surface">{{ t.customer.name }}</dd>
+                          </div>
+                        </div>
+                        <div class="flex items-start gap-2">
+                          <cs-icon name="mail" [size]="18" class="mt-0.5 text-on-surface-variant" />
+                          <div class="min-w-0">
+                            <dt class="text-label-md text-on-surface-variant">{{ 'field.email' | t }}</dt>
+                            <dd class="text-body-sm text-on-surface">{{ t.customer.email }}</dd>
+                          </div>
+                        </div>
+                        @if (t.customer.phone) {
+                          <div class="flex items-start gap-2">
+                            <cs-icon name="phone" [size]="18" class="mt-0.5 text-on-surface-variant" />
+                            <div class="min-w-0">
+                              <dt class="text-label-md text-on-surface-variant">{{ 'field.phone' | t }}</dt>
+                              <dd class="text-body-sm text-on-surface">{{ t.customer.phone }}</dd>
+                            </div>
+                          </div>
+                        }
+                      </dl>
+                    </cs-card>
+
+                    <cs-card [heading]="'tickets.detail.lifecycle' | t">
+                      @if (t.escalationState !== 'None') {
+                        <span action class="rounded-full bg-error-container px-2.5 py-1 text-label-md font-semibold text-on-error-container">
+                          {{ t.escalationState }}
+                        </span>
+                      }
+                      <div class="flex flex-col gap-4 p-4">
+                        @if (t.responseDueAt || t.resolutionDueAt) {
+                          <div class="flex flex-wrap items-center gap-2">
+                            @if (t.responseDueAt) {
+                              <cs-sla-countdown
+                                [dueAt]="t.responseDueAt"
+                                [createdAt]="t.createdAt"
+                                [label]="'tickets.detail.responseDue' | t"
+                              />
+                            }
+                            @if (t.resolutionDueAt) {
+                              <cs-sla-countdown
+                                [dueAt]="t.resolutionDueAt"
+                                [createdAt]="t.createdAt"
+                                [label]="'tickets.detail.resolutionDue' | t"
+                              />
+                            }
+                          </div>
+                        }
+                        <dl class="grid grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
+                          <div>
+                            <dt class="text-label-md text-on-surface-variant">{{ 'tickets.detail.opened' | t }}</dt>
+                            <dd class="text-body-sm text-on-surface">
+                              <time [attr.datetime]="t.createdAt">{{ t.createdAt | csDate : 'datetime' }}</time>
+                            </dd>
+                          </div>
+                          @if (t.firstResponseAt) {
+                            <div>
+                              <dt class="text-label-md text-on-surface-variant">{{ 'tickets.detail.firstResponse' | t }}</dt>
+                              <dd class="text-body-sm text-on-surface">
+                                <time [attr.datetime]="t.firstResponseAt">{{ t.firstResponseAt | csDate : 'datetime' }}</time>
+                              </dd>
+                            </div>
+                          }
+                          @if (t.lastResponseAt) {
+                            <div>
+                              <dt class="text-label-md text-on-surface-variant">{{ 'tickets.detail.lastResponse' | t }}</dt>
+                              <dd class="text-body-sm text-on-surface">
+                                <time [attr.datetime]="t.lastResponseAt">{{ t.lastResponseAt | csDate : 'datetime' }}</time>
+                              </dd>
+                            </div>
+                          }
+                          @if (t.resolvedAt) {
+                            <div>
+                              <dt class="text-label-md text-on-surface-variant">{{ 'tickets.detail.resolvedAt' | t }}</dt>
+                              <dd class="text-body-sm text-on-surface">
+                                <time [attr.datetime]="t.resolvedAt">{{ t.resolvedAt | csDate : 'datetime' }}</time>
+                              </dd>
+                            </div>
+                          }
+                          @if (t.closedAt) {
+                            <div>
+                              <dt class="text-label-md text-on-surface-variant">{{ 'tickets.detail.closedAt' | t }}</dt>
+                              <dd class="text-body-sm text-on-surface">
+                                <time [attr.datetime]="t.closedAt">{{ t.closedAt | csDate : 'datetime' }}</time>
+                              </dd>
+                            </div>
+                          }
+                        </dl>
+                        @if (t.escalationState !== 'None' && (t.escalationAssigneeName || t.escalationAssigneeId)) {
+                          <p class="text-body-sm text-on-surface-variant">
+                            {{ 'tickets.detail.escalationOwner' | t }}: <strong class="text-on-surface">{{ t.escalationAssigneeName || t.escalationAssigneeId }}</strong>
+                          </p>
+                        }
+                      </div>
+                    </cs-card>
+                  </div>
+
+                  <cs-card [heading]="'tickets.detail.links' | t">
+                    <span action class="rounded-full bg-surface-container px-2 py-0.5 text-label-md text-on-surface-variant">
+                      {{ t.links.length }}
+                    </span>
+                    <div class="flex flex-wrap items-center gap-2 p-4">
+                      <ul class="flex flex-wrap items-center gap-2" data-testid="link-list">
+                        @for (link of t.links; track link.id) {
+                          <li
+                            data-testid="link-row"
+                            class="flex items-center gap-2 rounded-full border border-outline-variant bg-surface-low py-1 ps-1 pe-2.5"
+                          >
+                            <a
+                              [routerLink]="['/tickets', link.otherTicketId]"
+                              class="min-w-0 rounded-full px-1.5 py-0.5 text-label-md text-on-surface hover:bg-surface-highest hover:text-primary hover:underline"
+                            >
+                              <span class="text-on-surface-variant">{{ linkLabel(link) }}</span>
+                              <span class="font-mono text-data-mono">{{ link.otherReference }}</span>
+                            </a>
+                            <button
+                              type="button"
+                              [attr.aria-label]="'tickets.detail.links.remove' | t: link.otherReference"
+                              [disabled]="busy()"
+                              (click)="removeLink(link.id)"
+                              class="grid size-4 place-items-center rounded-full text-on-surface-variant hover:bg-surface-highest hover:text-on-surface disabled:opacity-50"
+                            >
+                              <cs-icon name="close" [size]="12" />
+                            </button>
+                          </li>
+                        } @empty {
+                          <span class="text-body-sm italic text-on-surface-variant">{{ 'tickets.detail.links.none' | t }}</span>
+                        }
+                      </ul>
+                      <select
+                        id="new-link-type"
+                        #linkTypeSelect
+                        [attr.aria-label]="'tickets.detail.links.type' | t"
+                        class="h-7 rounded-full border border-outline-variant bg-surface-lowest px-2 text-label-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+                      >
+                        <option value="RelatedTo">{{ 'tickets.detail.links.related' | t }}</option>
+                        <option value="DuplicateOf">{{ 'tickets.detail.links.duplicateOf' | t }}</option>
+                      </select>
+                      <input
+                        type="text"
+                        #linkRefInput
+                        [attr.aria-label]="'tickets.detail.links.targetPlaceholder' | t"
+                        [placeholder]="'tickets.detail.links.targetPlaceholder' | t"
+                        [disabled]="busy()"
+                        class="h-7 w-32 rounded-full border border-outline-variant bg-surface-lowest px-2.5 text-label-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                      />
+                      <button
+                        type="button"
+                        [disabled]="busy()"
+                        (click)="addLink(linkTypeSelect.value, linkRefInput.value); linkRefInput.value = ''"
+                        class="inline-flex h-7 shrink-0 items-center rounded-full border border-outline-variant px-2.5 text-label-md font-semibold text-on-surface transition-colors hover:bg-surface-high disabled:opacity-50"
+                      >
+                        {{ 'action.add' | t }}
+                      </button>
+                    </div>
+                  </cs-card>
+                </div>
+              }
             </div>
 
           </div>
 
-          <div class="flex flex-col gap-6 lg:col-span-1">
-            <!-- Customer summary — AC-61, and the reason the detail read joins it in one query. -->
-            <cs-card [heading]="'field.customer' | t" data-testid="customer-summary">
-              <div class="flex flex-col gap-2 p-4">
-                <p class="text-label-lg text-on-surface">{{ t.customer.name }}</p>
-                <p class="flex items-center gap-2 text-body-sm text-on-surface-variant">
-                  <cs-icon name="mail" [size]="16" />
-                  {{ t.customer.email }}
-                </p>
-                @if (t.customer.phone) {
-                  <p class="flex items-center gap-2 text-body-sm text-on-surface-variant">
-                    <cs-icon name="phone" [size]="16" />
-                    {{ t.customer.phone }}
-                  </p>
-                }
-                <p class="flex items-center gap-2 text-body-sm text-on-surface-variant">
-                  <cs-icon name="sell" [size]="16" />
-                  {{ t.categoryName }}
-                </p>
-              </div>
-            </cs-card>
-
-            <cs-card [heading]="'field.status' | t">
-              <div class="flex flex-col gap-4 p-4">
-                <div class="flex flex-col gap-1.5" data-testid="status-action">
-                  <label for="detail-status" class="text-label-md text-on-surface-variant">
-                    {{ 'tickets.detail.moveTo' | t }}
-                  </label>
-                  <select
-                    id="detail-status"
-                    [disabled]="busy() || availableTransitions().length === 0"
-                    (change)="changeStatus($any($event.target).value)"
-                    class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-                  >
-                    <!--
-                      Only the transitions permitted from the CURRENT status. The server holds the
-                      same table and remains the authority; this stops the UI offering a move it
-                      knows will be refused.
-                    -->
-                    <option value="">{{ 'tickets.detail.selectStatus' | t }}</option>
-                    @for (option of availableTransitions(); track option) {
-                      <option [value]="option">{{ option }}</option>
-                    }
-                  </select>
-                </div>
-
-                <!--
-                  Rendered only for a supervisor. NOT the security control — the server answers 403
-                  to an agent regardless of what is on screen (AC-43). This is about not offering
-                  dead ends.
-                -->
-                @if (canAssign()) {
-                  <div class="flex flex-col gap-1.5" data-testid="assign-action">
-                    <label for="detail-assignee" class="text-label-md text-on-surface-variant">
-                      {{ 'tickets.detail.assignTo' | t }}
-                    </label>
-                    <select
-                      id="detail-assignee"
-                      [disabled]="busy()"
-                      (change)="assign($any($event.target).value)"
-                      class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-                    >
-                      <option value="">{{ 'tickets.detail.selectAgent' | t }}</option>
-                      @for (agent of agents(); track agent.id) {
-                        <option [value]="agent.id">{{ agent.name }}</option>
-                      }
-                    </select>
-                  </div>
-                }
-
-                @if (canTakeEscalation()) {
-                  <div class="flex flex-col gap-1.5" data-testid="escalation-owner-action">
-                    <label for="detail-escalation-owner" class="text-label-md text-on-surface-variant">
-                      {{ 'tickets.detail.escalationOwner' | t }}
-                    </label>
-                    <select
-                      id="detail-escalation-owner"
-                      [disabled]="busy()"
-                      (change)="takeEscalation($any($event.target).value)"
-                      class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
-                    >
-                      <option value="">{{ 'tickets.detail.selectAgent' | t }}</option>
-                      @for (agent of agents(); track agent.id) {
-                        <option [value]="agent.id">{{ agent.name }}</option>
-                      }
-                    </select>
-                  </div>
-                }
-
-                @if (actionError(); as failure) {
-                  <p role="alert" class="text-body-md text-error">
-                    {{ failure.message_ }}
-                  </p>
-                }
-              </div>
-            </cs-card>
-
-            <!-- FEAT-21 — the drafting assistant. Renders only while the deployment has AI configured. -->
-            <admin-ai-panel [ticketId]="id()" (insert)="messages()?.insertDraft($event)" />
-          </div>
+          <!--
+            FEAT-21 — the drafting assistant, directly beside the conversation per
+            `ai_ticket_management_workspace` rather than the last card in a ticket-metadata stack
+            (Customer/Status/Tags/Links/Assign/Escalation/Reclassify all moved above, into the
+            header and the main column). Renders only while the deployment has AI configured
+            (`AiPanelComponent.available`); an unconfigured deployment simply has no second column
+            here, so no empty rail is left behind.
+          -->
+          <admin-ai-panel [ticketId]="id()" (insert)="messages()?.insertDraft($event)" />
         </div>
       }
     }

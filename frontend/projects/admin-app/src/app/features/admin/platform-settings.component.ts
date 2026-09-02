@@ -19,6 +19,7 @@ import {
   PlatformSetting,
   PlatformSettingApi,
   TranslatePipe,
+  TranslationKey,
 } from 'common';
 
 /**
@@ -48,7 +49,7 @@ export default class PlatformSettingsComponent {
   protected readonly locale = inject(LocaleStore);
 
   /** Retained only for template compatibility with the hidden legacy block. */
-  readonly routingRules: readonly { priority: number; conditionKey: string; actionKey: string }[] = [];
+  readonly routingRules: readonly { priority: number; conditionKey: TranslationKey; actionKey: TranslationKey }[] = [];
 
   readonly state = signal<AsyncState<readonly PlatformSetting[]>>(loading());
   readonly editingKey = signal<string | null>(null);

@@ -76,7 +76,8 @@ public class TicketCreatedNotificationTests : IAsyncLifetime
             description = "A staff-created ticket should notify the linked customer.",
             customerId,
             categoryId = _categoryId,
-            priority = "Normal",
+            impact = "Medium",
+            urgency = "Medium",
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<Response<Guid>>())!.Data!;

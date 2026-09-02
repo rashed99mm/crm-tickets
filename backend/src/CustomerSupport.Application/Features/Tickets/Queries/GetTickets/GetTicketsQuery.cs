@@ -14,4 +14,7 @@ public class GetTicketsQuery : BasePagedQuery, IQuery<Response<PaginatedList<Tic
     public Guid? AssigneeId { get; init; }
     public bool Mine { get; init; }
     public bool Unassigned { get; init; }
+
+    /// <summary>US-924 / AC-924.4. Only tickets carrying this tag (normalized before matching).</summary>
+    public string? Tag { get; init; }
 }

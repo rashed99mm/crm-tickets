@@ -14,14 +14,15 @@ public static class AiJson
 {
     public static List<string>? ParseStringArray(string? json)
     {
-        if (string.IsNullOrWhiteSpace(json))
+        var candidate = ExtractJsonObject(json);
+        if (candidate is null)
         {
             return null;
         }
 
         try
         {
-            using var doc = JsonDocument.Parse(json);
+            using var doc = JsonDocument.Parse(candidate);
             if (!doc.RootElement.TryGetProperty("items", out var items) ||
                 items.ValueKind != JsonValueKind.Array)
             {
@@ -38,6 +39,26 @@ public static class AiJson
         {
             return null;
         }
+    }
+
+    /// <summary>
+    /// Real models routinely ignore "JSON only" and wrap the answer in a ```json fence, or add a
+    /// sentence of preamble/trailing commentary, even when explicitly told not to. This extracts
+    /// the first balanced <c>{...}</c> object from the raw text so a well-formed answer still
+    /// parses despite the wrapping — the parse itself stays strict (an unbalanced or malformed
+    /// object still returns <c>null</c>), so the AI-36 "never a best-effort guess" invariant holds:
+    /// this widens what counts as *extractable*, not what counts as *valid*.
+    /// </summary>
+    private static string? ExtractJsonObject(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
+
+        var start = text.IndexOf('{');
+        var end = text.LastIndexOf('}');
+        return start >= 0 && end > start ? text[start..(end + 1)] : null;
     }
 
     /// <summary>

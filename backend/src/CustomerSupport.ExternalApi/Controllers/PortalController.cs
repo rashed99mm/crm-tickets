@@ -94,8 +94,7 @@ public class PortalController(IMediator mediator) : ControllerBase
             request.Description,
             customerId,
             request.CategoryId,
-            request.Priority,
-            PortalSource);
+            Source: PortalSource);
 
         var result = await mediator.Send(command, ct);
         return this.ToActionResult(result, StatusCodes.Status201Created);
@@ -271,7 +270,7 @@ public class PortalController(IMediator mediator) : ControllerBase
     }
 }
 
-public record PortalCreateTicketRequest(string Subject, string Description, Guid CategoryId, string Priority);
+public record PortalCreateTicketRequest(string Subject, string Description, Guid CategoryId);
 
 public record PortalReplyRequest(string Body);
 

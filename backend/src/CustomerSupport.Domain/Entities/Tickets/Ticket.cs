@@ -81,6 +81,23 @@ public class Ticket : AggregateRoot
     /// </summary>
     public Guid? EscalationAssigneeId { get; private set; }
 
+    /// <summary>
+    /// US-922 / AC-922.2. How the ticket was resolved — required on the transition into
+    /// <c>Resolved</c>, cleared on reopen. Null on a ticket that has never been resolved.
+    /// </summary>
+    public string? ResolutionCode { get; private set; }
+    public string? ResolutionNotes { get; private set; }
+
+    /// <summary>US-922 / AC-922.4. How many times a resolved/closed ticket was sent back.</summary>
+    public int ReopenCount { get; private set; }
+
+    /// <summary>
+    /// US-923. The matrix inputs. Null on tickets created before FEAT-32 (spec A1) — their stored
+    /// Priority stands until the first Reclassify.
+    /// </summary>
+    public string? Impact { get; private set; }
+    public string? Urgency { get; private set; }
+
     public string Priority { get; private set; } = TicketPriority.Normal.Value;
     public string Status { get; private set; } = TicketStatus.New.Value;
 
@@ -99,7 +116,8 @@ public class Ticket : AggregateRoot
         string description,
         Guid customerId,
         Guid categoryId,
-        string priority,
+        string impact,
+        string urgency,
         Guid actorId)
     {
         if (string.IsNullOrWhiteSpace(reference))
@@ -137,7 +155,8 @@ public class Ticket : AggregateRoot
             throw new ArgumentException("An actor is required", nameof(actorId));
         }
 
-        var priorityVo = TicketPriority.Create(priority);
+        var impactVo = TicketImpact.Create(impact);
+        var urgencyVo = TicketUrgency.Create(urgency);
 
         var ticket = new Ticket
         {
@@ -147,7 +166,9 @@ public class Ticket : AggregateRoot
             Description = description,
             CustomerId = customerId,
             CategoryId = categoryId,
-            Priority = priorityVo.Value,
+            Impact = impactVo.Value,
+            Urgency = urgencyVo.Value,
+            Priority = PriorityMatrix.Derive(impactVo, urgencyVo).Value,
             Status = TicketStatus.New.Value,
             AssigneeId = null,
             CreatedAt = DateTime.UtcNow,
@@ -167,7 +188,7 @@ public class Ticket : AggregateRoot
     /// failure, because the request was well-formed and it is the state that is wrong — which is
     /// what makes AC-38 a 409 and not a 400.
     /// </summary>
-    public void ChangeStatus(string targetStatus, Guid actorId)
+    public void ChangeStatus(string targetStatus, Guid actorId, ResolutionDetails? resolution = null)
     {
         if (actorId == Guid.Empty)
         {
@@ -195,15 +216,43 @@ public class Ticket : AggregateRoot
         var changeType = isReopen ? TicketChangeType.Reopened : TicketChangeType.StatusChanged;
 
         // US-906 / AC-510: entering Resolved/Closed stamps the respective timestamp; reopening clears
-        // both so the next resolve starts clean.
+        // both so the next resolve starts clean. US-922: the resolution record follows the same
+        // lifecycle — required to enter Resolved (AC-922.5), cleared and counted on reopen (AC-922.4).
         if (isReopen)
         {
             ResolvedAt = null;
             ClosedAt = null;
+            ResolutionCode = null;
+            ResolutionNotes = null;
+            ReopenCount++;
         }
         else
         {
-            if (target.Value == "Resolved") ResolvedAt = DateTime.UtcNow;
+            if (target.Value == "Resolved")
+            {
+                if (resolution is null)
+                {
+                    throw new InvalidOperationException(
+                        $"Ticket '{Reference}' cannot be resolved without a resolution code and notes.");
+                }
+
+                var code = TicketResolutionCode.Create(resolution.Code);
+
+                if (string.IsNullOrWhiteSpace(resolution.Notes))
+                {
+                    throw new ArgumentException("Resolution notes are required", nameof(resolution));
+                }
+
+                if (resolution.Notes.Length > 2000)
+                {
+                    throw new ArgumentException("Resolution notes must not exceed 2000 characters", nameof(resolution));
+                }
+
+                ResolutionCode = code.Value;
+                ResolutionNotes = resolution.Notes.Trim();
+                ResolvedAt = DateTime.UtcNow;
+            }
+
             if (target.Value == "Closed") ClosedAt = DateTime.UtcNow;
         }
 
@@ -402,7 +451,7 @@ public class Ticket : AggregateRoot
     }
 
     /// <summary>Corrects the descriptive fields. The lifecycle fields are not reachable from here.</summary>
-    public void UpdateDetails(string? subject, string? description, string? priority, Guid actorId)
+    public void UpdateDetails(string? subject, string? description, Guid actorId)
     {
         if (!string.IsNullOrWhiteSpace(subject))
         {
@@ -419,9 +468,34 @@ public class Ticket : AggregateRoot
             Description = description;
         }
 
-        if (!string.IsNullOrWhiteSpace(priority))
+        MarkUpdated();
+        UpdatedBy = actorId;
+    }
+
+    /// <summary>
+    /// US-923 / AC-923.2. Sets the matrix inputs and re-derives priority — the only mutation path
+    /// priority has (spec decision: matrix-only). A changed derivation is recorded; an unchanged
+    /// one is not history, because nothing the queue sorts on moved.
+    /// </summary>
+    public void Reclassify(string impact, string urgency, Guid actorId)
+    {
+        if (actorId == Guid.Empty)
         {
-            Priority = TicketPriority.Create(priority).Value;
+            throw new ArgumentException("An actor is required", nameof(actorId));
+        }
+
+        var impactVo = TicketImpact.Create(impact);
+        var urgencyVo = TicketUrgency.Create(urgency);
+        var derived = PriorityMatrix.Derive(impactVo, urgencyVo).Value;
+
+        Impact = impactVo.Value;
+        Urgency = urgencyVo.Value;
+
+        if (derived != Priority)
+        {
+            var previous = Priority;
+            Priority = derived;
+            Append(actorId, TicketChangeType.Reprioritized, previous, derived);
         }
 
         MarkUpdated();

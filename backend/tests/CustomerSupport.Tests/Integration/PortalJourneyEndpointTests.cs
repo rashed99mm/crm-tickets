@@ -112,7 +112,6 @@ public sealed class PortalJourneyEndpointTests : IClassFixture<ExternalApiFactor
             subject = "Cannot log in",
             description = "The button does nothing",
             categoryId,
-            priority = "Normal",
         });
         resp.StatusCode.Should().Be(HttpStatusCode.Created);
 
@@ -140,7 +139,6 @@ public sealed class PortalJourneyEndpointTests : IClassFixture<ExternalApiFactor
             subject = "Broken export",
             description = "CSV is empty",
             categoryId,
-            priority = "High",
         });
         var ticketId = (await created.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;
 
@@ -176,7 +174,6 @@ public sealed class PortalJourneyEndpointTests : IClassFixture<ExternalApiFactor
             subject = "Owner ticket",
             description = "desc",
             categoryId,
-            priority = "Normal",
         });
         var ticketId = (await created.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;
 
@@ -207,7 +204,6 @@ public sealed class PortalJourneyEndpointTests : IClassFixture<ExternalApiFactor
             subject = "Dup survey",
             description = "desc",
             categoryId,
-            priority = "Normal",
         });
         var ticketId = (await created.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;
         await SetTicketStatusAsync(ticketId, TicketStatus.Resolved.Value);
@@ -230,7 +226,6 @@ public sealed class PortalJourneyEndpointTests : IClassFixture<ExternalApiFactor
             subject = "Not resolved yet",
             description = "desc",
             categoryId,
-            priority = "Normal",
         });
         var ticketId = (await created.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;
 

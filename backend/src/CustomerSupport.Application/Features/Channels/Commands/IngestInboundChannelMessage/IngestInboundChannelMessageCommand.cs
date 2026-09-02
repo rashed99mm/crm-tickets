@@ -13,4 +13,11 @@ public record IngestInboundChannelMessageCommand(
     string? CustomerPhone,
     string? CustomerEmail,
     string Body,
-    string? ProviderMessageId) : ICommand<Response<Guid>>;
+    string? ProviderMessageId,
+    /// <summary>
+    /// A23 — the subject for a newly-created ticket, when the channel actually carries one: the web
+    /// form collects it and an email has a Subject: header. Null for WhatsApp and SMS, which have no
+    /// subject concept, and the handler then synthesizes its "{Channel} — {Name}" default as before.
+    /// Last, with a default, so existing call sites are untouched.
+    /// </summary>
+    string? Subject = null) : ICommand<Response<Guid>>;

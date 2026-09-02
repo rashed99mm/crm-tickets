@@ -30,6 +30,16 @@ public class TicketConfiguration : IEntityTypeConfiguration<Ticket>
         // with "None" rather than an empty string — EF has no other way to know the CLR default.
         builder.Property(x => x.EscalationState).HasMaxLength(16).HasDefaultValue("None");
 
+        // US-922. String-persisted code (same convention as Status/Priority); notes bounded at the
+        // validator's limit; ReopenCount defaulted so existing rows backfill to 0.
+        builder.Property(x => x.ResolutionCode).HasMaxLength(24);
+        builder.Property(x => x.ResolutionNotes).HasMaxLength(2000);
+        builder.Property(x => x.ReopenCount).HasDefaultValue(0);
+
+        // US-923. Matrix inputs; null means "created before FEAT-32, never reclassified" (spec A1).
+        builder.Property(x => x.Impact).HasMaxLength(8);
+        builder.Property(x => x.Urgency).HasMaxLength(8);
+
         // Unfiltered, and deliberately the one exception to the filtered-unique convention: a
         // reference read aloud to a customer must never be reissued, so a soft delete does not
         // free it.

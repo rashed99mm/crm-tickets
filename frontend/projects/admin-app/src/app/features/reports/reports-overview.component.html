@@ -6,101 +6,48 @@
 
   <cs-report-date-range-filter [from]="from()" [to]="to()" (apply)="applyRange($event)" />
 
-  <!-- KPI bento: every number is a derived read of a real report endpoint, nothing is fabricated. -->
+  <!--
+    KPI bento: every number is a derived read of a real report endpoint, nothing is fabricated.
+
+    Four `cs-stat-card`s, not four hand-rolled boxes. These had drifted into their own tile design
+    — a different radius and border from the dashboard's, the caption above the figure, and the
+    loading skeleton written out four times — so the same metrics looked like a different product
+    depending on which report you opened. `loading` keeps the pending state distinct from an em
+    dash, which means "the report returned nothing to average".
+  -->
   <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-    <div class="flex flex-col justify-between rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md" data-testid="kpi-volume">
-      <div class="mb-4 flex items-start justify-between">
-        <div class="rounded-lg bg-primary/10 p-2 text-primary">
-          <cs-icon name="confirmation_number" [size]="20" />
-        </div>
-      </div>
-      <div>
-        <p class="mb-1 text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.overview.totalVolume' | t }}</p>
-        @switch (volume().status) {
-          @case ('loading') {
-            <div class="h-8 w-16 animate-pulse rounded bg-surface-container-low" role="status"></div>
-          }
-          @default {
-            @if (totalVolume(); as value) {
-              <p class="text-display font-bold text-on-surface">{{ value }}</p>
-            } @else {
-              <p class="text-display font-bold text-on-surface-variant">—</p>
-            }
-          }
-        }
-      </div>
-    </div>
-
-    <div class="flex flex-col justify-between rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md" data-testid="kpi-sla">
-      <div class="mb-4 flex items-start justify-between">
-        <div class="rounded-lg bg-error-container/30 p-2 text-on-error-container">
-          <cs-icon name="timer_off" [size]="20" />
-        </div>
-      </div>
-      <div>
-        <p class="mb-1 text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.overview.slaBreachRate' | t }}</p>
-        @switch (sla().status) {
-          @case ('loading') {
-            <div class="h-8 w-16 animate-pulse rounded bg-surface-container-low" role="status"></div>
-          }
-          @default {
-            @if (breachRateText(); as value) {
-              <p class="text-display font-bold text-on-surface">{{ value }}</p>
-            } @else {
-              <p class="text-display font-bold text-on-surface-variant">—</p>
-            }
-          }
-        }
-      </div>
-    </div>
-
-    <div class="flex flex-col justify-between rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md" data-testid="kpi-resolution">
-      <div class="mb-4 flex items-start justify-between">
-        <div class="rounded-lg bg-tertiary-fixed p-2 text-on-tertiary-fixed">
-          <cs-icon name="schedule" [size]="20" />
-        </div>
-      </div>
-      <div>
-        <p class="mb-1 text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.overview.avgResolution' | t }}</p>
-        @switch (agents().status) {
-          @case ('loading') {
-            <div class="h-8 w-16 animate-pulse rounded bg-surface-container-low" role="status"></div>
-          }
-          @default {
-            @if (avgResolutionText(); as value) {
-              <p class="text-display font-bold text-on-surface">{{ value }}</p>
-            } @else {
-              <p class="text-display font-bold text-on-surface-variant">—</p>
-            }
-          }
-        }
-      </div>
-    </div>
-
-    <div class="flex flex-col justify-between rounded-xl border border-outline-variant/40 bg-surface-container-lowest p-md" data-testid="kpi-csat">
-      <div class="mb-4 flex items-start justify-between">
-        <div class="rounded-lg bg-surface-container-high p-2 text-primary">
-          <cs-icon name="sentiment_satisfied" [size]="20" />
-        </div>
-      </div>
-      <div>
-        <p class="mb-1 text-label-md uppercase tracking-wider text-on-surface-variant">{{ 'reports.overview.globalCsat' | t }}</p>
-        @switch (csat().status) {
-          @case ('loading') {
-            <div class="h-8 w-16 animate-pulse rounded bg-surface-container-low" role="status"></div>
-          }
-          @default {
-            @if (csatAverageText(); as value) {
-              <p class="text-display font-bold text-on-surface">
-                {{ 'reports.csat.scoreOutOf' | t: value }}
-              </p>
-            } @else {
-              <p class="text-display font-bold text-on-surface-variant">—</p>
-            }
-          }
-        }
-      </div>
-    </div>
+    <cs-stat-card
+      data-testid="kpi-volume"
+      icon="confirmation_number"
+      iconTone="bg-primary/10 text-primary"
+      [label]="'reports.overview.totalVolume' | t"
+      [value]="volumeTileValue()"
+      [loading]="volume().status === 'loading'"
+    />
+    <cs-stat-card
+      data-testid="kpi-sla"
+      icon="timer_off"
+      iconTone="bg-error-container/30 text-on-error-container"
+      [label]="'reports.overview.slaBreachRate' | t"
+      [value]="slaTileValue()"
+      [loading]="sla().status === 'loading'"
+    />
+    <cs-stat-card
+      data-testid="kpi-resolution"
+      icon="schedule"
+      iconTone="bg-tertiary-fixed text-on-tertiary-fixed"
+      [label]="'reports.overview.avgResolution' | t"
+      [value]="resolutionTileValue()"
+      [loading]="agents().status === 'loading'"
+    />
+    <cs-stat-card
+      data-testid="kpi-csat"
+      icon="sentiment_satisfied"
+      iconTone="bg-surface-container-high text-primary"
+      [label]="'reports.overview.globalCsat' | t"
+      [value]="csatTileValue()"
+      [loading]="csat().status === 'loading'"
+    />
   </div>
 
   <!-- Every report screen behind the hub, one hop away. -->
@@ -116,13 +63,21 @@
   </nav>
 
   <div class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
-    <cs-card data-testid="trend">
-      <div class="mb-3 flex items-center justify-between gap-4">
-        <h2 class="text-headline-md text-on-surface">{{ 'reports.overview.volumeTrend' | t }}</h2>
-        <a routerLink="/reports/ticket-volume" class="text-label-md font-semibold text-primary hover:underline">
-          {{ 'reports.overview.view' | t }}
-        </a>
-      </div>
+    <!--
+      Both panels put their title through `cs-card`'s heading strip and their trailing link through
+      its `action` slot. Built inline in the body — as they were — the title, the "View" link and
+      the chart all sat flush against the card's edges, because `CsCard`'s body is deliberately
+      unpadded for tables that supply their own. Content that wants breathing room asks for it,
+      which is what the `p-5` wrappers below are.
+    -->
+    <cs-card data-testid="trend" [heading]="'reports.overview.volumeTrend' | t">
+      <a
+        action
+        routerLink="/reports/ticket-volume"
+        class="shrink-0 text-label-md font-semibold text-primary hover:underline"
+      >
+        {{ 'reports.overview.view' | t }}
+      </a>
       @switch (volume().status) {
         @case ('loading') {
           <cs-loading-state [label]="'state.loading' | t" />
@@ -134,7 +89,7 @@
         }
         @default {
           @if (bars().length > 0) {
-            <div class="flex h-40 items-end gap-1 overflow-x-auto pb-1">
+            <div class="flex h-48 items-end gap-1.5 overflow-x-auto p-5">
               @for (bar of bars(); track bar.key) {
                 <div class="flex min-w-10 flex-1 flex-col">
                   <div class="flex flex-1 items-end justify-center">
@@ -144,7 +99,7 @@
                       [title]="bar.key + ': ' + bar.count"
                     ></div>
                   </div>
-                  <div class="mt-1 text-center font-mono text-label-sm text-on-surface-variant">{{ bar.count }}</div>
+                  <div class="mt-2 text-center font-mono text-label-sm text-on-surface-variant">{{ bar.count }}</div>
                   <div class="text-center text-label-sm text-on-surface-variant">{{ bar.shortKey }}</div>
                 </div>
               }
@@ -156,8 +111,14 @@
       }
     </cs-card>
 
-    <cs-card data-testid="leaderboard">
-      <h2 class="mb-3 text-headline-md text-on-surface">{{ 'reports.overview.leaderboard' | t }}</h2>
+    <cs-card data-testid="leaderboard" [heading]="'reports.overview.leaderboard' | t">
+      <a
+        action
+        routerLink="/reports/agent-performance"
+        class="shrink-0 text-label-md font-semibold text-primary hover:underline"
+      >
+        {{ 'reports.overview.view' | t }}
+      </a>
       @switch (agents().status) {
         @case ('loading') {
           <cs-loading-state [label]="'state.loading' | t" />
@@ -169,10 +130,10 @@
         }
         @default {
           @if (leaderboard().length > 0) {
-            <ul class="flex flex-col gap-2">
+            <ul class="flex flex-col divide-y divide-border-subtle">
               @for (row of leaderboard(); track row.agentId) {
-                <li class="flex items-center gap-3 rounded-lg border border-outline-variant/40 bg-surface-lowest px-3 py-2.5">
-                  <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-surface-container-high text-label-md font-semibold text-primary">
+                <li class="flex items-center gap-3 px-5 py-3">
+                  <span class="grid size-8 shrink-0 place-items-center rounded-full bg-surface-container-high text-label-md font-semibold text-primary">
                     {{ row.agentName.charAt(0) }}
                   </span>
                   <span class="min-w-0 flex-1">

@@ -1,4 +1,5 @@
 using CustomerSupport.Application.Errors;
+using CustomerSupport.Domain.Common;
 using CustomerSupport.Domain.ValueObjects;
 using FluentValidation;
 
@@ -22,11 +23,26 @@ public class CreateTicketCommandValidator : AbstractValidator<CreateTicketComman
         RuleFor(x => x.CategoryId)
             .NotEmpty().WithErrorCode(ApplicationErrors.Validation.CATEGORY_ID_REQUIRED);
 
-        // The single source of the four values is the value object, so adding a priority means
-        // editing one file rather than one file and every validator that happens to list them.
-        RuleFor(x => x.Priority)
-            .NotEmpty().WithErrorCode(ApplicationErrors.Validation.TICKET_PRIORITY_REQUIRED)
-            .Must(BeAKnownPriority).WithErrorCode(ApplicationErrors.Validation.TICKET_PRIORITY_INVALID);
+        // US-923 / AC-923.1. Required from the staff surface (Source == null); customer-origin
+        // callers omit both and the handler defaults them (spec A2). Whenever present, they must
+        // be real matrix values regardless of origin.
+        When(x => x.Source is null, () =>
+        {
+            RuleFor(x => x.Impact)
+                .NotEmpty().WithErrorCode(ApplicationErrors.Validation.TICKET_IMPACT_REQUIRED);
+            RuleFor(x => x.Urgency)
+                .NotEmpty().WithErrorCode(ApplicationErrors.Validation.TICKET_URGENCY_REQUIRED);
+        });
+
+        When(x => !string.IsNullOrWhiteSpace(x.Impact), () =>
+            RuleFor(x => x.Impact)
+                .Must(v => TicketImpact.TryCreate(v, out _, out _))
+                .WithErrorCode(ApplicationErrors.Validation.TICKET_IMPACT_INVALID));
+
+        When(x => !string.IsNullOrWhiteSpace(x.Urgency), () =>
+            RuleFor(x => x.Urgency)
+                .Must(v => TicketUrgency.TryCreate(v, out _, out _))
+                .WithErrorCode(ApplicationErrors.Validation.TICKET_URGENCY_INVALID));
 
         // PJ-5. A source is optional — staff pass none — but when present it must name a real
         // origin channel. An empty/whitespace source is treated as "none" (the handler leaves the
@@ -36,11 +52,7 @@ public class CreateTicketCommandValidator : AbstractValidator<CreateTicketComman
                 .Must(BeAKnownSource).WithErrorCode(ApplicationErrors.Validation.TICKET_SOURCE_INVALID));
     }
 
-    private static readonly string[] AllowedSources =
-        { "Portal", "WebForm", "WhatsApp", "SMS", "Email", "LiveChat" };
-
-    private static bool BeAKnownPriority(string? priority) =>
-        TicketPriority.TryCreate(priority, out _, out _);
+    private static readonly string[] AllowedSources = ChannelNames.TicketSources;
 
     private static bool BeAKnownSource(string? source) =>
         source is not null && AllowedSources.Contains(source);

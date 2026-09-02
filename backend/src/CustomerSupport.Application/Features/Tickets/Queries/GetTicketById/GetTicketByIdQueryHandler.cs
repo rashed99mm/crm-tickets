@@ -15,6 +15,8 @@ public class GetTicketByIdQueryHandler(
     IRepository<TicketHistory> history,
     IRepository<Customer> customers,
     IRepository<Category> categories,
+    IRepository<TicketTag> ticketTags,
+    IRepository<TicketLink> links,
     IIdentityUserService identityUsers,
     IUserContext userContext,
     IMessageFactory messages)
@@ -64,6 +66,32 @@ public class GetTicketByIdQueryHandler(
             escalationAssigneeName = escalationAssignee?.FullName;
         }
 
+        var tags = await ticketTags.ListAsync(g => g.TicketId == ticket.Id, ct);
+
+        var linkRows = await links.ListAsync(
+            l => l.SourceTicketId == ticket.Id || l.TargetTicketId == ticket.Id, ct);
+
+        var otherIds = linkRows
+            .Select(l => l.SourceTicketId == ticket.Id ? l.TargetTicketId : l.SourceTicketId)
+            .Distinct()
+            .ToList();
+        var otherTickets = await tickets.ListAsync(t => otherIds.Contains(t.Id), ct);
+        var otherMap = otherTickets.ToDictionary(t => t.Id);
+
+        var linkDtos = linkRows.Select(l =>
+        {
+            var outbound = l.SourceTicketId == ticket.Id;
+            var otherId = outbound ? l.TargetTicketId : l.SourceTicketId;
+            var other = otherMap.GetValueOrDefault(otherId);
+            return new TicketLinkDto(
+                l.Id,
+                l.LinkType,
+                outbound ? "Outbound" : "Inbound",
+                otherId,
+                other?.Reference ?? string.Empty,
+                other?.Subject ?? string.Empty);
+        }).ToList();
+
         var detail = new TicketDetailDto(
             ticket.Id,
             ticket.Reference,
@@ -97,7 +125,14 @@ public class GetTicketByIdQueryHandler(
             ticket.ResolvedAt,
             ticket.ClosedAt,
             ticket.EscalationAssigneeId,
-            escalationAssigneeName);
+            escalationAssigneeName,
+            ticket.ResolutionCode,
+            ticket.ResolutionNotes,
+            ticket.ReopenCount,
+            ticket.Impact,
+            ticket.Urgency,
+            [.. tags.Select(g => g.Value).OrderBy(v => v)],
+            linkDtos);
 
         return messages.Success(detail, ApplicationErrors.General.SUCCESS_OPERATION);
     }

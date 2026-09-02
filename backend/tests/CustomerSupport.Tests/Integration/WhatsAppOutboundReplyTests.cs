@@ -26,7 +26,11 @@ public class WhatsAppOutboundReplyTests : IAsyncLifetime
     {
         await _factory.EnsureDatabaseAsync();
         _stub = await StubGatewayServer.StartAsync();
-        await _factory.SeedWhatsAppGatewayAsync(_stub.BaseUrl);
+        // The sender POSTs straight to config.BaseUrl with no path composition of its own — it
+        // expects the provider's full send URL, e.g. Meta's /{phone-number-id}/messages. The stub's
+        // handler is mapped at /messages, not at its bare root, so the seeded URL has to include it;
+        // seeding the bare host 404s at ASP.NET's routing layer before the mapped handler ever runs.
+        await _factory.SeedWhatsAppGatewayAsync($"{_stub.BaseUrl.TrimEnd('/')}/messages");
         (_client, _) = await _factory.CreateAuthenticatedClientAsync();
     }
 
@@ -56,7 +60,8 @@ public class WhatsAppOutboundReplyTests : IAsyncLifetime
             description = "Bill looks wrong.",
             customerId,
             categoryId,
-            priority = "Normal",
+            impact = "Medium",
+            urgency = "Medium",
         });
 
         return (await ticket.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;

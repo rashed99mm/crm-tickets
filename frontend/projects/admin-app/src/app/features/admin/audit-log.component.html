@@ -86,12 +86,12 @@
                           <cs-icon [name]="eventIcon(entry.action)" [size]="14" />
                         </div>
                         <div>
-                      <span class="text-label-lg text-on-surface block">{{ entry.action }}</span>
+                      <span class="text-label-lg text-on-surface block">{{ actionLabel(entry.action) }}</span>
                         </div>
                       </div>
                     </td>
                     <td class="px-4 py-3 text-on-surface-variant">
-                      <span class="font-mono text-data-mono text-xs">{{ entry.entityType }}</span>
+                      <span class="text-body-sm">{{ entityLabel(entry.entityType) }}</span>
                       <span class="text-on-surface-variant mx-1">—</span>
                       <span class="font-mono text-data-mono text-xs">{{ entry.entityId }}</span>
                     </td>
@@ -116,12 +116,23 @@
                             <dt class="text-on-surface-variant">{{ 'auditLog.detail.userAgent' | t }}</dt>
                             <dd class="truncate">{{ entry.userAgent || '—' }}</dd>
                           </div>
-                          @if (entry.newValues) {
-                            <div class="col-span-2">
-                              <dt class="text-on-surface-variant">{{ 'auditLog.detail.newValues' | t }}</dt>
-                              <dd class="whitespace-pre-wrap break-all font-mono text-data-mono text-xs">{{ entry.newValues }}</dd>
-                            </div>
-                          }
+                          <div class="col-span-2">
+                            <dt class="text-on-surface-variant">{{ 'auditLog.detail.newValues' | t }}</dt>
+                            @if (detailFields(entry.newValues); as fields) {
+                              @if (fields.length > 0) {
+                                <dd>
+                                  <dl class="mt-1 grid grid-cols-[max-content_1fr] gap-x-3 gap-y-1">
+                                    @for (field of fields; track field.label) {
+                                      <dt class="text-on-surface-variant">{{ field.label }}</dt>
+                                      <dd class="break-words text-on-surface">{{ field.value }}</dd>
+                                    }
+                                  </dl>
+                                </dd>
+                              } @else {
+                                <dd class="text-on-surface-variant">{{ 'auditLog.detail.noPayload' | t }}</dd>
+                              }
+                            }
+                          </div>
                         </dl>
                       </td>
                     </tr>

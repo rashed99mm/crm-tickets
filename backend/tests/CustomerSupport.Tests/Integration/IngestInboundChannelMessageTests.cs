@@ -229,4 +229,77 @@ public class IngestInboundChannelMessageTests : IAsyncLifetime
         result.Errors.Should().Contain(e => e.Field == "CustomerPhone");
         result.Errors.Should().Contain(e => e.Code == SystemCode.ERR005);
     }
+
+    // --- A23 — the optional Subject the web form and inbound email carry -------------------------
+
+    [Fact]
+    [Trait("AC", "CC42")]
+    public async Task A23_ExplicitSubject_BecomesTheNewTicketsSubject()
+    {
+        var email = $"subject-{Guid.NewGuid():N}@example.com";
+
+        var result = await SendAsync(new IngestInboundChannelMessageCommand(
+            Channel: ChannelNames.WebForm,
+            CustomerName: "Layla Haddad",
+            CustomerPhone: null,
+            CustomerEmail: email,
+            Body: "The invoice total looks wrong.",
+            ProviderMessageId: null,
+            Subject: "Invoice query"));
+
+        result.Success.Should().BeTrue();
+
+        await using var scope = _factory.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var message = await db.TicketMessages.SingleAsync(m => m.Id == result.Data);
+        var ticket = await db.Tickets.SingleAsync(t => t.Id == message.TicketId);
+        ticket.Subject.Should().Be("Invoice query");
+    }
+
+    [Fact]
+    [Trait("AC", "CC42")]
+    public async Task A23_NoSubject_KeepsTheGeneratedDefault()
+    {
+        var phone = UniquePhone();
+
+        var result = await SendAsync(new IngestInboundChannelMessageCommand(
+            Channel: ChannelNames.Sms,
+            CustomerName: "Omar Nasser",
+            CustomerPhone: phone,
+            CustomerEmail: null,
+            Body: "Where is my order?",
+            ProviderMessageId: null));
+
+        result.Success.Should().BeTrue();
+
+        await using var scope = _factory.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var message = await db.TicketMessages.SingleAsync(m => m.Id == result.Data);
+        var ticket = await db.Tickets.SingleAsync(t => t.Id == message.TicketId);
+        ticket.Subject.Should().Be($"{ChannelNames.Sms} — Omar Nasser");
+    }
+
+    [Fact]
+    [Trait("AC", "CC42")]
+    public async Task A23_SubjectOver200Characters_IsRejectedBeforeAnyWrite()
+    {
+        // Ticket.Create throws ArgumentException past 200 chars; the validator has to refuse it
+        // first so the failure is a keyed 400 rather than an unhandled exception.
+        var email = $"long-subject-{Guid.NewGuid():N}@example.com";
+
+        var result = await SendAsync(new IngestInboundChannelMessageCommand(
+            Channel: ChannelNames.WebForm,
+            CustomerName: "Too Long",
+            CustomerPhone: null,
+            CustomerEmail: email,
+            Body: "Body is fine.",
+            ProviderMessageId: null,
+            Subject: new string('x', 201)));
+
+        result.Success.Should().BeFalse();
+
+        await using var scope = _factory.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        (await db.Customers.AnyAsync(c => c.Email == email)).Should().BeFalse();
+    }
 }

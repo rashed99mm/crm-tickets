@@ -8,11 +8,12 @@ import {
   CsCard,
   CsEmptyState,
   CsErrorState,
-  CsIcon,
   CsLoadingState,
+  CsStatCard,
   failed,
   loaded,
   loading,
+  LocaleStore,
   ReportDateRangeFilter,
   ReportsApi,
   SlaPerformanceReport,
@@ -33,6 +34,9 @@ function shortKey(key: string): string {
   return /-W\d+$/.test(key) ? key : key.length > 5 ? key.slice(5) : key;
 }
 
+/** Shown when a report returned no data to derive a figure from — never while one is in flight. */
+const EMPTY_FIGURE = '—';
+
 interface ChartBar {
   readonly key: string;
   readonly shortKey: string;
@@ -52,12 +56,13 @@ interface ChartBar {
  */
 @Component({
   selector: 'admin-reports-overview',
-  imports: [RouterLink, CsCard, CsLoadingState, CsEmptyState, CsErrorState, CsIcon, ReportDateRangeFilter, TranslatePipe],
+  imports: [RouterLink, CsCard, CsStatCard, CsLoadingState, CsEmptyState, CsErrorState, ReportDateRangeFilter, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './reports-overview.component.html',
 })
 export default class ReportsOverviewComponent {
   private readonly api = inject(ReportsApi);
+  private readonly locale = inject(LocaleStore);
 
   readonly from = signal(defaultRange().from);
   readonly to = signal(defaultRange().to);
@@ -169,6 +174,21 @@ export default class ReportsOverviewComponent {
     return current.status === 'loaded' && current.data.totalResponses > 0
       ? current.data.averageRating.toFixed(1)
       : null;
+  });
+
+  /**
+   * The four KPI tiles' display values.
+   *
+   * An em dash means "the report came back and had nothing to average" — never "still loading",
+   * which the tile shows as a skeleton instead (`CsStatCard.loading`). Kept here rather than as a
+   * ternary in the template because the CSAT figure needs the dictionary to phrase it as "x / 5".
+   */
+  protected readonly volumeTileValue = computed<string | number>(() => this.totalVolume() ?? EMPTY_FIGURE);
+  protected readonly slaTileValue = computed<string>(() => this.breachRateText() ?? EMPTY_FIGURE);
+  protected readonly resolutionTileValue = computed<string>(() => this.avgResolutionText() ?? EMPTY_FIGURE);
+  protected readonly csatTileValue = computed<string>(() => {
+    const average = this.csatAverageText();
+    return average === null ? EMPTY_FIGURE : this.locale.t('reports.csat.scoreOutOf', average);
   });
 
   protected readonly bars = computed<readonly ChartBar[]>(() => {

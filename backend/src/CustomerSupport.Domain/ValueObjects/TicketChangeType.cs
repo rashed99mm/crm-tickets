@@ -14,9 +14,12 @@ public sealed class TicketChangeType : ValueObject
     public static readonly TicketChangeType StatusChanged = new("StatusChanged");
     public static readonly TicketChangeType Reopened = new("Reopened");
     public static readonly TicketChangeType Escalated = new("Escalated");
+    public static readonly TicketChangeType Reprioritized = new("Reprioritized");
+    public static readonly TicketChangeType TagAdded = new("TagAdded");
+    public static readonly TicketChangeType TagRemoved = new("TagRemoved");
 
     public static IReadOnlyList<TicketChangeType> All { get; } =
-        [Created, Assigned, Reassigned, StatusChanged, Reopened, Escalated];
+        [Created, Assigned, Reassigned, StatusChanged, Reopened, Escalated, Reprioritized, TagAdded, TagRemoved];
 
     private TicketChangeType(string value)
     {
@@ -38,8 +41,11 @@ public sealed class TicketChangeType : ValueObject
             "StatusChanged" => StatusChanged,
             "Reopened" => Reopened,
             "Escalated" => Escalated,
+            "Reprioritized" => Reprioritized,
+            "TagAdded" => TagAdded,
+            "TagRemoved" => TagRemoved,
             _ => throw new ArgumentException(
-                $"Invalid ticket change type: {changeType}. Must be Created, Assigned, Reassigned, StatusChanged, Reopened, or Escalated.",
+                $"Invalid ticket change type: {changeType}. Must be Created, Assigned, Reassigned, StatusChanged, Reopened, Escalated, Reprioritized, TagAdded, or TagRemoved.",
                 nameof(changeType))
         };
     }

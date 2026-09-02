@@ -10,8 +10,12 @@ namespace CustomerSupport.Application.Features.Tickets.Commands.ChangeTicketStat
 /// callers would both see the current value and both succeed, and AC-41's lost update would happen
 /// exactly as the criterion forbids.
 /// </summary>
-public record ChangeTicketStatusCommand(Guid TicketId, string Status, string RowVersion)
+public record ChangeTicketStatusCommand(
+    Guid TicketId, string Status, string RowVersion,
+    string? ResolutionCode = null, string? ResolutionNotes = null)
     : ICommand<Response<Guid>>;
 
-/// <summary>The status-change payload. <c>RowVersion</c> is the value read from the detail endpoint.</summary>
-public record ChangeTicketStatusRequest(string Status, string RowVersion);
+/// <summary>The status-change payload. Resolution fields are required when the target is Resolved (AC-922.1).</summary>
+public record ChangeTicketStatusRequest(
+    string Status, string RowVersion,
+    string? ResolutionCode = null, string? ResolutionNotes = null);

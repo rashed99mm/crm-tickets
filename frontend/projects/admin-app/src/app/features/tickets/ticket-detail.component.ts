@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, signal, viewChild } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import {
   ApiError,
   AssignableAgent,
@@ -16,19 +17,28 @@ import {
   loading,
   LocaleStore,
   PERMITTED_TRANSITIONS,
+  RESOLUTION_CODES,
   SessionStore,
   SlaCountdown,
+  TICKET_IMPACTS,
+  TICKET_URGENCIES,
   TicketApi,
   TicketDetail,
   TicketHistoryEntry,
+  TicketImpact,
+  TicketLink,
   TicketStatus,
+  TicketUrgency,
   TranslatePipe,
   CsDatePipe,
 } from 'common';
 import { AiPanelComponent } from './ai-panel.component';
 import { TicketMessagesComponent } from './ticket-messages.component';
 
-type TicketDetailTab = 'messages' | 'history' | 'attachments';
+type TicketDetailTab = 'info' | 'messages' | 'history' | 'attachments';
+
+/** US-924 — the server refuses the eleventh tag; the UI stops offering one at the same count. */
+const MAX_TAGS = 10;
 
 /**
  * US-128 — one ticket, its history, and the actions permitted on it. `AC-61`.
@@ -39,6 +49,7 @@ type TicketDetailTab = 'messages' | 'history' | 'attachments';
 @Component({
   selector: 'admin-ticket-detail',
   imports: [
+    RouterLink,
     CsCard,
     CsIcon,
     CsBadge,
@@ -70,13 +81,31 @@ export default class TicketDetailComponent {
   readonly busy = signal(false);
   readonly actionError = signal<ApiError | null>(null);
   readonly agents = signal<readonly AssignableAgent[]>([]);
-  readonly activeTab = signal<TicketDetailTab>('messages');
+  readonly activeTab = signal<TicketDetailTab>('info');
+  readonly referenceCopied = signal(false);
   readonly messages = viewChild(TicketMessagesComponent);
+
+  protected readonly resolutionCodes = RESOLUTION_CODES;
+  protected readonly impacts = TICKET_IMPACTS;
+  protected readonly urgencies = TICKET_URGENCIES;
+  readonly showResolveForm = signal(false);
+  readonly newTagValue = signal('');
+  readonly newLinkType = signal<'RelatedTo' | 'DuplicateOf'>('RelatedTo');
+  readonly newLinkReference = signal('');
 
   readonly ticket = computed<TicketDetail | null>(() => {
     const current = this.state();
     return current.status === 'loaded' ? current.data : null;
   });
+
+  /**
+   * Whether the ticket has hit the tag ceiling.
+   *
+   * A computed rather than `t.tags.length >= MAX_TAGS` inline, because a `>` inside a template
+   * attribute breaks any naive `<[^>]*>` tag stripper — including `no-hardcoded-strings.spec.ts`'s
+   * AC-63 sweep, which then reports the rest of the element as untranslated visible text.
+   */
+  readonly tagLimitReached = computed(() => (this.ticket()?.tags.length ?? 0) >= MAX_TAGS);
 
   readonly loadError = computed<ApiError | null>(() => {
     const current = this.state();
@@ -123,6 +152,27 @@ export default class TicketDetailComponent {
 
   setTab(tab: TicketDetailTab): void {
     this.activeTab.set(tab);
+  }
+
+  /**
+   * The header's reference chip doubles as a copy button — the reference is what an agent pastes
+   * into a chat, a call note or another ticket, and selecting six characters of mono text by hand
+   * is the kind of friction that gets a UI called clunky.
+   *
+   * `navigator.clipboard` is absent on insecure origins and in some test environments, so the
+   * failure path is silent: the chip simply does not flip to "Copied", which is honest — claiming
+   * a copy that did not happen is worse than no feedback.
+   */
+  copyReference(reference: string): void {
+    void navigator.clipboard
+      ?.writeText(reference)
+      .then(() => {
+        this.referenceCopied.set(true);
+        setTimeout(() => this.referenceCopied.set(false), 1500);
+      })
+      .catch(() => {
+        // Clipboard permission refused. Leave the chip as it was.
+      });
   }
 
   /**
@@ -175,9 +225,106 @@ export default class TicketDetailComponent {
     });
   }
 
-  changeStatus(status: string): void {
+  /**
+   * AC-922.7: `Resolved` is never committed bare. Selecting it opens the inline form instead of
+   * calling the API — `submitResolve` is what actually posts. Every other target still commits
+   * immediately, matching the existing one-click behaviour AC-61 already established.
+   */
+  selectStatus(status: string): void {
+    if (!status) {
+      return;
+    }
+
+    if (status === 'Resolved') {
+      this.showResolveForm.set(true);
+      return;
+    }
+
+    this.commitStatus(status);
+  }
+
+  submitResolve(resolutionCode: string, resolutionNotes: string): void {
     const current = this.ticket();
-    if (!current || this.busy() || !status) {
+    if (!current || this.busy() || !resolutionCode || !resolutionNotes.trim()) {
+      return;
+    }
+
+    this.run(
+      this.api.changeStatus(current.id, 'Resolved', current.rowVersion, resolutionCode, resolutionNotes),
+    );
+    this.showResolveForm.set(false);
+  }
+
+  cancelResolve(): void {
+    this.showResolveForm.set(false);
+  }
+
+  reclassify(impact: string, urgency: string): void {
+    const current = this.ticket();
+    if (!current || this.busy() || !impact || !urgency) {
+      return;
+    }
+
+    this.run(this.api.reclassify(current.id, impact as TicketImpact, urgency as TicketUrgency, current.rowVersion));
+  }
+
+  addTag(value: string): void {
+    const current = this.ticket();
+    const trimmed = value.trim();
+    if (!current || this.busy() || !trimmed) {
+      return;
+    }
+
+    this.run(this.api.addTag(current.id, trimmed));
+    this.newTagValue.set('');
+  }
+
+  removeTag(value: string): void {
+    const current = this.ticket();
+    if (!current || this.busy()) {
+      return;
+    }
+
+    this.run(this.api.removeTag(current.id, value));
+  }
+
+  addLink(linkType: string, targetReference: string): void {
+    const current = this.ticket();
+    const reference = targetReference.trim();
+    if (!current || this.busy() || !reference) {
+      return;
+    }
+
+    this.run(this.api.addLink(current.id, linkType as 'RelatedTo' | 'DuplicateOf', reference));
+    this.newLinkReference.set('');
+  }
+
+  removeLink(linkId: string): void {
+    const current = this.ticket();
+    if (!current || this.busy()) {
+      return;
+    }
+
+    this.run(this.api.removeLink(current.id, linkId));
+  }
+
+  /**
+   * AC-925.5 — the directional reading. `RelatedTo` shows the same way from both sides; `DuplicateOf`
+   * does not: the source reads "duplicate of", the target it points at reads "duplicated by".
+   */
+  linkLabel(link: TicketLink): string {
+    if (link.linkType === 'RelatedTo') {
+      return this.locale.t('tickets.detail.links.related');
+    }
+
+    return link.direction === 'Outbound'
+      ? this.locale.t('tickets.detail.links.duplicateOf')
+      : this.locale.t('tickets.detail.links.duplicatedBy');
+  }
+
+  private commitStatus(status: string): void {
+    const current = this.ticket();
+    if (!current || this.busy()) {
       return;
     }
 

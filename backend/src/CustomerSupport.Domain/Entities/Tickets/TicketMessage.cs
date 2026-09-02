@@ -14,7 +14,7 @@ namespace CustomerSupport.Domain.Entities.Tickets;
 public class TicketMessage : BaseEntity, IAppendOnlyEntity
 {
     private static readonly string[] AllowedDirections = ["Inbound", "Outbound"];
-    private static readonly string[] AllowedChannels = ["Email", "System", "WhatsApp", "SMS", "WebForm", "LiveChat", "Portal"];
+    private static readonly string[] AllowedChannels = ChannelNames.All;
 
     public Guid TicketId { get; private set; }
     public string Direction { get; private set; } = string.Empty;

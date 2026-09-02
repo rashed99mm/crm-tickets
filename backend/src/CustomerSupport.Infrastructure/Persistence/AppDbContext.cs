@@ -57,6 +57,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
     public DbSet<TicketTask> TicketTasks => Set<TicketTask>();
     public DbSet<TicketNote> TicketNotes => Set<TicketNote>();
     public DbSet<QuickReply> QuickReplies => Set<QuickReply>();
+    public DbSet<TicketTag> TicketTags => Set<TicketTag>();
+    public DbSet<TicketLink> TicketLinks => Set<TicketLink>();
 
     public override async Task<int> SaveChangesAsync(CancellationToken ct = default)
     {

@@ -100,26 +100,63 @@
         </div>
 
         <div class="flex flex-col gap-1.5">
-          <label for="ticket-priority" class="text-label-md text-on-surface-variant">
-            {{ 'field.priority' | t }}
+          <label for="ticket-impact" class="text-label-md text-on-surface-variant">
+            {{ 'field.impact' | t }}
           </label>
           <select
-            id="ticket-priority"
-            formControlName="priority"
-            [attr.aria-invalid]="fieldError('priority') ? 'true' : null"
-            [attr.aria-describedby]="fieldError('priority') ? 'ticket-priority-error' : null"
-            (change)="clearServerError('priority')"
+            id="ticket-impact"
+            formControlName="impact"
+            [attr.aria-invalid]="fieldError('impact') ? 'true' : null"
+            [attr.aria-describedby]="fieldError('impact') ? 'ticket-impact-error' : null"
+            (change)="clearServerError('impact')"
             class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
-            @for (priority of priorities; track priority) {
-              <option [value]="priority">{{ priority }}</option>
+            @for (impact of impacts; track impact) {
+              <option [value]="impact">{{ impact }}</option>
             }
           </select>
-          @if (fieldError('priority'); as failure) {
-            <p id="ticket-priority-error" role="alert" class="text-body-sm text-error">
+          @if (fieldError('impact'); as failure) {
+            <p id="ticket-impact-error" role="alert" class="text-body-sm text-error">
               {{ failure.message }}
             </p>
           }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="ticket-urgency" class="text-label-md text-on-surface-variant">
+            {{ 'field.urgency' | t }}
+          </label>
+          <select
+            id="ticket-urgency"
+            formControlName="urgency"
+            [attr.aria-invalid]="fieldError('urgency') ? 'true' : null"
+            [attr.aria-describedby]="fieldError('urgency') ? 'ticket-urgency-error' : null"
+            (change)="clearServerError('urgency')"
+            class="h-10 rounded-lg border border-outline-variant bg-surface-lowest px-3 text-body-md text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          >
+            @for (urgency of urgencies; track urgency) {
+              <option [value]="urgency">{{ urgency }}</option>
+            }
+          </select>
+          @if (fieldError('urgency'); as failure) {
+            <p id="ticket-urgency-error" role="alert" class="text-body-sm text-error">
+              {{ failure.message }}
+            </p>
+          }
+        </div>
+
+        <!--
+          AC-923.7 — a live, display-only mirror of the server's derived priority. The dashed
+          border marks it as read-only at a glance, distinct from the editable selects beside it.
+        -->
+        <div class="flex flex-col gap-1.5">
+          <span class="text-label-md text-on-surface-variant">{{ 'field.priority' | t }}</span>
+          <div
+            data-testid="priority-preview"
+            class="flex h-10 items-center rounded-lg border border-dashed border-outline-variant bg-surface-low px-3"
+          >
+            <cs-badge kind="priority" [value]="derivedPriority()" />
+          </div>
         </div>
       </div>
 

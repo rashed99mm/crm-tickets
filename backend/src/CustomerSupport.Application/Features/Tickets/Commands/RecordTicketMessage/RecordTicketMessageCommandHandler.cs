@@ -66,22 +66,35 @@ public class RecordTicketMessageCommandHandler(
             }
         }
 
-        // CC-10/CC-13 — an agent reply on the WhatsApp/SMS channels leaves through the same
-        // notification gateway that outbound system notifications use, quoted to the customer's
-        // own phone number. Email and System replies keep their existing paths.
-        if (request.Direction == "Outbound" && request.Channel is "WhatsApp" or "SMS")
+        // CC-10/CC-13/CC-44 — an agent reply on a customer-facing channel leaves through the same
+        // notification gateway outbound system notifications use. The contact field is per channel
+        // and never both (RequestOtpCommandHandler.cs:83-92 is the precedent): phone channels carry
+        // PhoneNumber, email carries Email. Dispatching email with PhoneNumber set — which adding
+        // "Email" to the old channel gate alone would have done — reaches nobody (spec A27).
+        if (request.Direction == "Outbound"
+            && request.Channel is ChannelNames.WhatsApp or ChannelNames.Sms or ChannelNames.Email)
         {
             var customer = await customers.GetByIdAsync(ticket.CustomerId, ct);
-            var phone = customer?.Phone;
+            var isEmail = request.Channel == ChannelNames.Email;
 
-            if (!string.IsNullOrWhiteSpace(phone))
+            // A phone-only customer's email is a deterministic {phone}@channel.invalid placeholder
+            // (IngestInboundChannelMessageCommandHandler.cs:115) that exists only to satisfy
+            // Customer.Email's non-nullable contract. It is not deliverable.
+            var email = isEmail && customer?.Email is { } candidate
+                        && !candidate.EndsWith("@channel.invalid", StringComparison.OrdinalIgnoreCase)
+                ? candidate
+                : null;
+            var phone = isEmail ? null : customer?.Phone;
+            var contact = isEmail ? email : phone;
+
+            if (!string.IsNullOrWhiteSpace(contact))
             {
                 await notificationGateway.SendAsync(new NotificationDispatchRequest(
                     TemplateCode: "TICKET_REPLY",
                     RecipientUserId: null,
                     Channels: [NotificationChannel.Create(request.Channel)],
                     Variables: new Dictionary<string, string> { ["Title"] = "Ticket reply", ["Message"] = request.Body },
-                    Email: null,
+                    Email: email,
                     PhoneNumber: phone,
                     BypassUserSettings: true,
                     DeduplicationKey: null,
@@ -90,7 +103,7 @@ public class RecordTicketMessageCommandHandler(
             else
             {
                 logger.LogWarning(
-                    "Outbound {Channel} reply {MessageId} for ticket {TicketId} had no customer phone to send to",
+                    "Outbound {Channel} reply {MessageId} for ticket {TicketId} had no deliverable customer contact to send to",
                     request.Channel, message.Id, request.TicketId);
             }
         }

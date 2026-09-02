@@ -178,7 +178,7 @@ public class ReportsEndpointTests : IAsyncLifetime
             .StatusCode.Should().Be(HttpStatusCode.OK);
         var afterOpen = await _supervisor.GetFromJsonAsync<Response<TicketDetailRow>>($"/api/Tickets/{ticketId}");
         (await agentClient.PostAsJsonAsync($"/api/Tickets/{ticketId}/status",
-            new { status = "Resolved", rowVersion = afterOpen!.Data!.RowVersion }))
+            new { status = "Resolved", rowVersion = afterOpen!.Data!.RowVersion, resolutionCode = "Fixed", resolutionNotes = "resolved in test" }))
             .StatusCode.Should().Be(HttpStatusCode.OK);
 
         var report = await _supervisor.GetFromJsonAsync<Response<AgentPerformanceReportRow>>(

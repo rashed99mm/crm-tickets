@@ -1,4 +1,5 @@
 using CustomerSupport.Application.Errors;
+using CustomerSupport.Domain.Common;
 using FluentValidation;
 
 namespace CustomerSupport.Application.Features.Tickets.Commands.RecordTicketMessage;
@@ -6,7 +7,7 @@ namespace CustomerSupport.Application.Features.Tickets.Commands.RecordTicketMess
 public class RecordTicketMessageCommandValidator : AbstractValidator<RecordTicketMessageCommand>
 {
     private static readonly string[] AllowedDirections = ["Inbound", "Outbound"];
-    private static readonly string[] AllowedChannels = ["Email", "System", "WhatsApp", "SMS", "WebForm", "LiveChat"];
+    private static readonly string[] AllowedChannels = ChannelNames.All;
 
     public RecordTicketMessageCommandValidator()
     {

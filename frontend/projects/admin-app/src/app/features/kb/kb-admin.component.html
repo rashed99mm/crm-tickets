@@ -221,11 +221,26 @@
                         </td>
                         <td class="py-2 pe-4">
                           <span
-                            class="rounded-full px-2 py-0.5 text-label-sm"
-                            [class.bg-primary-container]="article.status === 'Published'"
-                            [class.text-on-primary-container]="article.status === 'Published'"
-                            [class.bg-surface-container]="article.status !== 'Published'"
-                          >{{ statusLabel(article.status) | t }}</span>
+                            class="inline-flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-label-sm"
+                            [class.bg-status-new/10]="article.status === 'Draft'"
+                            [class.text-status-new]="article.status === 'Draft'"
+                            [class.border-status-new/20]="article.status === 'Draft'"
+                            [class.bg-status-resolved/10]="article.status === 'Published'"
+                            [class.text-status-resolved]="article.status === 'Published'"
+                            [class.border-status-resolved/20]="article.status === 'Published'"
+                            [class.bg-status-closed/10]="article.status === 'Archived'"
+                            [class.text-status-closed]="article.status === 'Archived'"
+                            [class.border-status-closed/20]="article.status === 'Archived'"
+                          >
+                            <span
+                              class="size-1.5 shrink-0 rounded-full"
+                              [class.bg-status-new]="article.status === 'Draft'"
+                              [class.bg-status-resolved]="article.status === 'Published'"
+                              [class.bg-status-closed]="article.status === 'Archived'"
+                              aria-hidden="true"
+                            ></span>
+                            {{ statusLabel(article.status) | t }}
+                          </span>
                         </td>
                         <td class="py-2 pe-4 text-on-surface-variant">{{ article.categoryName || article.category || '—' }}</td>
                         <td class="py-2 pe-4 text-on-surface-variant font-data-mono">{{ (article.publishedAt ?? '') || '—' }}</td>

@@ -83,7 +83,7 @@ public class DraftReplyHandlerPayloadTests
     {
         var userId = Guid.NewGuid();
         var ticket = Ticket.Create(
-            "TKT-2", "Subject", "Description", Guid.NewGuid(), Guid.NewGuid(), "Normal", userId);
+            "TKT-2", "Subject", "Description", Guid.NewGuid(), Guid.NewGuid(), "Medium", "Medium", userId);
         ticket.AssignTo(userId, userId);
 
         var messages = new FakeMessageRepository(Enumerable.Range(0, 3)

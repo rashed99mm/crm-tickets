@@ -45,14 +45,33 @@ public class TicketEndpointTests : IAsyncLifetime
         return (await response.Content.ReadFromJsonAsync<Response<Guid>>())!.Data!;
     }
 
-    private object NewTicket(string subject = "Cannot sign in", string priority = "Normal", Guid? customerId = null, Guid? categoryId = null) => new
+    /// <summary>
+    /// US-923: priority is matrix-derived, not settable directly. <paramref name="priority"/> is
+    /// mapped to the impact/urgency pair that derives it, so every existing call site keeps
+    /// asserting on the priority it always meant.
+    /// </summary>
+    private static (string Impact, string Urgency) ToClassification(string priority) => priority switch
     {
-        subject,
-        description = "The portal rejects my password.",
-        customerId = customerId ?? _customerId,
-        categoryId = categoryId ?? _categoryId,
-        priority,
+        "Low" => ("Low", "Low"),
+        "Normal" => ("Medium", "Medium"),
+        "High" => ("High", "Medium"),
+        "Urgent" => ("High", "High"),
+        _ => ("Medium", "Medium"), // invalid values are exercised via impact directly (AC30 test)
     };
+
+    private object NewTicket(string subject = "Cannot sign in", string priority = "Normal", Guid? customerId = null, Guid? categoryId = null)
+    {
+        var (impact, urgency) = ToClassification(priority);
+        return new
+        {
+            subject,
+            description = "The portal rejects my password.",
+            customerId = customerId ?? _customerId,
+            categoryId = categoryId ?? _categoryId,
+            impact,
+            urgency,
+        };
+    }
 
     private async Task<Guid> CreateTicketAsync(string subject = "Cannot sign in", string priority = "Normal")
     {
@@ -110,13 +129,14 @@ public class TicketEndpointTests : IAsyncLifetime
             description = "",
             customerId = _customerId,
             categoryId = _categoryId,
-            priority = "Catastrophic",
+            impact = "Catastrophic",
+            urgency = "Medium",
         });
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
         var body = await response.Content.ReadFromJsonAsync<Response<object>>();
-        body!.Errors.Select(e => e.Field).Should().Contain(["Subject", "Description", "Priority"]);
+        body!.Errors.Select(e => e.Field).Should().Contain(["Subject", "Description", "Impact"]);
     }
 
     [Fact]

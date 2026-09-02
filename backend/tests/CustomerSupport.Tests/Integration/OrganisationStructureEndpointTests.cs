@@ -4,6 +4,7 @@ using CustomerSupport.Application.Contracts;
 using CustomerSupport.Domain.Entities.Identity;
 using CustomerSupport.Infrastructure.Persistence;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace CustomerSupport.Tests.Integration;
@@ -271,7 +272,8 @@ public class OrganisationStructureEndpointTests : IAsyncLifetime
             description = "Created by the organisation scoping integration test.",
             customerId,
             categoryId,
-            priority = "Normal"
+            impact = "Medium",
+            urgency = "Medium"
         });
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         return (await response.Content.ReadFromJsonAsync<Response<Guid>>())!.Data;

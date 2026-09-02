@@ -77,7 +77,8 @@ describe('TicketCreateComponent', () => {
       description: 'The portal rejects my password.',
       customerId: 'c-1',
       categoryId: 'cat-1',
-      priority: 'Normal',
+      impact: 'Medium',
+      urgency: 'Medium',
     });
   }
 
@@ -216,7 +217,32 @@ describe('TicketCreateComponent', () => {
   it('AC418_TicketFormsAndActionsAreKeyboardAccessible: inputs and buttons are focusable and keyboard accessible', () => {
     const fixture = render();
     const el = fixture.nativeElement as HTMLElement;
-    expect(el.querySelectorAll('select').length).toBe(3);
+    expect(el.querySelectorAll('select').length).toBe(4);
     expect(el.querySelector('button[type="submit"]')).not.toBeNull();
+  });
+
+  it('AC923_7: create sends impact and urgency, and shows the derived priority preview', () => {
+    const fixture = render();
+    fillValid(fixture);
+    fixture.componentInstance.form.controls.impact.setValue('High');
+    fixture.componentInstance.form.controls.urgency.setValue('High');
+    fixture.detectChanges();
+
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('[data-testid="priority-preview"]')?.textContent,
+    ).toContain('Urgent');
+
+    fixture.componentInstance.submit();
+
+    const req = http.expectOne('/api/Tickets');
+    expect(req.request.body).toEqual({
+      subject: 'Cannot sign in',
+      description: 'The portal rejects my password.',
+      customerId: 'c-1',
+      categoryId: 'cat-1',
+      impact: 'High',
+      urgency: 'High',
+    });
+    req.flush({ success: true, code: 'CON035', message: 'OK', data: { id: 't-1' }, errors: [] });
   });
 });

@@ -9,6 +9,7 @@ import {
   CsErrorState,
   CsIcon,
   CsLoadingState,
+  CsStatCard,
   TicketApi,
   TicketListItem,
   TranslatePipe,
@@ -38,7 +39,7 @@ interface AgentLoadRow {
 /** US-607 — the live operational queue: unassigned work (oldest first, urgent flagged) and per-agent load. */
 @Component({
   selector: 'admin-live-queue',
-  imports: [RouterLink, CsCard, CsLoadingState, CsEmptyState, CsErrorState, CsIcon, TranslatePipe],
+  imports: [RouterLink, CsCard, CsStatCard, CsLoadingState, CsEmptyState, CsErrorState, CsIcon, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './live-queue.component.html',
 })

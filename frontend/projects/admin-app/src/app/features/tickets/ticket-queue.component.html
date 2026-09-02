@@ -85,6 +85,21 @@
         />
         {{ 'tickets.queue.sortByEscalation' | t }}
       </label>
+
+      <!-- US-924 / AC-924.4 — a server-side filter, composed with the existing status/mine filters. -->
+      <div class="flex items-center gap-2">
+        <label for="queue-tag-filter" class="text-label-md text-on-surface-variant">
+          {{ 'tickets.queue.tagFilter' | t }}
+        </label>
+        <input
+          id="queue-tag-filter"
+          type="text"
+          [value]="tagFilter()"
+          (change)="setTagFilter($any($event.target).value)"
+          [placeholder]="'tickets.queue.tagFilterPlaceholder' | t"
+          class="h-8 w-40 rounded-lg border border-outline-variant bg-surface-lowest px-2 text-body-sm text-on-surface transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+        />
+      </div>
     </div>
 
     <!--
@@ -207,6 +222,16 @@
                       } @else {
                         <span class="truncate text-body-sm text-on-surface-variant italic">
                           {{ 'dashboard.unassigned' | t }}
+                        </span>
+                      }
+                      <!-- US-924 / AC-924.5 — tags travel with the row so they are visible without opening it. -->
+                      @if (ticket.tags.length > 0) {
+                        <span class="ms-2 flex flex-wrap gap-1">
+                          @for (tag of ticket.tags; track tag) {
+                            <span class="rounded-full bg-surface-highest px-1.5 py-0.5 text-label-md text-on-surface-variant">
+                              {{ tag }}
+                            </span>
+                          }
                         </span>
                       }
                     </span>

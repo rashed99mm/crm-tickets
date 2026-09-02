@@ -249,7 +249,7 @@
                   @if (!n.isRead) {
                     <button
                       type="button"
-                      class="grid size-8 shrink-0 place-items-center rounded-lg text-primary transition-colors hover:bg-primary-container"
+                      class="grid size-8 shrink-0 place-items-center rounded-lg text-primary transition-colors hover:bg-primary-container hover:text-on-primary-container"
                       [attr.aria-label]="'notifications.markRead' | t"
                       [attr.title]="'notifications.markRead' | t"
                       (click)="markRead(n.id)"

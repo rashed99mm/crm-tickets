@@ -1,4 +1,5 @@
 using CustomerSupport.Domain.Entities.Tickets;
+using CustomerSupport.Domain.ValueObjects;
 using FluentAssertions;
 using Xunit;
 
@@ -23,9 +24,9 @@ public class TicketTests
     private static readonly Guid Specialist = Guid.Parse("66666666-6666-6666-6666-666666666666");
     private static readonly Guid OtherSpecialist = Guid.Parse("77777777-7777-7777-7777-777777777777");
 
-    private static Ticket NewTicket(string priority = "Normal") =>
+    private static Ticket NewTicket(string impact = "Medium", string urgency = "Medium") =>
         Ticket.Create("TKT-001000", "Cannot sign in", "The portal rejects my password.",
-            Customer, Category, priority, Supervisor);
+            Customer, Category, impact, urgency, Supervisor);
 
     /// <summary>
     /// Builds a ticket in the named status, optionally ensuring it has an assignee (required for
@@ -56,11 +57,13 @@ public class TicketTests
 
         foreach (var step in path)
         {
-            ticket.ChangeStatus(step, Agent);
+            ticket.ChangeStatus(step, Agent, step == "Resolved" ? DefaultResolution : null);
         }
 
         return ticket;
     }
+
+    private static readonly ResolutionDetails DefaultResolution = new("Fixed", "resolved in test");
 
     [Fact]
     [Trait("AC", "29")]
@@ -75,11 +78,11 @@ public class TicketTests
 
     [Theory]
     [Trait("AC", "30")]
-    [InlineData("", "Normal", "subject")]
-    [InlineData("   ", "Normal", "subject")]
-    public void AC30_Create_Rejects_A_Missing_Subject(string subject, string priority, string expectedParameter)
+    [InlineData("", "subject")]
+    [InlineData("   ", "subject")]
+    public void AC30_Create_Rejects_A_Missing_Subject(string subject, string expectedParameter)
     {
-        var act = () => Ticket.Create("TKT-001000", subject, "body", Customer, Category, priority, Supervisor);
+        var act = () => Ticket.Create("TKT-001000", subject, "body", Customer, Category, "Medium", "Medium", Supervisor);
 
         act.Should().Throw<ArgumentException>().WithParameterName(expectedParameter);
     }
@@ -88,16 +91,16 @@ public class TicketTests
     [Trait("AC", "30")]
     public void AC30_Create_Rejects_A_Subject_Over_Its_Length_Limit()
     {
-        var act = () => Ticket.Create("TKT-001000", new string('x', 201), "body", Customer, Category, "Normal", Supervisor);
+        var act = () => Ticket.Create("TKT-001000", new string('x', 201), "body", Customer, Category, "Medium", "Medium", Supervisor);
 
         act.Should().Throw<ArgumentException>().WithParameterName("subject");
     }
 
     [Fact]
-    [Trait("AC", "30")]
-    public void AC30_Create_Rejects_A_Priority_Outside_The_Four()
+    [Trait("AC", "923.1")]
+    public void AC30_Create_Rejects_An_Impact_Outside_The_Three()
     {
-        var act = () => Ticket.Create("TKT-001000", "Subject", "body", Customer, Category, "Catastrophic", Supervisor);
+        var act = () => Ticket.Create("TKT-001000", "Subject", "body", Customer, Category, "Catastrophic", "Medium", Supervisor);
 
         act.Should().Throw<ArgumentException>().WithMessage("*Catastrophic*");
     }
@@ -168,7 +171,7 @@ public class TicketTests
     {
         var ticket = TicketAt("In Progress", assigned: true);
 
-        ticket.ChangeStatus("Resolved", Agent);
+        ticket.ChangeStatus("Resolved", Agent, DefaultResolution);
         ticket.ResolvedAt.Should().NotBeNull();
         ticket.ClosedAt.Should().BeNull();
 

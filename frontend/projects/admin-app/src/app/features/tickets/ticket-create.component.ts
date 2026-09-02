@@ -7,15 +7,19 @@ import {
   CategoryOption,
   CsActionBar,
   CsAttachmentPicker,
+  CsBadge,
   CsButton,
   CsCard,
   CsIcon,
   CsInputField,
   CustomerOption,
+  derivePriority,
   LocaleStore,
-  TICKET_PRIORITIES,
+  TICKET_IMPACTS,
+  TICKET_URGENCIES,
   TicketApi,
-  TicketPriority,
+  TicketImpact,
+  TicketUrgency,
   TranslatePipe,
 } from 'common';
 
@@ -28,7 +32,7 @@ import {
  */
 @Component({
   selector: 'admin-ticket-create',
-  imports: [ReactiveFormsModule, RouterLink, CsActionBar, CsCard, CsIcon, CsInputField, CsButton, CsAttachmentPicker, TranslatePipe],
+  imports: [ReactiveFormsModule, RouterLink, CsActionBar, CsCard, CsIcon, CsInputField, CsButton, CsBadge, CsAttachmentPicker, TranslatePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './ticket-create.component.html',
 })
@@ -37,7 +41,8 @@ export default class TicketCreateComponent {
   private readonly router = inject(Router);
 
   protected readonly locale = inject(LocaleStore);
-  protected readonly priorities = TICKET_PRIORITIES;
+  protected readonly impacts = TICKET_IMPACTS;
+  protected readonly urgencies = TICKET_URGENCIES;
 
   readonly picker = viewChild(CsAttachmentPicker);
 
@@ -67,11 +72,23 @@ export default class TicketCreateComponent {
     }),
     customerId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
     categoryId: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    priority: new FormControl<TicketPriority>('Normal', {
+    impact: new FormControl<TicketImpact>('Medium', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    urgency: new FormControl<TicketUrgency>('Medium', {
       nonNullable: true,
       validators: [Validators.required],
     }),
   });
+
+  /**
+   * AC-923.7 — a client-side mirror of the matrix, display only; the server derives the real
+   * value. A plain writable signal, not `computed`: Reactive Forms values are not observed
+   * reactively without an explicit subscription, so the constructor re-derives it on every
+   * `impact`/`urgency` change.
+   */
+  readonly derivedPriority = signal<ReturnType<typeof derivePriority>>(derivePriority('Medium', 'Medium'));
 
   /** A failure with no field has no control to attach to, so it renders at form level (AC-60). */
   readonly formLevelError = computed(() => {
@@ -80,6 +97,13 @@ export default class TicketCreateComponent {
   });
 
   constructor() {
+    const recompute = () =>
+      this.derivedPriority.set(
+        derivePriority(this.form.controls.impact.value, this.form.controls.urgency.value),
+      );
+    this.form.controls.impact.valueChanges.subscribe(recompute);
+    this.form.controls.urgency.valueChanges.subscribe(recompute);
+
     this.api.listCategories().subscribe({
       next: (categories) => this.categories.set(categories),
       // A picker that failed to load is not a form-level submit error, and showing it as one would

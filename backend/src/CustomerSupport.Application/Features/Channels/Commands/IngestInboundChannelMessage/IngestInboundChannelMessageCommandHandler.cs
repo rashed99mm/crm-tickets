@@ -71,11 +71,18 @@ public class IngestInboundChannelMessageCommandHandler(
             var reference = await references.NextAsync(ct);
             var ticket = Ticket.Create(
                 reference,
-                subject: $"{request.Channel} — {request.CustomerName ?? "New contact"}",
+                // A23 — the channel's own subject when it has one (web form, email); otherwise the
+                // generated default, which is all WhatsApp and SMS can offer.
+                subject: string.IsNullOrWhiteSpace(request.Subject)
+                    ? $"{request.Channel} — {request.CustomerName ?? "New contact"}"
+                    : request.Subject.Trim(),
                 description: request.Body,
                 customerId: customer.Id,
                 categoryId: category.Id,
-                priority: "Normal",
+                // US-923 / spec A2: customer-origin tickets are not asked to self-classify. Medium/Medium
+                // derives Normal, the previous literal default, so behaviour is unchanged.
+                impact: "Medium",
+                urgency: "Medium",
                 actorId: SystemActors.ChannelIngestion);
             ticket.SetSource(request.Channel);
 

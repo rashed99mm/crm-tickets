@@ -1,11 +1,12 @@
 using CustomerSupport.Application.Errors;
+using CustomerSupport.Domain.Common;
 using FluentValidation;
 
 namespace CustomerSupport.Application.Features.Channels.Commands.IngestInboundChannelMessage;
 
 public class IngestInboundChannelMessageCommandValidator : AbstractValidator<IngestInboundChannelMessageCommand>
 {
-    private static readonly string[] AllowedChannels = ["WhatsApp", "SMS", "WebForm"];
+    private static readonly string[] AllowedChannels = ChannelNames.Inbound;
 
     public IngestInboundChannelMessageCommandValidator()
     {
@@ -20,6 +21,13 @@ public class IngestInboundChannelMessageCommandValidator : AbstractValidator<Ing
         RuleFor(x => x.CustomerName)
             .MaximumLength(200).WithErrorCode(ApplicationErrors.Validation.NAME_MAX_LENGTH)
             .When(x => x.CustomerName is not null);
+
+        // Ticket.Create throws past 200 characters (Ticket.cs:135-138). Refusing it here turns an
+        // unhandled ArgumentException into a field-keyed 400. SUBJECT_MAX_LENGTH already exists and
+        // already has bilingual messages, so no Resources.yaml change is needed.
+        RuleFor(x => x.Subject)
+            .MaximumLength(200).WithErrorCode(ApplicationErrors.Validation.SUBJECT_MAX_LENGTH)
+            .When(x => x.Subject is not null);
 
         RuleFor(x => x.CustomerEmail)
             .EmailAddress().WithErrorCode(ApplicationErrors.Validation.INVALID_EMAIL)

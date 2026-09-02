@@ -19,7 +19,7 @@ namespace CustomerSupport.Tests.Unit.Features.Portal;
 public class PortalCommandTests
 {
     private static Ticket OwnedTicket(Guid customerId, string status = "Open") =>
-        Ticket.Create("TKT-1", "Subject", "Description", customerId, Guid.NewGuid(), "Low", Guid.NewGuid());
+        Ticket.Create("TKT-1", "Subject", "Description", customerId, Guid.NewGuid(), "Low", "Low", Guid.NewGuid());
 
     [Fact]
     [Trait("AC", "407")]
@@ -162,7 +162,9 @@ public class PortalCommandTests
             ticket.ChangeStatus(TicketStatus.Open.Value, Guid.NewGuid());
         }
 
-        ticket.ChangeStatus(status, Guid.NewGuid());
+        // AC-922.1: resolving requires code+notes.
+        var resolution = status == "Resolved" ? new ResolutionDetails("Fixed", "resolved in test") : null;
+        ticket.ChangeStatus(status, Guid.NewGuid(), resolution);
     }
 
     private sealed class StubMessageFactory : IMessageFactory

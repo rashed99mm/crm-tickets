@@ -1,7 +1,14 @@
 # Sprint 2 — Ticket domain enrichment: resolution discipline, impact/urgency matrix, tags, links
 
 **Epic:** `EPIC-02` · **Feature:** `FEAT-32` · **Stories:** `US-922`…`US-925` ·
-**Status:** draft — awaiting approval before any plan or code.
+**Status:** implemented (backend + frontend), with three items superseded — see below.
+
+> **Partly amended 2026-08-31 by
+> [FEAT-33 — ticket triage and BI alignment](./EPIC-02-US-926-ticket-triage-and-bi-alignment.md).**
+> `AC-923.1`, `AC-923.7` and assumption `A2` are superseded or deleted in place (each marked where
+> it stands, never rewritten): a requester cannot classify their own ticket, so impact/urgency move
+> off capture and onto a triage step. `AC-922.x` (resolution), `AC-924.x` (tags), `AC-925.x` (links)
+> and the rest of `AC-923.x` (the matrix itself, reclassify, DTOs) are unaffected.
 
 ## Problem
 
@@ -37,10 +44,14 @@ Numbered; each written so it can be proven wrong.
 - **A1.** **Existing tickets are untouched by the matrix.** `Impact`/`Urgency` are nullable; every
   pre-existing ticket keeps its stored `Priority` until the first `Reclassify`. No backfill invents
   a classification nobody made.
-- **A2.** **Customer-originated tickets default to `Medium`/`Medium` → `Normal`.** Portal
+- **A2.** ~~**Customer-originated tickets default to `Medium`/`Medium` → `Normal`.** Portal
   submissions and channel-ingested tickets (WhatsApp/SMS/web form paths) do not ask the customer
   for impact/urgency; the default equals today's default priority (`Normal`), so their behaviour
-  does not change.
+  does not change.~~
+  **DELETED 2026-08-31 by [FEAT-33](./EPIC-02-US-926-ticket-triage-and-bi-alignment.md).** The
+  fabricated default is precisely the defect that made the SLA clock and the BI layer disagree: a
+  ticket's targets were computed from a fallback constant nobody chose. Under FEAT-33 a ticket is
+  born unclassified and a triage desk classifies it.
 - **A3.** **Resolution is required on every transition into `Resolved`** — from `In Progress` and
   from `Open` alike (both are legal per the FEAT-28 transition table). One rule, no special case.
 - **A4.** **Reopening clears `ResolutionCode`/`ResolutionNotes` and increments `ReopenCount`**, in
@@ -108,9 +119,13 @@ Stable ids, permanent. Convention: `AC-<story>.n`, one block per story/slice.
 
 ### US-923 — Impact/urgency → derived priority (slice 2, vertical)
 
-- **AC-923.1** Given a create-ticket request, then `impact` and `urgency` (`Low | Medium | High`)
+- **AC-923.1** ~~Given a create-ticket request, then `impact` and `urgency` (`Low | Medium | High`)
   are required, `priority` is no longer accepted, and the stored priority is derived exactly per
-  the matrix below — all nine cells unit-tested.
+  the matrix below — all nine cells unit-tested.~~
+  **SUPERSEDED 2026-08-31 by `AC-926.1`/`AC-926.2` in
+  [FEAT-33](./EPIC-02-US-926-ticket-triage-and-bi-alignment.md):** capture is not classification, so
+  create accepts neither field and a ticket is born unclassified. The matrix itself is retained —
+  it moves to the triage action.
 - **AC-923.2** Given a reclassify request on an existing ticket with new impact/urgency, then the
   priority is re-derived; when the derived value changes, history records a `Reprioritized` row
   with the old and new priority.
@@ -123,9 +138,13 @@ Stable ids, permanent. Convention: `AC-<story>.n`, one block per story/slice.
 - **AC-923.5** Given a portal-submitted or channel-ingested ticket, then it is created with
   `Medium`/`Medium` → `Normal` (A2) without asking the customer.
 - **AC-923.6** Given ticket list and detail endpoints, then DTOs carry `impact` and `urgency`.
-- **AC-923.7** Given the admin create form, then impact/urgency selects replace the priority
+- **AC-923.7** ~~Given the admin create form, then impact/urgency selects replace the priority
   select and a non-editable derived-priority preview updates as they change (client mirror of the
-  matrix, display only — the server value is authoritative).
+  matrix, display only — the server value is authoritative).~~
+  **SUPERSEDED 2026-08-31 by `AC-929.1`/`AC-929.2` in
+  [FEAT-33](./EPIC-02-US-926-ticket-triage-and-bi-alignment.md):** the two selects and the preview
+  move off the create form onto the detail screen's Triage panel, where the person who can actually
+  answer the question is standing.
 
 **The matrix** (impact rows × urgency columns → existing `TicketPriority` values):
 

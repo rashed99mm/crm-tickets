@@ -18,7 +18,7 @@ namespace CustomerSupport.Tests.Unit.Features.Portal;
 public class PortalQueryTests
 {
     private static Ticket OwnedTicket(Guid customerId, string reference) =>
-        Ticket.Create(reference, "Subject", "Description", customerId, Guid.NewGuid(), "Low", Guid.NewGuid());
+        Ticket.Create(reference, "Subject", "Description", customerId, Guid.NewGuid(), "Low", "Low", Guid.NewGuid());
 
     [Fact]
     [Trait("AC", "405")]

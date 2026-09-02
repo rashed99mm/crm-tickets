@@ -10,7 +10,8 @@ public class CreateTicketCommandValidatorTests
     private readonly CreateTicketCommandValidator _validator = new();
 
     private static CreateTicketCommand Valid(string? source = null) =>
-        new("Subject", "Description", Guid.NewGuid(), Guid.NewGuid(), "Low", source);
+        new("Subject", "Description", Guid.NewGuid(), Guid.NewGuid(),
+            Impact: source is null ? "Low" : null, Urgency: source is null ? "Low" : null, Source: source);
 
     [Fact]
     public async Task Validate_ValidCommand_ShouldPass()

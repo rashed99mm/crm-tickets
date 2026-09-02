@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using CustomerSupport.Application.Interfaces;
 using CustomerSupport.Application.Features.Auth.Dtos;
 using CustomerSupport.Domain.Entities.Audit;
@@ -111,9 +113,37 @@ public class AuditBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TR
             entityType,
             entityId.Value,
             oldValues: null,
-            newValues: action == "Deleted" ? null : request);
+            newValues: action == "Deleted" ? null : Redact(request));
 
         await _auditService.LogAsync(auditLog, ct);
+    }
+
+    /// <summary>
+    /// A real gap found while auditing this behavior: <c>CreateUserCommand.Password</c> was being
+    /// serialized verbatim into <see cref="AuditLog.NewValues"/>, putting a newly created staff
+    /// account's plaintext password into the audit trail and onto the audit-log screen — exactly
+    /// what US-115/NFR-5 ("credentials never appear anywhere") forbids. This is generic across every
+    /// auditable command rather than special-cased to <c>CreateUserCommand</c>, on the same
+    /// "generic across every auditable command" principle the rest of this behavior follows: any
+    /// property whose name contains "password" or "secret" is replaced with a fixed placeholder
+    /// before serialization, so a future command with a credential-shaped field is covered too.
+    /// </summary>
+    private static object? Redact(TRequest request)
+    {
+        var node = JsonSerializer.SerializeToNode(request);
+        if (node is JsonObject obj)
+        {
+            foreach (var key in obj.Select(kv => kv.Key).ToList())
+            {
+                if (key.Contains("password", StringComparison.OrdinalIgnoreCase) ||
+                    key.Contains("secret", StringComparison.OrdinalIgnoreCase))
+                {
+                    obj[key] = "***REDACTED***";
+                }
+            }
+        }
+
+        return node;
     }
 
     /// <summary>
