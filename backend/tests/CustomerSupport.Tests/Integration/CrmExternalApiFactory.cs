@@ -38,6 +38,9 @@ public sealed class CrmExternalApiFactory : WebApplicationFactory<externalapi::P
     /// with the app secret stored protected and only restored at the boundary.</summary>
     public Task SeedWhatsAppGatewayAsync(string baseUrl) => GatewayTestData.SeedWhatsAppGatewayAsync(Services, baseUrl);
 
+    /// <summary>Seeds the SmsGateway configuration TwilioSignatureVerifier reads (CC-40/CC-41).</summary>
+    public Task SeedSmsGatewayAsync(string baseUrl) => GatewayTestData.SeedSmsGatewayAsync(Services, baseUrl);
+
     /// <summary>
     /// Records an Agent reply on the shared database and delivers it through the real
     /// <see cref="ChatMessagePushedConsumer"/> — the single source of the live-chat push — so the

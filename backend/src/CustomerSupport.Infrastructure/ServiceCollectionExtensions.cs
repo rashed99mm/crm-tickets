@@ -1,4 +1,5 @@
 using CustomerSupport.Application.Ai;
+using CustomerSupport.Application.Channels;
 using CustomerSupport.Application.Common.Options;
 using CustomerSupport.Application.Interfaces;
 using CustomerSupport.Domain.Entities.Identity;
@@ -65,7 +66,29 @@ public static class ServiceCollectionExtensions
         services.AddScoped<QuickReplySeeder>();
         services.AddScoped<ContentCategorySeeder>();
         services.AddScoped<ContentSeeder>();
-        services.AddSingleton<IExternalApiConfigurationProvider, DatabaseExternalApiProvider>();
+        // CC-30/CC-31/CC-32/CC-33 — the mock/real channel toggle. Fails startup outright if
+        // someone leaves it on in Production; a mock gateway that silently discards customer
+        // notifications is worse than an outage, since every send reports success.
+        services.Configure<ChannelOptions>(configuration.GetSection(ChannelOptions.SectionName));
+
+        var channelOptions = configuration.GetSection(ChannelOptions.SectionName).Get<ChannelOptions>()
+            ?? new ChannelOptions();
+        var channelMockGuard = ChannelMockGuard.Validate(
+            channelOptions.UseMocks,
+            configuration["ASPNETCORE_ENVIRONMENT"] ?? configuration["DOTNET_ENVIRONMENT"]);
+        if (!channelMockGuard.IsLegal)
+        {
+            throw new InvalidOperationException(channelMockGuard.Error);
+        }
+
+        services.AddSingleton<DatabaseExternalApiProvider>();
+        services.AddSingleton<IExternalApiConfigurationProvider>(sp =>
+        {
+            var inner = sp.GetRequiredService<DatabaseExternalApiProvider>();
+            return channelOptions.UseMocks
+                ? new MockRoutingExternalApiConfigurationProvider(inner, channelOptions)
+                : inner;
+        });
         services.AddSingleton<IDateTimeService, DateTimeService>();
         
         services.ConfigureMessaging(configuration);
@@ -81,7 +104,24 @@ public static class ServiceCollectionExtensions
         services.AddScoped<CustomerSupport.Application.Notifications.INotificationChannelSender, CustomerSupport.Infrastructure.Notifications.InAppNotificationChannelSender>();
         services.AddScoped<CustomerSupport.Application.Notifications.INotificationDispatcher, CustomerSupport.Infrastructure.Notifications.NotificationDispatcher>();
         services.AddScoped<CustomerSupport.Application.Notifications.INotificationGateway, CustomerSupport.Infrastructure.Notifications.NotificationGateway>();
-        services.AddScoped<CustomerSupport.Application.Channels.IWebhookSignatureVerifier, CustomerSupport.Infrastructure.Channels.MetaSignatureVerifier>();
+        // CC-40/CC-41 (spec A22) — two providers now sign webhooks, with different algorithms:
+        // Meta hashes the raw body with SHA256, Twilio hashes the URL plus sorted form parameters
+        // with SHA1. Both are registered as concrete types and reached only through the composite;
+        // registering both against IWebhookSignatureVerifier directly would resolve to whichever
+        // came last and silently break the other channel.
+        services.AddScoped<CustomerSupport.Infrastructure.Channels.MetaSignatureVerifier>();
+        services.AddScoped<CustomerSupport.Infrastructure.Channels.TwilioSignatureVerifier>();
+        services.AddScoped<CustomerSupport.Application.Channels.IWebhookSignatureVerifier>(sp =>
+            new CustomerSupport.Infrastructure.Channels.CompositeWebhookSignatureVerifier(
+            [
+                sp.GetRequiredService<CustomerSupport.Infrastructure.Channels.MetaSignatureVerifier>(),
+                sp.GetRequiredService<CustomerSupport.Infrastructure.Channels.TwilioSignatureVerifier>(),
+            ]));
+
+        // CC-47 / spec A24 — singleton: the window lives in the instance, so a scoped or transient
+        // registration would hand every request an empty counter and throttle nothing.
+        services.AddSingleton<CustomerSupport.Application.Channels.IWebFormSubmissionThrottle,
+            CustomerSupport.Infrastructure.Channels.WebFormSubmissionThrottle>();
 
         // Profile-update OTP verification (AC-439..AC-445). The pepper is configurable; a fixed
         // fallback keeps local development working without a setting but must be overridden in prod.

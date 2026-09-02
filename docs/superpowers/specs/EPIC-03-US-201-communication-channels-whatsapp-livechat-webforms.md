@@ -3,14 +3,20 @@
 **Epic:** [`EPIC-03` Communication channels](../../requirements/epics/EPIC-03-communication-channels.md)
 **Features:** `FEAT-24` WhatsApp · `FEAT-25` SMS conversations · `FEAT-26` Live chat · `FEAT-27` Web forms ·
 `FEAT-35` Mock provider gateway and the mock/real toggle
-**Status:** Partly implemented, **with a red test on the outbound path**. The "no implementation code
-exists" claim this header carried until 2026-09-02 was wrong: `CC-1`–`CC-9` are built. But the first
-correction overshot — it listed `CC-10`/`CC-13` as built from the *existence* of tests, and running
-them showed the outbound send is broken for every channel (`A19`, fixed by `CC-51`). See
+**Status:** Outbound + the mock/real toggle (`CC-1`–`CC-9`, `CC-30`–`CC-51`) implemented and verified —
+see [`EPIC-03-US-201-feat-35-channel-mock-gateway`](../plans/EPIC-03-US-201-feat-35-channel-mock-gateway/README.md)
+for the full task-by-task record, including `CC-51`'s fix for the outbound-send defect this header
+used to describe as red. **Not yet committed** — implemented and verified this session, commit pending.
+Inbound completion (`CC-40`–`CC-44`, the revised `CC-47`) is specced in
+[Amendment — 2026-09-02, inbound completion](#amendment--2026-09-02-inbound-completion) below and is
+now **implemented and verified, also uncommitted** — see
+[`EPIC-03-US-201-feat-35-inbound-completion`](../plans/EPIC-03-US-201-feat-35-inbound-completion/README.md),
+including `A27`, which corrects this amendment's own mistaken claim that `CC-44` was a one-line fix.
+`CC-45`/`CC-46` (live chat, abandoned session) remain deferred by instruction. See
 [Amendment — 2026-09-02](#amendment--2026-09-02-mock-provider-gateway-mockreal-toggle-and-email-inbound)
-for the verified build state, and
+for the plan-1 verified build state, and
 [`docs/superpowers/plans/EPIC-03-US-201-feat-24-communication-channels/`](../plans/EPIC-03-US-201-feat-24-communication-channels/)
-for the task breakdown.
+for the original `FEAT-24` task breakdown.
 
 ## Problem
 
@@ -568,6 +574,14 @@ only, and the other two return responses **indistinguishable** from the valid on
 nothing (`CC-20`–`CC-23` unchanged; this criterion is that a caller outside the process cannot tell
 the defence fired).
 
+> **Revised by the [inbound-completion amendment](#amendment--2026-09-02-inbound-completion)
+> below.** "The gateway's web-form poster" assumed a Node script exercising some endpoint; the
+> portal-app's own `web-form` feature (built independently, ahead of this criterion, against
+> `/api/external/webform/submit`) makes the web form a real screen in the customer portal instead.
+> The response contract (`201`, indistinguishable honeypot/rate-limit responses) is unchanged; only
+> who the caller is changes. Left in place rather than rewritten, same reasoning as the header note
+> at the top of this document.
+
 #### Consolidation this feature requires (`FEAT-35`)
 
 **CC-48.** Given the permitted channel names, when a new channel is added, then exactly one list is
@@ -637,3 +651,149 @@ support them.
 - Replacing the gateway's existing house-shaped `email`/`sms` routes, or migrating whatever else
   consumes them.
 - Voice/phone, unchanged from the original out-of-scope list.
+
+## Amendment — 2026-09-02, inbound completion
+
+Plan 1 (above) built the outbound side and the mock/real toggle. This amendment covers what plan 1
+explicitly deferred: the inbound half for the three channels with a real or portal-native transport —
+`CC-40`–`CC-44` and the revised `CC-47`. `CC-45`/`CC-46` (live-chat visitor simulator, abandoned-session
+job) are **deferred to a later pass, by instruction** — nothing below implements them, and nothing
+above required them to ship together.
+
+### Assumptions
+
+- **A20.** The web-form's client is the **portal-app itself**, not a gateway simulator. This narrows
+  `A16` for web forms specifically: `frontend/projects/portal-app/src/app/features/web-form/` and
+  `frontend/projects/common/src/lib/channels/web-form.api.ts` already exist, built ahead of this
+  criterion, and already target `POST /api/external/webform/submit` with a
+  `{name, email, subject, description, honeypot?}` request and a `{reference, success}` response. The
+  backend endpoint is built to that exact, already-fixed contract rather than the other way around.
+  `A16`'s reasoning for live chat (no third party, so its artifact is a simulator) is unchanged.
+- **A21.** Email inbound carries **no signature verification**. SendGrid's Inbound Parse (unlike its
+  separate Event Webhook feature) does not sign the payloads it posts; `CC-42` does not ask for one.
+  The email inbound endpoint is anonymous by necessity (`CC-5`'s reasoning) but authenticates nothing
+  about the sender beyond what's in the payload itself — consistent with email being spoofable by
+  design and out of this spec's threat model to solve.
+- **A22.** `IWebhookSignatureVerifier` gets a **second implementation and a composite dispatcher**,
+  not a second interface. `MetaSignatureVerifier.cs:23` today hard-gates
+  `if (provider != "WhatsApp") return false` and is the only registration. A new
+  `TwilioSignatureVerifier` implements the same interface for `provider == "SMS"`
+  (HMAC-SHA1 over the request URL plus alphabetically-sorted POST parameters, per Twilio's actual
+  scheme — not Meta's raw-body SHA256), and a `CompositeWebhookSignatureVerifier` — the only class
+  actually registered for `IWebhookSignatureVerifier` — dispatches to whichever of the two matches
+  `provider`. Neither webhook controller's shape changes.
+- **A23.** The shared `IngestInboundChannelMessageCommand` gains an **optional `Subject`**, used for
+  the new ticket's subject when creating one, falling back to today's
+  `"{Channel} — {CustomerName}"` default when absent. `IngestInboundChannelMessageCommandHandler.cs:74`
+  synthesizes a subject unconditionally today, which is correct for WhatsApp/SMS (no subject concept)
+  but silently discards the web-form's explicit subject field and the email's `Subject:` header if
+  left unchanged. Backward compatible: existing WhatsApp/SMS call sites pass nothing and see no
+  behaviour change; `IngestInboundChannelMessageTests.cs`'s existing assertions are unaffected.
+- **A24.** The web-form's rate limit **fakes success rather than answering `429`**, per `CC-47`'s own
+  "indistinguishable" requirement. The platform's existing `AddRateLimiter` middleware
+  (`WebApiServiceExtensions.cs:49-98`) always answers a distinguishable `429` on
+  `options.RejectionStatusCode`, which would leak exactly the signal `CC-47` says must not leak. The
+  web-form endpoint therefore tracks its own per-IP fixed window in the handler (same shape as the
+  `"login"` policy: `PermitLimit`/`Window` per source IP) and, on exceeding it, returns the same
+  `201` + fake reference the honeypot path already returns — no ticket created, no distinguishable
+  status code.
+- **A25.** The web form's returned `reference` is fetched by **one extra read**, not by widening
+  `IngestInboundChannelMessageCommand`'s response shape. The shared command returns `Response<Guid>`
+  (the message id) today, asserted directly by `IngestInboundChannelMessageTests.cs:83,161`;
+  `WebFormController` is the only caller that needs a human-readable ticket reference synchronously,
+  so it reads `TicketMessage.TicketId` → `Ticket.Reference` after ingesting rather than changing a
+  contract three other controllers (one existing, two new in this amendment) would then all have to
+  accommodate. **The read goes through MediatR as a dedicated
+  `GetTicketReferenceForMessageQuery`**, not a repository call in the controller: every controller in
+  both hosts dispatches through `IMediator` and none injects `IRepository<T>`
+  (`GetTicketMessagesQueryHandler.cs` is the shape to copy), so a raw repository read in a controller
+  would be the only one of its kind in the codebase.
+- **A26.** The gateway gains **inbound simulator scripts for SMS and email**, extending `A13`'s
+  dev-only surface to the inbound direction the same way plan 1's outbound mocks did for sends. Each
+  script builds a provider-shaped payload (Twilio form-encoded fields for SMS, SendGrid Inbound
+  Parse's multipart fields for email), signs the SMS one with the shared `WEBHOOK_SECRET` using
+  Twilio's real algorithm, and `POST`s to `${CALLBACK_BASE_URL}/api/channels/{sms,email}/webhook` —
+  so `CC-40`–`CC-43` are provable end-to-end without a real Twilio or SendGrid account, exactly as
+  plan 1's provider mocks did for the outbound side. The web form has no equivalent script (`A20`):
+  the portal-app is already the real client.
+
+- **A27 — correcting `CC-44`'s "one-line fix", found while grounding the plan.** The outbound reply
+  block at `RecordTicketMessageCommandHandler.cs:72-89` is not channel-agnostic: it loads
+  `customer?.Phone`, skips the send when it is blank (logging a warning), and dispatches with
+  `PhoneNumber: phone, Email: null`. Adding `or "Email"` to the gate alone would therefore dispatch
+  every email reply with a null `Email` and the customer's phone number in `PhoneNumber` — which
+  `EmailNotificationChannelSender` cannot deliver. The corrected shape, following
+  `RequestOtpCommandHandler.cs:83-92`'s precedent (`Email:` set for the email channel,
+  `PhoneNumber:` set for phone channels, never both):
+  the block resolves the customer once, then selects the contact by channel — phone for
+  `WhatsApp`/`SMS`, `Customer.Email` for `Email` — and dispatches with only the matching field
+  populated. **The email branch additionally skips addresses ending `@channel.invalid`**: those are
+  the deterministic RFC-2606 placeholders `IngestInboundChannelMessageCommandHandler.cs:115` mints
+  for phone-only customers to satisfy `Customer.Email`'s non-nullable contract, and they are not
+  deliverable. Skipping logs the same warning shape the missing-phone path already uses, so a
+  silently-undeliverable reply is visible in the log rather than recorded as sent.
+### Acceptance criteria (interpretive notes; `CC-40`–`CC-44` and `CC-47` are unchanged in substance)
+
+No new `CC-n` ids are added — `CC-40`–`CC-44` and the revised `CC-47` (see the note above `CC-47`)
+already state the observable behaviour this amendment implements. What follows resolves how, not
+what:
+
+- `CC-40`/`CC-41` are satisfied by a new `SmsWebhookController` at `POST /api/channels/sms/webhook`,
+  built to the same shape as `WhatsAppWebhookController.cs` (anonymous only on the action, raw body
+  read before model binding, signature checked before any database write), using the composite
+  verifier from `A22`.
+- `CC-42`/`CC-43` are satisfied by a new `EmailWebhookController` at
+  `POST /api/channels/email/webhook`, `[Consumes("multipart/form-data")]`, reading SendGrid Inbound
+  Parse's `from`/`subject`/`text`/`envelope` fields. Idempotency (`CC-43`) uses the `Message-ID:` line
+  parsed out of the raw `headers` field — Inbound Parse has no separate id field, but forwards the
+  original email's headers verbatim.
+- `CC-44` — **corrected 2026-09-02 while grounding the plan; see `A27`.** This was written above as
+  "a one-line fix" to `RecordTicketMessageCommandHandler.cs:72`'s channel gate. It is not. The block
+  it would join (`:72-89`) resolves the customer's **phone** and dispatches with
+  `PhoneNumber: phone, Email: null`; email needs the inverse, and needs a placeholder-address guard.
+  `A27` carries the corrected design.
+- `CC-47` is satisfied by a new `WebFormController` at `POST /api/external/webform/submit`, matching
+  `WebFormApi`'s existing request/response contract exactly (`A20`), applying the honeypot check and
+  the per-IP rate limit (`A24`) before the real path, and returning the reference via `A25`'s extra
+  read.
+
+### Design
+
+**Signature verification becomes a composite.** `TwilioSignatureVerifier` (new,
+`Infrastructure/Channels/`) mirrors `MetaSignatureVerifier.cs`'s shape exactly — a pure function of
+`(provider, signature, requestUrl, rawBody)` — but reads its secret from `SmsGateway`'s
+`Auth.Value` and computes Twilio's `Base64(HMAC-SHA1(url + sorted-and-concatenated POST params))`
+instead of Meta's `hex(HMAC-SHA256(rawBody))`. `CompositeWebhookSignatureVerifier` (new) holds both
+verifiers and is the only one registered for `IWebhookSignatureVerifier` in
+`ServiceCollectionExtensions.cs:107` (replacing the direct `MetaSignatureVerifier` registration).
+Neither existing webhook controller nor its tests change shape — they already depend on the
+interface, not the concrete class.
+
+**The two new webhook controllers follow `WhatsAppWebhookController.cs` almost verbatim**: no
+class-level `[AllowAnonymous]`, buffer and re-read the raw body, verify before deserializing, return
+`200` once authenticity is established regardless of downstream outcome (a failed ingestion is not a
+retryable webhook), `400`/`401` before any database write otherwise. `SmsWebhookController` reads
+`Request.Form` (Twilio posts `application/x-www-form-urlencoded`); `EmailWebhookController` reads
+`Request.Form` under `[Consumes("multipart/form-data")]`.
+
+**`WebFormController` composes three concerns in order**: honeypot (any non-empty value in the
+honeypot field), then the per-IP fixed-window check (`A24`), then — only if both pass — the real
+`IngestInboundChannelMessageCommand` call with `Channel = "WebForm"` and the new `Subject` (`A23`),
+followed by the extra reference read (`A25`). The honeypot and rate-limit paths both return
+`{reference: "TKT-" + <same digit width the real generator uses>, success: true}` built from a
+non-persisted random value — visually identical to a real reference, backed by nothing.
+
+**Gateway-side additions** (`cms-integration-gateway/scripts/`): `simulate-sms-inbound.js` and
+`simulate-email-inbound.js`, following the existing `scripts/test-*.js` convention — read
+`CALLBACK_BASE_URL`/`WEBHOOK_SECRET` from `config.js` (already added in plan 1's Task 13), build the
+provider-shaped payload, sign it where applicable, `POST` it, and print the response. Exposed via
+`npm run simulate:sms` / `npm run simulate:email`, matching `test:sms`/`test:email`'s existing
+pattern.
+
+### Out of scope (additions, this amendment)
+
+- `CC-45`/`CC-46` (live-chat visitor simulator, abandoned-session job) — deferred to a later pass, by
+  instruction. Not touched by anything in this amendment.
+- A web-form simulator script (`A20`/`A26`) — the portal-app is the real client; scripting a fake one
+  would test nothing the real screen doesn't already exercise.
+- CAPTCHA, real Twilio/SendGrid account procurement — unchanged from `OQ-CC-1`/`OQ-CC-2`.
