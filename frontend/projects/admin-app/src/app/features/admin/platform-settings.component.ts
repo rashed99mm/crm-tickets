@@ -8,6 +8,7 @@ import {
   BrandingStore,
   CmsIntegrationApi,
   CsButton,
+  CsCard,
   CsEmptyState,
   CsErrorState,
   CsIcon,
@@ -30,6 +31,7 @@ import {
   selector: 'admin-platform-settings',
   imports: [
     ReactiveFormsModule,
+    CsCard,
     CsIcon,
     CsButton,
     CsLoadingState,

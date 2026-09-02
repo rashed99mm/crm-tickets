@@ -21,13 +21,11 @@ public class GetBrandingQueryHandler(
         var primary = settings.FirstOrDefault(s => s.Key == BrandingKeys.PrimaryColor);
         var accent = settings.FirstOrDefault(s => s.Key == BrandingKeys.AccentColor);
 
-        if (logo is null && primary is null && accent is null)
-        {
-            return messages.Fail<BrandingDto>(
-                ApplicationErrors.PlatformSetting.NOT_FOUND,
-                MessageType.NotFound);
-        }
-
+        // Unconfigured branding is not a missing resource. Nothing seeds the three brand.* settings,
+        // and this endpoint is public and called by both shells on load — so failing here 404'd on
+        // every page load of a fresh install, and painted "Setting not found" across the settings
+        // screen's Global Branding panel. The defaults below are the answer in that case; the old
+        // guard computed them and then threw them away.
         return messages.Success(
             new BrandingDto(
                 LogoUrl: logo?.Value ?? "",
