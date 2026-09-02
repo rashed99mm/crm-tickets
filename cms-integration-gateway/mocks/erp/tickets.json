@@ -1,0 +1,22 @@
+{
+  "success": true,
+  "source": "CMS-ERP-MOCK",
+  "tickets": [
+    {
+      "externalId": "ERP-1001",
+      "customerName": "Aisha Al-Harbi",
+      "customerEmail": "aisha.alharbi@example.com",
+      "subject": "ERP invoice is not visible",
+      "description": "The latest invoice was approved in ERP but is not visible in the customer account.",
+      "priority": "High"
+    },
+    {
+      "externalId": "ERP-1002",
+      "customerName": "Omar Nasser",
+      "customerEmail": "omar.nasser@example.com",
+      "subject": "Warehouse delivery status mismatch",
+      "description": "The ERP shipment status does not match the delivery update received today.",
+      "priority": "Normal"
+    }
+  ]
+}

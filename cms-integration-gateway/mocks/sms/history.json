@@ -1,0 +1,31 @@
+[
+  {
+    "messageId": "SMS-550e8400-e29b-41d4-a716-446655440000",
+    "status": "delivered",
+    "to": "+966501234567",
+    "from": "CCE-Carbon",
+    "body": "Your CCE Carbon verification code is 123456",
+    "sentAt": "2024-01-15T10:30:00Z",
+    "deliveredAt": "2024-01-15T10:30:05Z"
+  },
+  {
+    "messageId": "SMS-550e8400-e29b-41d4-a716-446655440001",
+    "status": "failed",
+    "to": "+966500000000",
+    "from": "CCE-Carbon",
+    "body": "Your CCE Carbon verification code is 654321",
+    "error": {
+      "code": "INVALID_PHONE_NUMBER",
+      "message": "The phone number +966500000000 is invalid."
+    },
+    "sentAt": "2024-01-15T11:00:00Z"
+  },
+  {
+    "messageId": "SMS-550e8400-e29b-41d4-a716-446655440002",
+    "status": "queued",
+    "to": "+966509998877",
+    "from": "CCE-Carbon",
+    "body": "New blog post from @sustainability: '10 Ways to Reduce Your Carbon Footprint'",
+    "sentAt": "2024-01-15T12:00:00Z"
+  }
+]

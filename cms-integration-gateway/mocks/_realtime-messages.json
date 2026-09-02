@@ -1,0 +1,1363 @@
+[
+  {
+    "id": "msg-1788350907932-8n1yoyja9",
+    "type": "whatsapp",
+    "timestamp": "2026-09-02T12:08:27.932Z",
+    "payload": {
+      "messaging_product": "whatsapp",
+      "to": "+20 100 000 0000",
+      "type": "text",
+      "text": {
+        "body": "testing the mock"
+      }
+    },
+    "response": {
+      "$response": true,
+      "status": 200,
+      "body": {
+        "messaging_product": "whatsapp",
+        "contacts": [
+          {
+            "input": "+20 100 000 0000",
+            "wa_id": "201000000000"
+          }
+        ],
+        "messages": [
+          {
+            "id": "wamid.NmFjZDUwZGQtMDU4NC00NTM2LTlkOGUtYjk3MGRhY2JjY2M2"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "msg-1788350348766-tstzs0zmb",
+    "type": "whatsapp",
+    "timestamp": "2026-09-02T11:59:08.766Z",
+    "payload": {
+      "messaging_product": "whatsapp",
+      "to": "+19995550001",
+      "type": "text",
+      "text": {
+        "body": "hi"
+      }
+    },
+    "response": {
+      "$response": true,
+      "status": 200,
+      "body": {
+        "messaging_product": "whatsapp",
+        "contacts": [
+          {
+            "input": "+19995550001",
+            "wa_id": "19995550001"
+          }
+        ],
+        "messages": [
+          {
+            "id": "wamid.OWViNjMxYmEtYTU0NS00ZTMwLTljNWItZDNlOTU3YmFjNTBm"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "msg-1788350348727-k5714z6v5",
+    "type": "whatsapp",
+    "timestamp": "2026-09-02T11:59:08.727Z",
+    "payload": {
+      "messaging_product": "whatsapp",
+      "to": "+19995550001",
+      "type": "text",
+      "text": {
+        "body": "hi"
+      }
+    },
+    "response": {
+      "$response": true,
+      "status": 503,
+      "body": {
+        "error": {
+          "message": "Temporarily unavailable",
+          "type": "OAuthException",
+          "code": 500,
+          "fbtrace_id": "b37c4fc8-da88-4649-80d6-7eab28b9a97b"
+        }
+      }
+    }
+  },
+  {
+    "id": "msg-1788350348690-oa0u2meze",
+    "type": "whatsapp",
+    "timestamp": "2026-09-02T11:59:08.690Z",
+    "payload": {
+      "messaging_product": "whatsapp",
+      "to": "+19995550001",
+      "type": "text",
+      "text": {
+        "body": "hi"
+      }
+    },
+    "response": {
+      "$response": true,
+      "status": 503,
+      "body": {
+        "error": {
+          "message": "Temporarily unavailable",
+          "type": "OAuthException",
+          "code": 500,
+          "fbtrace_id": "b3bc67df-a750-4ddb-b283-c40aede5981c"
+        }
+      }
+    }
+  },
+  {
+    "id": "msg-1788350348653-cxy3qidmr",
+    "type": "email",
+    "timestamp": "2026-09-02T11:59:08.653Z",
+    "payload": {
+      "personalizations": [
+        {
+          "to": [
+            {
+              "email": "permanent-fail@mock.test"
+            }
+          ]
+        }
+      ],
+      "from": {
+        "email": "a@b.com"
+      },
+      "subject": "x",
+      "content": [
+        {
+          "type": "text/plain",
+          "value": "y"
+        }
+      ]
+    },
+    "response": {
+      "$response": true,
+      "status": 400,
+      "body": {
+        "errors": [
+          {
+            "message": "Recipient permanent-fail@mock.test is not deliverable",
+            "field": null,
+            "help": "INVALID_RECIPIENT"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "msg-1788350333165-i8dfflfte",
+    "type": "sms",
+    "timestamp": "2026-09-02T11:58:53.165Z",
+    "payload": {
+      "to": "+966501234567",
+      "body": "hi"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-4bd08219-f586-430c-a06f-85d9aec0e5a4",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "hi",
+      "timestamp": "2026-09-02T11:58:53.165Z"
+    }
+  },
+  {
+    "id": "msg-1788350333136-vm00z8snd",
+    "type": "whatsapp",
+    "timestamp": "2026-09-02T11:58:53.136Z",
+    "payload": {
+      "messaging_product": "whatsapp",
+      "to": "+15559998888",
+      "type": "text",
+      "text": {
+        "body": "hi"
+      }
+    },
+    "response": {
+      "$response": true,
+      "status": 200,
+      "body": {
+        "messaging_product": "whatsapp",
+        "contacts": [
+          {
+            "input": "+15559998888",
+            "wa_id": "15559998888"
+          }
+        ],
+        "messages": [
+          {
+            "id": "wamid.NTAzZjY5MjYtMzFjOC00ODY5LWEzN2ItMzdhMzQxMDUzY2Y4"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "id": "msg-1788350333127-liwh4jihs",
+    "type": "email",
+    "timestamp": "2026-09-02T11:58:53.127Z",
+    "payload": {
+      "personalizations": [
+        {
+          "to": [
+            {
+              "email": "customer@example.com"
+            }
+          ]
+        }
+      ],
+      "from": {
+        "email": "support@commandcenter.local"
+      },
+      "subject": "Hello",
+      "content": [
+        {
+          "type": "text/plain",
+          "value": "Body"
+        }
+      ]
+    },
+    "response": {
+      "$response": true,
+      "status": 202,
+      "headers": {
+        "X-Message-Id": "sg-14646fa8-5195-489f-8d15-14dd7b5bf80d"
+      },
+      "body": null
+    }
+  },
+  {
+    "id": "msg-1780323685565-t3ijz9z6p",
+    "type": "email",
+    "timestamp": "2026-06-01T14:21:25.565Z",
+    "payload": {
+      "to": "ahmed.althani@example.qa",
+      "from": "no-reply@cce.local",
+      "subject": "Verification Code",
+      "html": "Your verification code is: 402160. Valid for 5 minutes.",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-51e48c78-7045-4f59-99c8-f75529579b28",
+      "to": "ahmed.althani@example.qa",
+      "from": "no-reply@cce.local",
+      "subject": "Verification Code",
+      "timestamp": "2026-06-01T14:21:25.565Z"
+    }
+  },
+  {
+    "id": "msg-1779791464157-8juix8quu",
+    "type": "sms",
+    "timestamp": "2026-05-26T10:31:04.157Z",
+    "payload": {
+      "to": "+0112306625662",
+      "message": "Your phone change verification code is: 344895. Valid for 5 minutes.",
+      "body": "Your phone change verification code is: 344895. Valid for 5 minutes."
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-e0048a94-e703-4ecc-b1e6-f3dd1472b0c3",
+      "to": "+0112306625662",
+      "from": "CCE-Carbon",
+      "body": "Your phone change verification code is: 344895. Valid for 5 minutes.",
+      "timestamp": "2026-05-26T10:31:04.157Z"
+    }
+  },
+  {
+    "id": "msg-1779791132334-wizzot5k9",
+    "type": "email",
+    "timestamp": "2026-05-26T10:25:32.334Z",
+    "payload": {
+      "to": "faisal22.alharbi@example.sa",
+      "from": "no-reply@cce.local",
+      "subject": "Confirm Email Change",
+      "html": "Your email change verification code is: 839194. Valid for 5 minutes.",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-8f341eee-48e5-425d-ad57-aad3c6ffe8fb",
+      "to": "faisal22.alharbi@example.sa",
+      "from": "no-reply@cce.local",
+      "subject": "Confirm Email Change",
+      "timestamp": "2026-05-26T10:25:32.334Z"
+    }
+  },
+  {
+    "id": "msg-1779790037708-fwztj3sak",
+    "type": "email",
+    "timestamp": "2026-05-26T10:07:17.708Z",
+    "payload": {
+      "to": "faisal11.alharbi@example.sa",
+      "from": "no-reply@cce.local",
+      "subject": "Confirm Email Change",
+      "html": "Your email change verification code is: 598640. Valid for 5 minutes.",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-b31baa78-6a01-4bb8-85fd-823299113b56",
+      "to": "faisal11.alharbi@example.sa",
+      "from": "no-reply@cce.local",
+      "subject": "Confirm Email Change",
+      "timestamp": "2026-05-26T10:07:17.708Z"
+    }
+  },
+  {
+    "id": "msg-1779785889005-kgkle20bf",
+    "type": "email",
+    "timestamp": "2026-05-26T08:58:09.006Z",
+    "payload": {
+      "to": "user1@cce.local",
+      "from": "no-reply@cce.local",
+      "subject": "Confirm Email Change",
+      "html": "Your email change verification code is: 222943. Valid for 5 minutes.",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-f1756e85-2a95-46a1-8761-c90676a2b6cd",
+      "to": "user1@cce.local",
+      "from": "no-reply@cce.local",
+      "subject": "Confirm Email Change",
+      "timestamp": "2026-05-26T08:58:09.005Z"
+    }
+  },
+  {
+    "id": "msg-1779785676044-7ps8w9c0r",
+    "type": "email",
+    "timestamp": "2026-05-26T08:54:36.044Z",
+    "payload": {
+      "to": "user1@cce.local",
+      "from": "no-reply@cce.local",
+      "subject": "Confirm Email Change",
+      "html": "Your email change verification code is: 285504. Valid for 5 minutes.",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-02a7854d-2145-4b15-b179-374d0e5aee62",
+      "to": "user1@cce.local",
+      "from": "no-reply@cce.local",
+      "subject": "Confirm Email Change",
+      "timestamp": "2026-05-26T08:54:36.043Z"
+    }
+  },
+  {
+    "id": "msg-1779622289166-swtde0ong",
+    "type": "sms",
+    "timestamp": "2026-05-24T11:31:29.166Z",
+    "payload": {
+      "to": "+0966501234567",
+      "message": "Your code: 116697",
+      "body": "Your code: 116697"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-18481157-47be-4e9b-a688-a1e7c8f1c2a1",
+      "to": "+0966501234567",
+      "from": "CCE-Carbon",
+      "body": "Your code: 116697",
+      "timestamp": "2026-05-24T11:31:29.166Z"
+    }
+  },
+  {
+    "id": "msg-1779622138953-07s5d94s5",
+    "type": "sms",
+    "timestamp": "2026-05-24T11:28:58.953Z",
+    "payload": {
+      "to": "+0966501234567",
+      "message": "Your code: 762977"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-e78bbbcb-188b-48ec-9050-cea31d869aef",
+      "to": "+0966501234567",
+      "from": "CCE-Carbon",
+      "body": null,
+      "timestamp": "2026-05-24T11:28:58.953Z"
+    }
+  },
+  {
+    "id": "msg-1779621853700-vh8b87qj4",
+    "type": "sms",
+    "timestamp": "2026-05-24T11:24:13.700Z",
+    "payload": {
+      "to": "+0966501234567",
+      "message": "Your code: 870548"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-edf6f1bf-664e-4188-900b-091f67863cab",
+      "to": "+0966501234567",
+      "from": "CCE-Carbon",
+      "body": null,
+      "timestamp": "2026-05-24T11:24:13.700Z"
+    }
+  },
+  {
+    "id": "msg-1779620622636-hn16ndphc",
+    "type": "sms",
+    "timestamp": "2026-05-24T11:03:42.636Z",
+    "payload": {
+      "to": "0966501234567",
+      "message": "Your code: 523955"
+    },
+    "response": {
+      "status": "failed",
+      "messageId": null,
+      "to": "0966501234567",
+      "error": {
+        "code": "MISSING_COUNTRY_CODE",
+        "message": "Phone number must include a country code (e.g., +966)."
+      },
+      "timestamp": "2026-05-24T11:03:42.636Z"
+    }
+  },
+  {
+    "id": "msg-1779617416738-lyex3rvya",
+    "type": "email",
+    "timestamp": "2026-05-24T10:10:16.738Z",
+    "payload": {
+      "to": "mohamed.rashed1216@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Mohamed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=mohamed.rashed1216%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElWNDFtbnUvdGordy9vbnM0anR6Q2VKcVRZampOSm9RR1lEZnVDVjAwSmhqbWZWVFREWFI5a0lGaEgyMyt1NTU3WW1pMHh0dmExOFFGYk9KMWltMERDb3BBSVQ4RmVIVXAwRDlMTTNlQ1NrQzNXV2tYanU5OElzYllCU0FXbTBJdlR4MXpiTXhNOFFCMEFNRU5IS2dLOXkvalBNM05NQW9iRUcwTnkvVTZSeEtNeTBVdVN1b2JqZDhoWGRhZzQ3UWs3M2VBMk9FTzEySlJuZFA1eVc4dUYv",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-23f81ca6-205e-4d28-96ec-d9b39e3180a5",
+      "to": "mohamed.rashed1216@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T10:10:16.738Z"
+    }
+  },
+  {
+    "id": "msg-1779608931317-wax64kr1f",
+    "type": "sms",
+    "timestamp": "2026-05-24T07:48:51.317Z",
+    "payload": {
+      "to": "0598878787",
+      "message": "Your code: 912491"
+    },
+    "response": {
+      "status": "failed",
+      "messageId": null,
+      "to": "0598878787",
+      "error": {
+        "code": "MISSING_COUNTRY_CODE",
+        "message": "Phone number must include a country code (e.g., +966)."
+      },
+      "timestamp": "2026-05-24T07:48:51.317Z"
+    }
+  },
+  {
+    "id": "msg-1779608892098-tm7ca8ujn",
+    "type": "sms",
+    "timestamp": "2026-05-24T07:48:12.098Z",
+    "payload": {
+      "to": "0598878787",
+      "message": "Your code: 986400"
+    },
+    "response": {
+      "status": "failed",
+      "messageId": null,
+      "to": "0598878787",
+      "error": {
+        "code": "MISSING_COUNTRY_CODE",
+        "message": "Phone number must include a country code (e.g., +966)."
+      },
+      "timestamp": "2026-05-24T07:48:12.098Z"
+    }
+  },
+  {
+    "id": "msg-1779608865840-ghnnmw7py",
+    "type": "sms",
+    "timestamp": "2026-05-24T07:47:45.840Z",
+    "payload": {
+      "to": "0598878787",
+      "message": "Your code: 901631"
+    },
+    "response": {
+      "status": "failed",
+      "messageId": null,
+      "to": "0598878787",
+      "error": {
+        "code": "MISSING_COUNTRY_CODE",
+        "message": "Phone number must include a country code (e.g., +966)."
+      },
+      "timestamp": "2026-05-24T07:47:45.840Z"
+    }
+  },
+  {
+    "id": "msg-1779608853225-aqb9y4dey",
+    "type": "sms",
+    "timestamp": "2026-05-24T07:47:33.225Z",
+    "payload": {
+      "to": "0598878787",
+      "message": "Your code: 454707"
+    },
+    "response": {
+      "status": "failed",
+      "messageId": null,
+      "to": "0598878787",
+      "error": {
+        "code": "MISSING_COUNTRY_CODE",
+        "message": "Phone number must include a country code (e.g., +966)."
+      },
+      "timestamp": "2026-05-24T07:47:33.225Z"
+    }
+  },
+  {
+    "id": "msg-1779608786972-dy8hcbtt4",
+    "type": "sms",
+    "timestamp": "2026-05-24T07:46:26.972Z",
+    "payload": {
+      "to": "0598878787",
+      "message": "Your code: 316854"
+    },
+    "response": {
+      "status": "failed",
+      "messageId": null,
+      "to": "0598878787",
+      "error": {
+        "code": "MISSING_COUNTRY_CODE",
+        "message": "Phone number must include a country code (e.g., +966)."
+      },
+      "timestamp": "2026-05-24T07:46:26.972Z"
+    }
+  },
+  {
+    "id": "msg-1779608332627-hvhlusqle",
+    "type": "email",
+    "timestamp": "2026-05-24T07:38:52.627Z",
+    "payload": {
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Ahmed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=ahmed.7%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElWeFJVblNFaStYeTNHc3VVQ0xNMWEzVEtMVzROWWIyUjZMeVYrNkxqMXVheWoxM1FRM1ZrdEtweDdVMk5iQVp4eVUzdXlnYmJZWFF0RWlVVG1RNXNkUG83eTRKTjVFVXlDZHhpYUhvbFQ5ZE9BTUFwTzJFY3hEMkhIRHJkZ0VDekIwVzdScFZIaXBrUENYUGVJbldwVzUxRHZjZ005T1NMNXRuQ2lZczAwRnRURTFTb05uZU5RLzVla0JNQzZJVVFaek93eDlDcVFvT1NkaTE2RFpJazBV",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-947ac9aa-b3ff-42a6-aae7-d6ed75251c8e",
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T07:38:52.627Z"
+    }
+  },
+  {
+    "id": "msg-1779608167003-2gibfwt4w",
+    "type": "sms",
+    "timestamp": "2026-05-24T07:36:07.003Z",
+    "payload": {
+      "to": "0509784567",
+      "message": "مرحباً Ahmed، رابط إعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=ahmed.7%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElWZmhtYTdSZWFRSXhUOHkxcDgyWkhZb1o5eStnWkxlY1JiVENZblh0bzA3Z3RNaTlCalloVllqSTRNdERJUVJUOVVic0hwT3diaU9TTWhOY3ZwV25iTmk5VHBGbkY0MVI5czZmajZPRjhGZVc1cmticndQYTVTMEdpR0YwNzRFOGROU0lzWFFzUXl6SWwvN0p2MGo0NW02THN0N3VqMUJjMWlXZ2lMdko4dzRxSG1naVlmUTFBdE5Edk1mVEpKOVJ0WlFHRkdzTi9CWW16emdWaHB5Z1Nt"
+    },
+    "response": {
+      "status": "failed",
+      "messageId": null,
+      "to": "0509784567",
+      "error": {
+        "code": "MISSING_COUNTRY_CODE",
+        "message": "Phone number must include a country code (e.g., +966)."
+      },
+      "timestamp": "2026-05-24T07:36:07.003Z"
+    }
+  },
+  {
+    "id": "msg-1779608126487-bg3fhnmp8",
+    "type": "email",
+    "timestamp": "2026-05-24T07:35:26.487Z",
+    "payload": {
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Ahmed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=ahmed.7%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElWZmhtYTdSZWFRSXhUOHkxcDgyWkhZb1o5eStnWkxlY1JiVENZblh0bzA3Z3RNaTlCalloVllqSTRNdERJUVJUOVVic0hwT3diaU9TTWhOY3ZwV25iTmk5VHBGbkY0MVI5czZmajZPRjhGZVc1cmticndQYTVTMEdpR0YwNzRFOGROU0lzWFFzUXl6SWwvN0p2MGo0NW02THN0N3VqMUJjMWlXZ2lMdko4dzRxSG1naVlmUTFBdE5Edk1mVEpKOVJ0WlFHRkdzTi9CWW16emdWaHB5Z1Nt",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-4a0df8c0-ded0-48e7-a2f5-5b0a4f1e276f",
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T07:35:26.487Z"
+    }
+  },
+  {
+    "id": "msg-1779608104501-2wzk8st1t",
+    "type": "sms",
+    "timestamp": "2026-05-24T07:35:04.501Z",
+    "payload": {
+      "to": "0509784567",
+      "message": "مرحباً Ahmed، رابط إعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=ahmed.7%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElVOHVLSDhvWmhIWHlUMExiMkx5eWFmWDZoRjVWbUlHRVV1b21WcFI2RHhuMjlheFpUQVRHQUo5a1pURXVlRDA2U2tkMnQ3OThhd2VNWUFLUnZEVG5iSjhFOXNMRzFYUjBhRmJxTXk3ZTR5bTltU1RaZDZheURmcitrVjdIV3hVZnc5aVJWQUhlT2wvN1lmTXozSXVFM3lYR3FuWnp4NTFCOG5odEh6STlnOE5MRnFEZUlIdWRQZ0RWTXpFMERVVDd5VEx2UFJHTFNWUG1aZk5hTjR5QXZz"
+    },
+    "response": {
+      "status": "failed",
+      "messageId": null,
+      "to": "0509784567",
+      "error": {
+        "code": "MISSING_COUNTRY_CODE",
+        "message": "Phone number must include a country code (e.g., +966)."
+      },
+      "timestamp": "2026-05-24T07:35:04.501Z"
+    }
+  },
+  {
+    "id": "msg-1779608100647-v6bvaajjz",
+    "type": "email",
+    "timestamp": "2026-05-24T07:35:00.647Z",
+    "payload": {
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Ahmed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=ahmed.7%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElVOHVLSDhvWmhIWHlUMExiMkx5eWFmWDZoRjVWbUlHRVV1b21WcFI2RHhuMjlheFpUQVRHQUo5a1pURXVlRDA2U2tkMnQ3OThhd2VNWUFLUnZEVG5iSjhFOXNMRzFYUjBhRmJxTXk3ZTR5bTltU1RaZDZheURmcitrVjdIV3hVZnc5aVJWQUhlT2wvN1lmTXozSXVFM3lYR3FuWnp4NTFCOG5odEh6STlnOE5MRnFEZUlIdWRQZ0RWTXpFMERVVDd5VEx2UFJHTFNWUG1aZk5hTjR5QXZz",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-5933cc10-6e9f-4575-9c47-98cfba8688a2",
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T07:35:00.647Z"
+    }
+  },
+  {
+    "id": "msg-1779607939312-6ijvojeva",
+    "type": "sms",
+    "timestamp": "2026-05-24T07:32:19.312Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123456",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-c4f61fe0-7591-4947-9995-0d3435d231ec",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-24T07:32:19.312Z"
+    }
+  },
+  {
+    "id": "msg-1779607810850-ahw6v5mrf",
+    "type": "email",
+    "timestamp": "2026-05-24T07:30:10.850Z",
+    "payload": {
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Ahmed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=ahmed.7%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElWMFFwbU1nL09mRzcxbFNSV3pZM0UwZVFDeFRCSjBJbE5XNFlRWVVsYXRvbVk2SFF3djhmQTFFaUVJbHVKcTBqTThqM0Y3enhnY2N5ZGVxODMvQ2l1VmQ4QXZvK1dXdUdLTXZQYW94UXprL1RjU1FGUDNPK25GWFdqemIvejFCdnNRb284TUloNE04MG1jNVNVNDhzWDk1UW13c0oyTjRsSit4b3BIa1NUYWxFcmdOdFR6RTRqUTFHck1HdGwrQ1hDMzZXcXBaNVh6V294TjgwS0JhN2ov",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-dbc9c620-4583-410f-a3e7-26af131ae3c4",
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T07:30:10.850Z"
+    }
+  },
+  {
+    "id": "msg-1779607562568-9d42jeuoc",
+    "type": "email",
+    "timestamp": "2026-05-24T07:26:02.568Z",
+    "payload": {
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Ahmed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=ahmed.7%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElYeTlyTERtMGxvZGxoZER4Yk5HKy83dU9HRU9EQkgzcVZJNk9ueCtQK0tqaDB3L2JNLytOT2wvSDcrbGxuQlJpTjhUYmY0UnZXMzIvd00zOUNScitqNlB3TmtBc0h5c1FVTnFzOEowTkkxSEx2NkFEaTNPSGRNVm55VmhVYzJtZjlJQ0VEWHJYUUhCaGIwejB0ZmY3KzJlN29ZV2VXNjlJNnhiUmMrRG5jYWROcWhWaEhhdHMveTRMMDRnVWIrNFU5Q0JjVlY4ZStsR2hCYXJWREhLQkpj",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-9e353543-f744-4df3-8f6c-94ac74f2a2a4",
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T07:26:02.568Z"
+    }
+  },
+  {
+    "id": "msg-1779607408877-eia1kvlai",
+    "type": "email",
+    "timestamp": "2026-05-24T07:23:28.877Z",
+    "payload": {
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Ahmed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=ahmed.7%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElYdGVnTXVsYzh2TnZ6ZGx2alJiNThEMU1pMks2cHI2UUZmSndWU0Q4OVBuQW95Z1d1ZWs5TFFDak5jR1RScFFRV0FGY2s1dVZ5akJhUEt1UVFicyswd2FQM0lTdXl0ajVhWnE0NHR0OWRIMzhyNmxBZzdLZURyTUJ0T0xVdW95TzJtQ3RseW9XR1RTMnJOak5zVmdMc09aNjZ3eitnSk9xZXJMd3lBNC90MStXMXhGTS90MmR3RTdaWmQyTUZrMnI0ZS9oRzlqUzZKU2I1Zk9qTDFVUkdv",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-d5aa0519-8f1f-4126-8daa-d3fc506f6fa1",
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T07:23:28.877Z"
+    }
+  },
+  {
+    "id": "msg-1779607390971-zr2b1pndb",
+    "type": "email",
+    "timestamp": "2026-05-24T07:23:10.971Z",
+    "payload": {
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Ahmed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=ahmed.7%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElVTHE5azB2eEIzb3JuSjdNd1BSR2dyTXVGOWtMSU1iM3RLdzVpQmU3U0ZXYnRsNndGSWowRXphN1ZmSDBVck0zQTNYWHg1bHkxN3lxZlE5S2VqeDI4d2VuOVdoanlnMitWVFNNdTA2ZWhPOGw4UW02SXhCYzJCQXRhakphcjJTVGxIRE1SMHdPOUhacEV6cFBpd0lJRHNLNUhYSU8xcDREbzBVdmxaajJNVjJObk9CckV4cm40NGhQczFPUEs3UG9xUzlGTGpEOFlzaEE0eFBhbjJUVGkx",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-a9d074ca-4e1b-4af3-be4c-fb1c9f0da6f7",
+      "to": "ahmed.7@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T07:23:10.971Z"
+    }
+  },
+  {
+    "id": "msg-1779606291237-5gdirpkk9",
+    "type": "email",
+    "timestamp": "2026-05-24T07:04:51.237Z",
+    "payload": {
+      "to": "mohamed.rashed1212@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Mohamed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=mohamed.rashed1212%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElXaTB1NTgwbFlCN0ZZRkV1azRPZkNDS1Z5K3o1SUVxYlRjYzdqQmRtejcwQmJmY05wUWlZbk5NakJMaWxYalg3ODR1SlYvWVNLUzBSYjZuU0JNck80ZkZFL1BPYWZiMlJSaFBjNUMvQnNzci9KenFxc090OVUzUi9pQzAvTDRKaEhZY2dRWjhUUjBOT3pCUVRHVEhGUnhzT1VlaW5GZ1R4dDFTV2cwWVJKZDAvdHRrRG96cHpWNnUwVloyMUVCV3JGbWhac1Z3TDB1STJxMXFqU0hYdEVB",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-560729df-a48a-4c98-b1ff-ca45e2a8e03d",
+      "to": "mohamed.rashed1212@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T07:04:51.237Z"
+    }
+  },
+  {
+    "id": "msg-1779606106112-bxxel6oy6",
+    "type": "email",
+    "timestamp": "2026-05-24T07:01:46.112Z",
+    "payload": {
+      "to": "mohamed.rashed121@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Mohamed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=mohamed.rashed121%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElWNDB0Y0x3SSs3RHI3bU00RUZkS2dTSkUvdkU0alBmek5HdTJkKzJlZEFzTFpvMHZZUXpJZFNaTFhSeUx4aGt3cFNMQmZEaGl6Y3A0SFhXVUszYkVFbjluLzhVa1hKMGo2N2pDZGlhQ3RDRkMrOGFxZXVFZTdBcy9PcTRnSGh0eHkxQWtQc25qb2RSOHBrMTg3WDZwVHhwV3IvcmFkZXA2U2M1T1JiTnJYSEVuUCtxOTEwWWRPdWF3RXZqUHplbmRFZnh0MlE0V2tENUlrMExzUm1JRmhT",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-130f8cbe-1b08-4b3b-aed3-ab319e1552e9",
+      "to": "mohamed.rashed121@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T07:01:46.112Z"
+    }
+  },
+  {
+    "id": "msg-1779605884871-xi48csr1d",
+    "type": "email",
+    "timestamp": "2026-05-24T06:58:04.871Z",
+    "payload": {
+      "to": "mohamed.rashed11@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Mohamed، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=mohamed.rashed11%40example.com&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElVM0p6amhVeFlsc1c3MGxxYzdBV1R4bUwxdFNhZHY0S1Rra0YvQXNabUZ3OVNjMUxFbXFIOHhwc3hHTTM1VHN0NUJYai9yNDgxT0pEelZ5K1ZBMUFrK21pYmJ0NDFqbDhYaGVXMDRIaEJvN3RHQUFlUTJhbC8wRENNMXNDc1pXa0hZU2hyZTlyQWZ4MU5WTHUzcXRPRTRNeTNZS1ZMNENqVTA2cEY1QlhQVUlTZnZxeDgvbTlvNFRkWXd5ZVpnL0JJTGN3b3ViRmUxdlZpOXpvVlFYdjlJ",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-77aba131-b9d3-4774-83cb-c7d51fb9de97",
+      "to": "mohamed.rashed11@example.com",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-24T06:58:04.871Z"
+    }
+  },
+  {
+    "id": "msg-1779561409183-cb5qi502v",
+    "type": "email",
+    "timestamp": "2026-05-23T18:36:49.183Z",
+    "payload": {
+      "to": "user@cce.local",
+      "from": "no-reply@cce.local",
+      "subject": "Verification Code",
+      "html": "Your verification code is: 395313. Valid for 5 minutes.",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-1472449a-a2ea-4d9c-8182-06471a10e7be",
+      "to": "user@cce.local",
+      "from": "no-reply@cce.local",
+      "subject": "Verification Code",
+      "timestamp": "2026-05-23T18:36:49.183Z"
+    }
+  },
+  {
+    "id": "msg-1779560874868-w37e9k1av",
+    "type": "email",
+    "timestamp": "2026-05-23T18:27:54.868Z",
+    "payload": {
+      "to": "user@cce.local",
+      "from": "no-reply@cce.local",
+      "subject": "Verification Code",
+      "html": "Your verification code is: 319964. Valid for 5 minutes.",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-a2b70e63-677a-4eae-8cb7-d8d51cd58e16",
+      "to": "user@cce.local",
+      "from": "no-reply@cce.local",
+      "subject": "Verification Code",
+      "timestamp": "2026-05-23T18:27:54.868Z"
+    }
+  },
+  {
+    "id": "msg-1779550478112-v03j8uuyu",
+    "type": "email",
+    "timestamp": "2026-05-23T15:34:38.112Z",
+    "payload": {
+      "to": "user@cce.local",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "html": "مرحباً Regular، استخدم الرابط التالي لإعادة تعيين كلمة المرور: http://localhost:4200/reset-password?email=user%40cce.local&token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElXUXRMYkp5dXg5RnBkRE5yU0syOHJob2pKT2NMOG93Sks5dlVON0N1ZncvSDhTQ3BIeGlFNGFaMmZTMDJhT1dWMk9SdlY3YVN6MUFEcXlTOXVtVHpQbC9PaVpQYS9wWGdONC85VU43eVlOZFRVZ0x4T0pNYlBVT3BXV0JhVXZuTk9SOXRPcDVXN1pxTk82OFF6bnNmQ2l5WlBNTkVGTFRtZXF2NDFNbzVxc2FuVFZZWTI5MkRPV0hia3NQRkhYb3I1ODNYL2ZUWlZEOEw3NGtEQ1M4ZDZr",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-76f1c523-186b-4736-9a0a-2838ba830d6c",
+      "to": "user@cce.local",
+      "from": "no-reply@cce.local",
+      "subject": "استعادة كلمة المرور",
+      "timestamp": "2026-05-23T15:34:38.112Z"
+    }
+  },
+  {
+    "id": "msg-1779226452250-ocfz6nbaz",
+    "type": "email",
+    "timestamp": "2026-05-19T21:34:12.250Z",
+    "payload": {
+      "to": "ahmed@example.com",
+      "subject": "Reset your CCE password",
+      "html": "<html><body style=\"font-family: sans-serif; color: #333;\"><p>Hello Ahmed,</p><p>Use the link below to reset your password.</p><p><a href=\"https://ccecarbon.com/reset?token=abc123\">Reset password</a></p><p>Your OTP is 847291</p><p>If you did not request this, please ignore this email.</p><p>Best regards,<br>CCE Carbon Team</p></body></html>"
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-367c509b-ca0e-498f-b2a2-d9380e170221",
+      "to": "ahmed@example.com",
+      "from": "noreply@ccecarbon.com",
+      "subject": "Reset your CCE password",
+      "timestamp": "2026-05-19T21:34:12.250Z"
+    }
+  },
+  {
+    "id": "msg-1779225794565-fbzcg2po2",
+    "type": "email",
+    "timestamp": "2026-05-19T21:23:14.565Z",
+    "payload": {
+      "to": "ahmed.hassan@company.com",
+      "from": "no-reply@cce.local",
+      "subject": "Reset your CCE password",
+      "html": "<html>\n  <body style=\"font-family: sans-serif; color: #333;\">\n    <p>Hello Ahmed,</p>\n    <p>Use the link below to reset your CCE password.</p>\n    <p><a href=\"http://localhost:4200/reset-password?email=ahmed.hassan%40company.com&amp;token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElYTjRabVNodDlrWklKYm1OcTdVZWpSaEkxNVA3b25mUVhMZnJNQ1NpMDBDN1FRQ3kvdE5lRWVmV1VaNVNVcGJNTUNCNmsxNXZZRWh1a0UxVVFTcTRETXByQ1EyVHJXaUErcVhGNitTK29tL1Nsb2Q4TXFDTWdBcHNJQVhIZ1RxNy8zeHdESmN5U0svWnVMMGVxb0RLdFBtdlBnNk84TU4vaG9nUXNUZUlZblNrQ0FuK2VOYVo0b3B4ZW13RmxZSis2aWptektKMFpmMnhidmt4ekNPRzUx\">Reset password</a></p>\n    <p>If you did not request a password reset, you can ignore this email.</p>\n  </body>\n</html>",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-1305b1a8-5db8-4076-9b7c-7f8b6b522af3",
+      "to": "ahmed.hassan@company.com",
+      "from": "no-reply@cce.local",
+      "subject": "Reset your CCE password",
+      "timestamp": "2026-05-19T21:23:14.565Z"
+    }
+  },
+  {
+    "id": "msg-1779225722878-gs61vkmbs",
+    "type": "sms",
+    "timestamp": "2026-05-19T21:22:02.878Z",
+    "payload": {
+      "to": "+966501234567",
+      "body": "Your OTP is 384756"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-3457d55c-f09f-48c3-b214-8a31dafbac89",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T21:22:02.878Z"
+    }
+  },
+  {
+    "id": "msg-1779225707189-w5dwyl8fj",
+    "type": "email",
+    "timestamp": "2026-05-19T21:21:47.189Z",
+    "payload": {
+      "to": "ahmed@example.com",
+      "subject": "Reset your CCE password",
+      "html": "<html><body style=\"font-family: sans-serif; color: #333;\"><p>Hello Ahmed,</p><p>You requested to reset your password.</p><p>Your OTP is 847291</p><p>If you did not request this, please ignore this email.</p><p>Best regards, CCE Carbon Team</p></body></html>"
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-0f752198-c793-4d6c-befa-38cdbf7101dc",
+      "to": "ahmed@example.com",
+      "from": "noreply@ccecarbon.com",
+      "subject": "Reset your CCE password",
+      "timestamp": "2026-05-19T21:21:47.189Z"
+    }
+  },
+  {
+    "id": "msg-1779225073543-oijbzkmtc",
+    "type": "email",
+    "timestamp": "2026-05-19T21:11:13.543Z",
+    "payload": {
+      "to": "ahmed.hassan@company.com",
+      "from": "no-reply@cce.local",
+      "subject": "Reset your CCE password",
+      "html": "<html>\n  <body style=\"font-family: sans-serif; color: #333;\">\n    <p>Hello Ahmed,</p>\n    <p>Use the link below to reset your CCE password.</p>\n    <p><a href=\"http://localhost:4200/reset-password?email=ahmed.hassan%40company.com&amp;token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElYU1luNHVuR09uLzhmQzNKVnNNTjY0K2MxR3FPVHpWWGhla1dZTlpzcHphcmZVb1JEMFZReTBXQjlxREdvbTlLZjcxODc0RDRieElrVFlNVHBCNzBWUjkrbEVPZExDa05Fd29DZ0J3WHMxSXRWT1Y1UW56RkREVkJxTkhpUTd4ZUZtZFpDSVo4L1lhdThZenZuUnZvZFAzWTZKdUQ5eTY2QUpqZ3lGVjlVdjFKYWhoaHI4dUJPWUl6Z2ZwU1prVXJtbnV4b2RaUUJmRXRLOTFMb1g1RXVT\">Reset password</a></p>\n    <p>If you did not request a password reset, you can ignore this email.</p>\n  </body>\n</html>",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-426ea80d-03ff-4477-bc15-954d6cb752fa",
+      "to": "ahmed.hassan@company.com",
+      "from": "no-reply@cce.local",
+      "subject": "Reset your CCE password",
+      "timestamp": "2026-05-19T21:11:13.543Z"
+    }
+  },
+  {
+    "id": "msg-1779225061044-8btcfl3it",
+    "type": "email",
+    "timestamp": "2026-05-19T21:11:01.044Z",
+    "payload": {
+      "to": "ahmed.hassan@company.com",
+      "from": "no-reply@cce.local",
+      "subject": "Reset your CCE password",
+      "html": "<html>\n  <body style=\"font-family: sans-serif; color: #333;\">\n    <p>Hello Ahmed,</p>\n    <p>Use the link below to reset your CCE password.</p>\n    <p><a href=\"http://localhost:4200/reset-password?email=ahmed.hassan%40company.com&amp;token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElYU1pqbHBqblp3OXRCZmk5cUtyamsvdmtlblVVM0N3N0lvRjc5L0Q1dS8zcDFVR0Q2b1VnU2VSL05aVFpFZ09mQlFWWEs1Y3dtbTVzREhlWEN0WXo0MWZQUENJWnVxbEFaOW5SNmZaeThySWZnRmVoYTZzOGdHdWRUck50d2ZVQ3UxVm5vMlloYXJ5SFF6a3NmcTRVRWdBekx0OTcvQnNsckdDcUR3ZUt4VlFPUDc5S1lHb0RvT1dSVFY2ODJldlM3cGtkendxc3dSM1Q0V0xPeTJzMmkx\">Reset password</a></p>\n    <p>If you did not request a password reset, you can ignore this email.</p>\n  </body>\n</html>",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-bb86217d-14b5-47b5-8855-b407fe3f37b8",
+      "to": "ahmed.hassan@company.com",
+      "from": "no-reply@cce.local",
+      "subject": "Reset your CCE password",
+      "timestamp": "2026-05-19T21:11:01.044Z"
+    }
+  },
+  {
+    "id": "msg-1779224917076-ezq5nf2xd",
+    "type": "email",
+    "timestamp": "2026-05-19T21:08:37.076Z",
+    "payload": {
+      "to": "ahmed.hassan@company.com",
+      "from": "no-reply@cce.local",
+      "subject": "Reset your CCE password",
+      "html": "<html>\n  <body style=\"font-family: sans-serif; color: #333;\">\n    <p>Hello Ahmed,</p>\n    <p>Use the link below to reset your CCE password.</p>\n    <p><a href=\"http://localhost:4200/reset-password?email=ahmed.hassan%40company.com&amp;token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElVZDlrenVyMDFaSUQ2NTYxTnA0cG10VUlnOXZDdTdZcVUrUS9oZDZvcW5KbEl1RUh2cTZGem0xVVZaYThaZ3haajFWYm5Lb1p0WGdZVkdZSlhlZHF6STk3cWRzQWJvK0wvZUwyemtWQ2FWdnlxdHVENUF4aUg3TzhIMEJ3djBSNndXcnViWWVEWVdUSWNzN1VaT2NtWXdFYklYWS9ySEhpZjROcWRIcE1JR2huaTdpWlMzb3kxMUdTMXZYN0hERzhWQzl3V2MvQU1ncXFsdzZEM0c2NEFX\">Reset password</a></p>\n    <p>If you did not request a password reset, you can ignore this email.</p>\n  </body>\n</html>",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-7e0138a3-c720-462f-b431-1f1e719f7deb",
+      "to": "ahmed.hassan@company.com",
+      "from": "no-reply@cce.local",
+      "subject": "Reset your CCE password",
+      "timestamp": "2026-05-19T21:08:37.076Z"
+    }
+  },
+  {
+    "id": "msg-1779224810571-y8zq1r8x8",
+    "type": "email",
+    "timestamp": "2026-05-19T21:06:50.571Z",
+    "payload": {
+      "to": "ahmed.hassan@company.com",
+      "from": "no-reply@cce.local",
+      "subject": "Reset your CCE password",
+      "html": "<html>\n  <body style=\"font-family: sans-serif; color: #333;\">\n    <p>Hello Ahmed,</p>\n    <p>Use the link below to reset your CCE password.</p>\n    <p><a href=\"http://localhost:4200/reset-password?email=ahmed.hassan%40company.com&amp;token=Q2ZESjhEUWlNQXpVVm9kTGpsYWJMblppVElYWnZ4MDRwNjlvMW10UHdVL05vY0NwQ0lEUmtiVzFpRHhaNWo4ZmdsajdudUhwcDdrb0VYR3hnVGV3TkpEaVNWcDgrZ09lUTZaZVlON2hlQXR5ckdsV0xOT25jOXlLcUdtYUJpc0lGcVUydmt3MVJiQUNYYURnNHplbHBZN3pqVlBabkdWOThwNEU5L0lUOTNSN1VsWDhsT1BPZGcydWVRQ2lIWFUwK1BGU3RXTWJkT0RTb1VxdFo5ZVIvS1dOb1JodnBGRmlwc3N3dTcvWGt6bTRIaWw2\">Reset password</a></p>\n    <p>If you did not request a password reset, you can ignore this email.</p>\n  </body>\n</html>",
+      "templateId": null
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-0c8747af-3c10-4a08-b440-524e5cfcd58c",
+      "to": "ahmed.hassan@company.com",
+      "from": "no-reply@cce.local",
+      "subject": "Reset your CCE password",
+      "timestamp": "2026-05-19T21:06:50.571Z"
+    }
+  },
+  {
+    "id": "msg-1779222888171-1rbw4nkzv",
+    "type": "email",
+    "timestamp": "2026-05-19T20:34:48.171Z",
+    "payload": {
+      "to": "user@example.com",
+      "from": "noreply@azm.sa",
+      "subject": "Welcome to CCE Carbon",
+      "html": "<h1>Welcome to CCE Carbon</h1><p>Join our sustainability community today!</p>",
+      "templateId": "welcome-email"
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-6e0c7b04-f9be-4626-8764-828aff0a7bd0",
+      "to": "user@example.com",
+      "from": "noreply@azm.sa",
+      "subject": "Welcome to CCE Carbon",
+      "timestamp": "2026-05-19T20:34:48.171Z"
+    }
+  },
+  {
+    "id": "msg-1779222764658-97zlwloes",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:32:44.658Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123456",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-ae3ba410-ce13-4578-9d8b-d914033dc39f",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:32:44.658Z"
+    }
+  },
+  {
+    "id": "msg-1779222760210-inv2z9q3c",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:32:40.210Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123456",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-8d748d2f-986a-474f-8de0-130a1c098aff",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:32:40.210Z"
+    }
+  },
+  {
+    "id": "msg-1779222677635-wduk09f4l",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:31:17.635Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123456",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-7684f6db-8b59-4369-a144-2971b56bf3e8",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:31:17.635Z"
+    }
+  },
+  {
+    "id": "msg-1779222674645-4gc9zdzl0",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:31:14.645Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123456",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-997a495a-c6e6-4457-8ee8-aba6f2ba20ec",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:31:14.645Z"
+    }
+  },
+  {
+    "id": "msg-1779222634898-q6shb4ro8",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:30:34.898Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123458",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-a01baa32-7243-4286-8a31-f0b830003034",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:30:34.898Z"
+    }
+  },
+  {
+    "id": "msg-1779222632360-op7eu3vvg",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:30:32.360Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123458",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-14125d76-f271-4dca-b03d-8c0417a31e37",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:30:32.360Z"
+    }
+  },
+  {
+    "id": "msg-1779222632081-2b1q07vlm",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:30:32.081Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123458",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-6997d478-7c7f-4dc5-9aac-532a07337f7e",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:30:32.081Z"
+    }
+  },
+  {
+    "id": "msg-1779222631909-ye3ich5mo",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:30:31.909Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123458",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-a55b1b2f-0ce4-4bae-aa79-08dafaf2bd44",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:30:31.909Z"
+    }
+  },
+  {
+    "id": "msg-1779222631657-yfgxsmxn7",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:30:31.657Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123458",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-ef09f88e-5dc3-415e-981f-21d0719eb642",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:30:31.657Z"
+    }
+  },
+  {
+    "id": "msg-1779222631186-x5awxrm3y",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:30:31.186Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123458",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-033fd127-69c7-4bf6-8af6-937c012ade1f",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:30:31.186Z"
+    }
+  },
+  {
+    "id": "msg-1779222627354-8ujxu4h7q",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:30:27.354Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123458",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-a5eb9b0b-529d-4def-a742-6b064f0ea8d4",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:30:27.354Z"
+    }
+  },
+  {
+    "id": "msg-1779222582309-l78s8wh4n",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:29:42.309Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123456",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-8a80c1a9-9542-4b81-b8b2-fc08c814f5fd",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:29:42.309Z"
+    }
+  },
+  {
+    "id": "msg-1779222579313-by7d3e6of",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:29:39.313Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123456",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-803c0c00-023a-464f-a2e0-e065f9954373",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:29:39.313Z"
+    }
+  },
+  {
+    "id": "msg-1779222491029-7txor9ash",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:28:11.029Z",
+    "payload": {
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "body": "Welcome to CCE Carbon! Your OTP is 123456",
+      "templateId": "otp-en"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-cca36a2c-a9dd-4c83-b757-9e343df570cf",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:28:11.029Z"
+    }
+  },
+  {
+    "id": "msg-1779221083455-4rjfptdci",
+    "type": "email",
+    "timestamp": "2026-05-19T20:04:43.455Z",
+    "payload": {
+      "to": "user@example.com",
+      "subject": "Your OTP Code",
+      "html": "<h1>Your OTP is 928374</h1>"
+    },
+    "response": {
+      "status": "success",
+      "message": "Email sent successfully",
+      "messageId": "EML-16a17c19-5e33-4bbc-99a3-ab3270a69cea",
+      "to": "user@example.com",
+      "from": "noreply@ccecarbon.com",
+      "subject": "Your OTP Code",
+      "timestamp": "2026-05-19T20:04:43.455Z"
+    }
+  },
+  {
+    "id": "msg-1779221082277-4qm7o5pbb",
+    "type": "sms",
+    "timestamp": "2026-05-19T20:04:42.277Z",
+    "payload": {
+      "to": "+966501234567",
+      "body": "Your OTP is 384756"
+    },
+    "response": {
+      "status": "success",
+      "message": "SMS sent successfully",
+      "messageId": "SMS-d85d81b5-c243-4d95-8784-ff281898ca32",
+      "to": "+966501234567",
+      "from": "CCE-Carbon",
+      "timestamp": "2026-05-19T20:04:42.277Z"
+    }
+  }
+]

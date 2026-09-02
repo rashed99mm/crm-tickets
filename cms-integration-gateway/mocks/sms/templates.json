@@ -1,0 +1,51 @@
+[
+  {
+    "id": "otp-ar",
+    "name": "OTP Arabic",
+    "language": "ar",
+    "body": "رمز التحقق الخاص بك في سي سي كاربون هو: {{code}}",
+    "variables": ["code"]
+  },
+  {
+    "id": "otp-en",
+    "name": "OTP English",
+    "language": "en",
+    "body": "Your CCE Carbon verification code is: {{code}}",
+    "variables": ["code"]
+  },
+  {
+    "id": "new-follower",
+    "name": "New Follower",
+    "language": "ar",
+    "body": "{{username}} بدأ متابعتك على سي سي كاربون!",
+    "variables": ["username"]
+  },
+  {
+    "id": "blog-published",
+    "name": "Blog Published",
+    "language": "en",
+    "body": "Your blog post '{{postTitle}}' has been published on CCE Carbon.",
+    "variables": ["postTitle"]
+  },
+  {
+    "id": "comment-notification",
+    "name": "Comment Notification",
+    "language": "ar",
+    "body": "{{username}} علق على منشورك: '{{postTitle}}'",
+    "variables": ["username", "postTitle"]
+  },
+  {
+    "id": "business-verified",
+    "name": "Business Verified",
+    "language": "en",
+    "body": "Congratulations! Your business page '{{businessName}}' is now verified on CCE Carbon.",
+    "variables": ["businessName"]
+  },
+  {
+    "id": "carbon-offset-alert",
+    "name": "Carbon Offset Alert",
+    "language": "en",
+    "body": "You have offset {{amount}} kg of CO2 this month through CCE Carbon partnerships!",
+    "variables": ["amount"]
+  }
+]

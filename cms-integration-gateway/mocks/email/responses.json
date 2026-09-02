@@ -1,0 +1,10 @@
+[
+  {
+    "status": "queued",
+    "messageId": "EML-DEFAULT-001",
+    "to": "user@example.com",
+    "from": "noreply@ccecarbon.com",
+    "subject": "Mock Email Subject",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+]

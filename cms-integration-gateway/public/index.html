@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCE Integration Gateway Mock Server</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        .container {
+            background: white;
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 90%;
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: #667eea;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .links {
+            display: grid;
+            gap: 1rem;
+        }
+        .link-card {
+            display: block;
+            padding: 1.2rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #333;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+        }
+        .link-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        .link-card h3 {
+            color: #667eea;
+            margin-bottom: 0.3rem;
+        }
+        .link-card p {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .status {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #28a745;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: #999;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><span class="status"></span>CCE Carbon</h1>
+        <p class="subtitle">Integration Gateway Mock Server - Social Media & Sustainability Platform</p>
+        
+        <div class="links">
+            <a href="/api-docs" class="link-card" target="_blank">
+                <h3>Swagger Documentation</h3>
+                <p>Interactive API docs for all mock endpoints</p>
+            </a>
+            <a href="/mock-manager" class="link-card">
+                <h3>Mock Manager</h3>
+                <p>Manage mock data, add records, and configure responses</p>
+            </a>
+            <a href="/realtime" class="link-card" style="border-color: #28a745;">
+                <h3 style="color: #28a745;">Realtime Viewer</h3>
+                <p>Watch SMS and Email messages arrive in real-time as they are sent</p>
+            </a>
+            <a href="/api/server-info" class="link-card" target="_blank">
+                <h3>Server Info</h3>
+                <p>View server status, version, and available services</p>
+            </a>
+            <a href="/health" class="link-card" target="_blank">
+                <h3>Health Check</h3>
+                <p>Check server health and memory usage</p>
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>CCE Carbon | Port: 3001 | Environment: Development</p>
+        </div>
+    </div>
+</body>
+</html>

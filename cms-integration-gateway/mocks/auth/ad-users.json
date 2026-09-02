@@ -1,0 +1,52 @@
+{
+  "users": {
+    "admin@company.com": {
+      "password": "P@ssw0rd123",
+      "firstName": "Ahmed",
+      "lastName": "Hassan",
+      "displayName": "Ahmed Hassan",
+      "groups": ["CCE-Admins", "CCE-Reviewers"],
+      "enabled": true
+    },
+    "reviewer@company.com": {
+      "password": "Reviewer2024!",
+      "firstName": "Sarah",
+      "lastName": "Khan",
+      "displayName": "Sarah Khan",
+      "groups": ["CCE-Reviewers"],
+      "enabled": true
+    },
+    "disabled@company.com": {
+      "password": "Disabled123",
+      "firstName": "Test",
+      "lastName": "User",
+      "displayName": "Test User",
+      "groups": [],
+      "enabled": false
+    },
+    "user@company.com": {
+      "password": "UserPass123",
+      "firstName": "Mohammed",
+      "lastName": "Ali",
+      "displayName": "Mohammed Ali",
+      "groups": ["CCE-Users"],
+      "enabled": true
+    },
+    "superadmin@cce.local": {
+      "password": "SuperAdminPass123!",
+      "firstName": "Super",
+      "lastName": "Admin",
+      "displayName": "Super Admin",
+      "groups": ["cce-super-admin"],
+      "enabled": true
+    },
+    "admin@cce.local": {
+      "password": "AdminPass123!",
+      "firstName": "System",
+      "lastName": "Administrator",
+      "displayName": "System Administrator",
+      "groups": ["cce-admin"],
+      "enabled": true
+    }
+  }
+}

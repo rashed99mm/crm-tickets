@@ -1,0 +1,8 @@
+{
+  "/integrationgateway/sms/send": "/sms-responses",
+  "/integrationgateway/sms/status/:messageId": "/sms-history",
+  "/integrationgateway/sms/templates": "/sms-templates",
+  "/integrationgateway/email/send": "/email-responses",
+  "/integrationgateway/email/status/:messageId": "/email-history",
+  "/integrationgateway/email/templates": "/email-templates"
+}

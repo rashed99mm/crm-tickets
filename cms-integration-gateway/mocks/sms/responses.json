@@ -1,0 +1,11 @@
+[
+  {
+    "status": "queued",
+    "messageId": "SMS-DEFAULT-001",
+    "to": "+966501234567",
+    "from": "CCE-Carbon",
+    "segmentCount": 1,
+    "price": "0.05 SAR",
+    "timestamp": "2024-01-01T00:00:00Z"
+  }
+]

@@ -1,0 +1,156 @@
+[
+  {
+    "countryCode": "ARE",
+    "countryName": "United Arab Emirates",
+    "classification": "Advanced",
+    "performanceScore": 89.1,
+    "totalIndex": 1
+  },
+  {
+    "countryCode": "QAT",
+    "countryName": "Qatar",
+    "classification": "Advanced",
+    "performanceScore": 85.3,
+    "totalIndex": 2
+  },
+  {
+    "countryCode": "SAU",
+    "countryName": "Saudi Arabia",
+    "classification": "Advanced",
+    "performanceScore": 78.5,
+    "totalIndex": 3
+  },
+  {
+    "countryCode": "KWT",
+    "countryName": "Kuwait",
+    "classification": "Advanced",
+    "performanceScore": 76.8,
+    "totalIndex": 4
+  },
+  {
+    "countryCode": "BHR",
+    "countryName": "Bahrain",
+    "classification": "Advanced",
+    "performanceScore": 74.9,
+    "totalIndex": 5
+  },
+  {
+    "countryCode": "OMN",
+    "countryName": "Oman",
+    "classification": "Advanced",
+    "performanceScore": 71.4,
+    "totalIndex": 6
+  },
+  {
+    "countryCode": "JOR",
+    "countryName": "Jordan",
+    "classification": "Intermediate",
+    "performanceScore": 62.1,
+    "totalIndex": 7
+  },
+  {
+    "countryCode": "TUN",
+    "countryName": "Tunisia",
+    "classification": "Intermediate",
+    "performanceScore": 60.7,
+    "totalIndex": 8
+  },
+  {
+    "countryCode": "MAR",
+    "countryName": "Morocco",
+    "classification": "Intermediate",
+    "performanceScore": 58.3,
+    "totalIndex": 9
+  },
+  {
+    "countryCode": "EGY",
+    "countryName": "Egypt",
+    "classification": "Intermediate",
+    "performanceScore": 55.6,
+    "totalIndex": 10
+  },
+  {
+    "countryCode": "DZA",
+    "countryName": "Algeria",
+    "classification": "Intermediate",
+    "performanceScore": 53.9,
+    "totalIndex": 11
+  },
+  {
+    "countryCode": "LBN",
+    "countryName": "Lebanon",
+    "classification": "Intermediate",
+    "performanceScore": 48.5,
+    "totalIndex": 12
+  },
+  {
+    "countryCode": "IRQ",
+    "countryName": "Iraq",
+    "classification": "Intermediate",
+    "performanceScore": 45.2,
+    "totalIndex": 13
+  },
+  {
+    "countryCode": "LBY",
+    "countryName": "Libya",
+    "classification": "Intermediate",
+    "performanceScore": 42.6,
+    "totalIndex": 14
+  },
+  {
+    "countryCode": "PSE",
+    "countryName": "Palestine",
+    "classification": "Developing",
+    "performanceScore": 41.2,
+    "totalIndex": 15
+  },
+  {
+    "countryCode": "DJI",
+    "countryName": "Djibouti",
+    "classification": "Developing",
+    "performanceScore": 36.8,
+    "totalIndex": 16
+  },
+  {
+    "countryCode": "SOM",
+    "countryName": "Somalia",
+    "classification": "Developing",
+    "performanceScore": 32.4,
+    "totalIndex": 17
+  },
+  {
+    "countryCode": "SDN",
+    "countryName": "Sudan",
+    "classification": "Developing",
+    "performanceScore": 30.1,
+    "totalIndex": 18
+  },
+  {
+    "countryCode": "MRT",
+    "countryName": "Mauritania",
+    "classification": "Developing",
+    "performanceScore": 28.7,
+    "totalIndex": 19
+  },
+  {
+    "countryCode": "COM",
+    "countryName": "Comoros",
+    "classification": "Developing",
+    "performanceScore": 27.5,
+    "totalIndex": 20
+  },
+  {
+    "countryCode": "YEM",
+    "countryName": "Yemen",
+    "classification": "Developing",
+    "performanceScore": 25.3,
+    "totalIndex": 21
+  },
+  {
+    "countryCode": "SYR",
+    "countryName": "Syria",
+    "classification": "Developing",
+    "performanceScore": 22.9,
+    "totalIndex": 22
+  }
+]

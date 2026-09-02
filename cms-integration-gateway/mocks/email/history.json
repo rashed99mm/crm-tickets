@@ -1,0 +1,33 @@
+[
+  {
+    "messageId": "EML-550e8400-e29b-41d4-a716-446655440000",
+    "status": "delivered",
+    "to": "user@example.com",
+    "from": "noreply@ccecarbon.com",
+    "subject": "Welcome to CCE Carbon",
+    "html": "<h1>Welcome to CCE Carbon!</h1><p>Your account has been created successfully. Start sharing your sustainability journey today.</p>",
+    "sentAt": "2024-01-15T10:30:00Z",
+    "deliveredAt": "2024-01-15T10:30:10Z"
+  },
+  {
+    "messageId": "EML-550e8400-e29b-41d4-a716-446655440001",
+    "status": "failed",
+    "to": "bounce@test.com",
+    "from": "noreply@ccecarbon.com",
+    "subject": "Weekly Carbon Digest",
+    "error": {
+      "code": "BOUNCE",
+      "message": "Mailbox does not exist."
+    },
+    "sentAt": "2024-01-15T11:00:00Z"
+  },
+  {
+    "messageId": "EML-550e8400-e29b-41d4-a716-446655440002",
+    "status": "queued",
+    "to": "another@example.com",
+    "from": "noreply@ccecarbon.com",
+    "subject": "Your blog post is trending!",
+    "html": "<h1>Trending Alert!</h1><p>Your blog post has received over 1,000 views on CCE Carbon.</p>",
+    "sentAt": "2024-01-15T12:00:00Z"
+  }
+]
