@@ -25,8 +25,8 @@ Verified against the code on 2026-09-02.
 | Feature | Criteria | Task | Status |
 |---|---|---|---|
 | Shared ingestion | `CC-1`–`CC-5` | Task 1 | **done** — `IngestInboundChannelMessage*`, 8 integration tests (`CC1_`…`CC4_`) |
-| `FEAT-24` WhatsApp | `CC-6`–`CC-10` | Task 2 | **done** — sender, signed webhook, outbound reply; 13 tests (`CC5_`…`CC10_`) |
-| `FEAT-25` SMS conversations | `CC-11`–`CC-13` | Task 3 | **partial** — `CC-13` (outbound reply) done; `CC-11`/`CC-12` **not started**, no SMS webhook transport exists |
+| `FEAT-24` WhatsApp | `CC-6`–`CC-10` | Task 2 | **partial** — `CC-6`–`CC-9` built (inbound webhook green). **`CC-10` is red**: `WhatsAppOutboundReplyTests.CC10_WhatsAppReply_RecordsOutboundMessageAndDispatchesToTheGateway` fails, 0 bodies reached the stub. Root cause and fix: spec `A19` / `CC-51` |
+| `FEAT-25` SMS conversations | `CC-11`–`CC-13` | Task 3 | **not delivered** — `CC-13` shares the broken outbound path (`A19`); `CC-11`/`CC-12` not started, no SMS webhook transport exists |
 | `FEAT-26` Live chat | `CC-14`–`CC-19` | Task 4 | **partial** — session/message entities, `ChatController` on both hosts, `ChatHub`; `CC-18` not started (and was impossible as specified — see spec `A18`) |
 | `FEAT-27` Web forms | `CC-20`–`CC-23` | Task 5 | **not started** on the backend — the anonymous endpoint does not exist, though the frontend widget (task 11) is complete |
 | Frontend (`CC-24`–`CC-26`) | — | tasks 07–11 | recorded complete |

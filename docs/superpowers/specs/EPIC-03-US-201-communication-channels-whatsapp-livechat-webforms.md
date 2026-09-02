@@ -3,9 +3,10 @@
 **Epic:** [`EPIC-03` Communication channels](../../requirements/epics/EPIC-03-communication-channels.md)
 **Features:** `FEAT-24` WhatsApp · `FEAT-25` SMS conversations · `FEAT-26` Live chat · `FEAT-27` Web forms ·
 `FEAT-35` Mock provider gateway and the mock/real toggle
-**Status:** Partly implemented. **The "no implementation code exists" claim this header carried until
-2026-09-02 was wrong** — `CC-1`–`CC-10` and `CC-13` are built and covered by tests named after those
-criteria. Corrected against the code, not against the plan record, which was also stale. See
+**Status:** Partly implemented, **with a red test on the outbound path**. The "no implementation code
+exists" claim this header carried until 2026-09-02 was wrong: `CC-1`–`CC-9` are built. But the first
+correction overshot — it listed `CC-10`/`CC-13` as built from the *existence* of tests, and running
+them showed the outbound send is broken for every channel (`A19`, fixed by `CC-51`). See
 [Amendment — 2026-09-02](#amendment--2026-09-02-mock-provider-gateway-mockreal-toggle-and-email-inbound)
 for the verified build state, and
 [`docs/superpowers/plans/EPIC-03-US-201-feat-24-communication-channels/`](../plans/EPIC-03-US-201-feat-24-communication-channels/)
@@ -403,10 +404,10 @@ wrong. What is actually there:
 | Criteria | Verified in code | State |
 |---|---|---|
 | `CC-1`–`CC-5` shared inbound ingestion | `Application/Features/Channels/Commands/IngestInboundChannelMessage/*`; 8 tests in `Integration/IngestInboundChannelMessageTests.cs` named `CC1_`…`CC4_` | **built** |
-| `CC-6`–`CC-7` WhatsApp outbound | `Infrastructure/Notifications/WhatsAppNotificationChannelSender.cs`; 7 tests named `CC6_`/`CC7_` | **built** |
+| `CC-6`–`CC-7` WhatsApp outbound | `Infrastructure/Notifications/WhatsAppNotificationChannelSender.cs`; 7 tests named `CC6_`/`CC7_`, all green | **built at unit level only** — see `A19` |
 | `CC-8`–`CC-9` WhatsApp inbound | `ExternalApi/Controllers/WhatsAppWebhookController.cs`, `Infrastructure/Channels/MetaSignatureVerifier.cs`; `Integration/WhatsAppWebhookTests.cs` | **built** |
-| `CC-10` WhatsApp reply | the `is "WhatsApp" or "SMS"` branch in `RecordTicketMessageCommandHandler.cs:72`; `Integration/WhatsAppOutboundReplyTests.cs` | **built** |
-| `CC-13` SMS reply | same branch | **built** |
+| `CC-10` WhatsApp reply | the `is "WhatsApp" or "SMS"` branch in `RecordTicketMessageCommandHandler.cs:72` | **NOT delivered** — `Integration/WhatsAppOutboundReplyTests.CC10_WhatsAppReply_RecordsOutboundMessageAndDispatchesToTheGateway` is **red**; see `A19` |
+| `CC-13` SMS reply | same branch | **NOT delivered** — same root cause as `CC-10`, same code path |
 | `CC-14`–`CC-17`, `CC-19` live chat | `Domain/Entities/Channels/LiveChatSession.cs`, `LiveChatMessage.cs`, `ChatController` on both hosts, `ChatHub`; frontend tasks 07–11 recorded complete | **partly built** |
 | `CC-18` abandoned-session timeout | nothing found | **missing** |
 | `CC-11`–`CC-12` SMS inbound | no SMS webhook controller exists | **missing** |
@@ -414,6 +415,32 @@ wrong. What is actually there:
 
 `"SMS"` and `"WebForm"` sit in the inbound allow-list with no transport that can reach them — they
 are reachable only by sending the command in-process, which is what the integration tests do.
+
+- **A19 — outbound sending is broken today, and this was found by running the tests rather than
+  reading them.** The first version of this amendment listed `CC-10` as built, inferred from the
+  existence of tests named `CC10_`. Those tests were then executed:
+  `WhatsAppOutboundReplyTests.CC10_WhatsAppReply_RecordsOutboundMessageAndDispatchesToTheGateway`
+  **fails** with `Expected _stub.ReceivedBodies to contain 1 item(s), but found 0` — the HTTP POST
+  never leaves the process.
+
+  Root cause, confirmed by reading the three files involved: `DatabaseExternalApiProvider.MapToConfig`
+  (`ExternalApis/Providers/DatabaseExternalApiProvider.cs:96-101`) **already decrypts** every
+  credential through `Decrypt(...)`, so `GetConfig` hands back plaintext. Each sender's `ApplyAuth`
+  then calls `_secretProtector.Unprotect(...)` on that plaintext (or on `string.Empty` when the
+  column was null), and `DataProtectionSecretProtector.Unprotect` delegates straight to
+  `IDataProtector.Unprotect`, which throws on input that is not a valid protected payload. Because
+  `ApplyAuth` is invoked *outside* the retry `try` block (`WhatsAppNotificationChannelSender.cs:61`),
+  the exception escapes `SendAsync` and is swallowed by `NotificationGateway.cs:93-99`, which logs
+  and records `DELIVERY_FAILED`.
+
+  The consequence is wider than WhatsApp: **every** outbound Email, SMS and WhatsApp dispatch
+  through a database-configured gateway fails, for any `AuthType` other than `None`, and presents
+  as a provider outage. The seven WhatsApp unit tests pass only because they inject
+  `IdentitySecretProtector`, whose `Unprotect` is the identity function — the double-unprotect is
+  invisible at unit level by construction.
+
+  `CC-51` below covers the fix. It is sequenced first in the plan, because provider-faithful
+  adapters built on a path that never posts would be untestable end-to-end.
 
 ### Assumptions
 
@@ -560,6 +587,15 @@ move to one base, leaving each adapter owning only its payload shape and its id/
 **CC-50.** Given the backend test suite, when it runs with the mock gateway not started, then every
 test passes — no test depends on port 3001. Integration tests continue to use the in-process
 `Integration/StubGatewayServer.cs`.
+
+**CC-51.** Given a gateway configuration whose credential `DatabaseExternalApiProvider` has already
+decrypted, when a dispatch is attempted with `AuthType` of `ApiKey`, `Bearer` or `Basic`, then the
+credential reaches the transport header intact and the request is actually sent — no second
+`Unprotect` is applied to an already-plaintext value, and no exception escapes `SendAsync`. Proven
+by `WhatsAppOutboundReplyTests.CC10_WhatsAppReply_RecordsOutboundMessageAndDispatchesToTheGateway`
+turning green, and by a unit test that uses a **real** `DataProtection`-backed `ISecretProtector`
+rather than the identity stub that hid this (`A19`). Closes `CC-10` and `CC-13`, which cannot pass
+without it.
 
 ### Design
 
