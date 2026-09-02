@@ -9,6 +9,8 @@ import {
   CmsIntegrationApi,
   CsButton,
   CsCard,
+  CsStatCard,
+  CmsErpImportResult,
   CsEmptyState,
   CsErrorState,
   CsIcon,
@@ -32,6 +34,7 @@ import {
   imports: [
     ReactiveFormsModule,
     CsCard,
+    CsStatCard,
     CsIcon,
     CsButton,
     CsLoadingState,
@@ -62,8 +65,20 @@ export default class PlatformSettingsComponent {
   readonly brandingSaveError = signal<ApiError | null>(null);
   readonly brandingSaving = signal(false);
   readonly erpImporting = signal(false);
-  readonly erpImportMessage = signal<string | null>(null);
-  readonly erpImportError = signal<string | null>(null);
+  /**
+   * The last import's own result, not a sentence built from it. The counts and the references it
+   * created are what the ERP panel renders, and flattening them here previously threw the
+   * references away and hardcoded the counts into English prose.
+   */
+  readonly erpImportResult = signal<CmsErpImportResult | null>(null);
+  readonly erpImportFailed = signal(false);
+
+  /**
+   * The gateway route the ERP import reads from, shown so an operator can see where the feed comes
+   * from. Held here rather than in the template because it is an endpoint path, not translatable
+   * copy — and the no-hardcoded-strings guard is right to reject literals in markup.
+   */
+  protected readonly erpSourcePath = '/integrationgateway/erp/tickets';
 
   readonly brandingLoadError = computed<ApiError | null>(() => {
     const current = this.brandingState();
@@ -176,18 +191,24 @@ export default class PlatformSettingsComponent {
   }
 
   importErpTickets(): void {
-    if (this.erpImporting()) return;
+    if (this.erpImporting()) {
+      return;
+    }
+
     this.erpImporting.set(true);
-    this.erpImportMessage.set(null);
-    this.erpImportError.set(null);
+    this.erpImportFailed.set(false);
+    this.erpImportResult.set(null);
+
     this.cmsIntegration.importErpTickets().subscribe({
       next: (result) => {
         this.erpImporting.set(false);
-        this.erpImportMessage.set(`${result.imported} imported, ${result.skipped} already synced.`);
+        this.erpImportResult.set(result);
       },
-      error: (error: unknown) => {
+      error: () => {
         this.erpImporting.set(false);
-        this.erpImportError.set(error instanceof ApiError ? error.message_ : 'CMS ERP import failed.');
+        // The server's own message is not shown here: the overwhelmingly common cause is the mock
+        // gateway not running, and the panel's copy says so in the reader's language.
+        this.erpImportFailed.set(true);
       },
     });
   }

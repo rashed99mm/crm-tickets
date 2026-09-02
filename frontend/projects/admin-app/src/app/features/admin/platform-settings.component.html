@@ -174,35 +174,89 @@
       }
     </cs-card>
 
-    <div class="hidden" aria-hidden="true">
 
     <!-- Integrations (col-span-12) -->
+    <!--
+      The ERP feed gets its own section rather than a tile in the integrations grid: it is the only
+      integration on this page with a real action behind it, and its result carries counts and the
+      references it created — none of which fits in a tile.
+    -->
+    <cs-card class="md:col-span-12" [heading]="'platformSettings.erp.title' | t">
+      <cs-button action (pressed)="importErpTickets()" [busy]="erpImporting()">
+        <cs-icon name="sync" [size]="16" />
+        {{ 'platformSettings.integrations.importTickets' | t }}
+      </cs-button>
+
+      <div class="p-5">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div class="flex max-w-2xl flex-col gap-2">
+            <p class="text-body-md text-on-surface-variant">
+              {{ 'platformSettings.erp.description' | t }}
+            </p>
+            <p class="flex flex-wrap items-center gap-2 text-label-md text-on-surface-variant">
+              <span class="uppercase tracking-wider">{{ 'platformSettings.erp.source' | t }}</span>
+              <!-- dir=ltr: a URL must not be reordered under an RTL layout. -->
+              <code dir="ltr" class="rounded bg-surface-container-low px-2 py-1 font-mono text-data-mono text-on-surface">{{ erpSourcePath }}</code>
+              <span class="rounded-full bg-status-resolved/15 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-status-resolved">
+                {{ 'platformSettings.integrations.cmsMock' | t }}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        @if (erpImportFailed()) {
+          <p role="alert" class="mt-4 rounded-lg bg-error/10 px-3 py-2 text-body-sm text-error">
+            {{ 'platformSettings.erp.failed' | t }}
+          </p>
+        } @else if (erpImportResult(); as result) {
+          <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <cs-stat-card
+              icon="download_done"
+              [label]="'platformSettings.erp.imported' | t"
+              [value]="result.imported"
+              iconTone="bg-status-resolved/15 text-status-resolved"
+            />
+            <cs-stat-card
+              icon="sync_disabled"
+              [label]="'platformSettings.erp.skipped' | t"
+              [value]="result.skipped"
+            />
+          </div>
+
+          @if (result.ticketReferences.length > 0) {
+            <div class="mt-4 flex flex-col gap-2">
+              <span class="text-label-md uppercase tracking-wider text-on-surface-variant">
+                {{ 'platformSettings.erp.createdTickets' | t }}
+              </span>
+              <div class="flex flex-wrap gap-2">
+                @for (reference of result.ticketReferences; track reference) {
+                  <span dir="ltr" class="rounded-lg border border-border-subtle bg-surface-container-low px-2.5 py-1 font-mono text-data-mono text-on-surface">
+                    {{ reference }}
+                  </span>
+                }
+              </div>
+            </div>
+          } @else {
+            <p class="mt-4 text-body-sm text-on-surface-variant">
+              {{ 'platformSettings.erp.nothingNew' | t }}
+            </p>
+          }
+        } @else {
+          <p class="mt-4 text-body-sm text-on-surface-variant">
+            {{ 'platformSettings.erp.neverRun' | t }}
+          </p>
+        }
+      </div>
+    </cs-card>
+
+    <div class="hidden" aria-hidden="true">
+
     <cs-card class="md:col-span-12" [heading]="'platformSettings.integrations.title' | t">
       <cs-button action variant="ghost">
         <cs-icon name="add" [size]="16" /> {{ 'platformSettings.integrations.add' | t }}
       </cs-button>
       <div class="p-5">
-      @if (erpImportMessage(); as message) {
-        <p class="mb-4 rounded-lg bg-status-resolved/10 px-3 py-2 text-body-sm text-status-resolved" role="status">{{ message }}</p>
-      }
-      @if (erpImportError(); as error) {
-        <p class="mb-4 rounded-lg bg-error/10 px-3 py-2 text-body-sm text-error" role="alert">{{ error }}</p>
-      }
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- CMS ERP -->
-        <div class="border border-primary/30 rounded-lg p-4 bg-primary/5 flex flex-col h-full relative overflow-hidden">
-          <div class="flex justify-between items-start mb-3">
-            <div class="w-10 h-10 bg-white border border-primary/20 rounded shadow-sm flex items-center justify-center p-1">
-              <cs-icon name="account_balance" [size]="24" class="text-primary" />
-            </div>
-            <span class="bg-status-resolved text-on-primary px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide">{{ 'platformSettings.integrations.cmsMock' | t }}</span>
-          </div>
-          <h4 class="text-label-lg text-on-surface">{{ 'platformSettings.integrations.erpTicketFeed' | t }}</h4>
-          <p class="text-body-sm text-on-surface-variant mt-1 mb-4 flex-grow">{{ 'platformSettings.integrations.importDescription' | t }}</p>
-          <cs-button (pressed)="importErpTickets()" [disabled]="erpImporting()">
-            {{ erpImporting() ? ('platformSettings.integrations.importing' | t) : ('platformSettings.integrations.importTickets' | t) }}
-          </cs-button>
-        </div>
         <!-- Gmail -->
         <div class="border border-border-subtle rounded-lg p-4 hover:border-primary transition-colors cursor-pointer bg-surface flex flex-col h-full relative overflow-hidden">
           <div class="absolute top-0 end-0 w-16 h-16 bg-primary opacity-5 rounded-es-full"></div>

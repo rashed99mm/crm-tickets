@@ -1021,6 +1021,27 @@ export const TRANSLATIONS = {
   'platformSettings.integrations.importDescription': { en: 'Import customer and ticket records from the CMS ERP integration mock.', ar: 'استورد سجلات العملاء والتذاكر من محاكاة تكامل نظام إدارة المحتوى وتخطيط الموارد.' },
   'platformSettings.integrations.importing': { en: 'Importing...', ar: 'جارٍ الاستيراد...' },
   'platformSettings.integrations.importTickets': { en: 'Import ERP tickets', ar: 'استيراد تذاكر النظام' },
+
+  // The ERP feed's own section. The import result carries imported/skipped counts and the
+  // references it created; those used to be flattened into one hardcoded English sentence.
+  'platformSettings.erp.title': { en: 'ERP Ticket Feed', ar: 'تغذية تذاكر نظام تخطيط الموارد' },
+  'platformSettings.erp.description': {
+    en: 'Pull customer and ticket records from the ERP feed. Records already synced are skipped, so running it twice is safe.',
+    ar: 'اسحب سجلات العملاء والتذاكر من تغذية نظام تخطيط الموارد. تُتجاهل السجلات المتزامنة مسبقًا، لذا تكرار العملية آمن.',
+  },
+  'platformSettings.erp.source': { en: 'Source', ar: 'المصدر' },
+  'platformSettings.erp.imported': { en: 'Imported', ar: 'تم استيرادها' },
+  'platformSettings.erp.skipped': { en: 'Already synced', ar: 'متزامنة مسبقًا' },
+  'platformSettings.erp.createdTickets': { en: 'Tickets created', ar: 'التذاكر المنشأة' },
+  'platformSettings.erp.neverRun': { en: 'Not run in this session', ar: 'لم تُنفَّذ في هذه الجلسة' },
+  'platformSettings.erp.nothingNew': {
+    en: 'Nothing new — every record in the feed is already synced.',
+    ar: 'لا جديد — جميع السجلات في التغذية متزامنة مسبقًا.',
+  },
+  'platformSettings.erp.failed': {
+    en: 'The import could not be completed. Check that the mock gateway is running on port 3001.',
+    ar: 'لم يكتمل الاستيراد. تأكد من تشغيل بوابة المحاكاة على المنفذ 3001.',
+  },
   'platformSettings.integrations.notConfigured': { en: 'Not Configured', ar: 'غير مكون' },
   'platformSettings.integrations.setupIncomplete': { en: 'Setup Incomplete', ar: 'الإعداد غير مكتمل' },
   'platformSettings.integrations.gmail': { en: 'Gmail', ar: 'جيميل' },

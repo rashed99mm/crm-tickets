@@ -16,7 +16,15 @@
       ></span>
       <span class="truncate">{{ heading() }}</span>
     </h2>
-    <ng-content select="[action], action" />
+    <!--
+      Wrapped and `shrink-0`: the header is a flex row whose `<h2>` is greedy, so a projected
+      action with the default `flex-shrink: 1` collapsed to 0x0 and became unclickable. Nothing
+      used this slot until now, which is why it went unnoticed. The wrapper is zero-width when no
+      action is projected, so cards without one are unaffected.
+    -->
+    <span class="shrink-0">
+      <ng-content select="[action], action" />
+    </span>
   </div>
 }
 
