@@ -68,6 +68,8 @@ exist** — an instruction file listing commands that fail is worse than one lis
 | Use the mocks | set `Channels__UseMocks=true` on either API host |
 | Simulate inbound SMS | `cd cms-integration-gateway && npm run simulate:sms` (needs the ExternalApi host running) |
 | Simulate inbound email | `cd cms-integration-gateway && npm run simulate:email` |
+| Publish an API (framework-dependent) | `cd backend && dotnet publish src/CustomerSupport.InternalApi -p:PublishProfile=FolderProfile` |
+| Publish an API (self-contained win-x64) | `cd backend && dotnet publish src/CustomerSupport.InternalApi -p:PublishProfile=SelfContainedWin64` |
 
 ### Both hosts need two settings, or every request returns 500
 
